@@ -42,17 +42,17 @@ public extension NSManagedObjectContext {
      *
      * :returns: An array with the found managed objects which match the given predicate.
      */
-    public func findEntitiesForEntityName(entityName: String, withPredicate predicate: NSPredicate?, andSortDescriptors sortDescriptors: [NSSortDescriptor]?, error: NSErrorPointer) -> [NSManagedObject] {
+    public func findEntitiesForEntityName(entityName: String, withPredicate predicate: NSPredicate?, andSortDescriptors sortDescriptors: [NSSortDescriptor]?, error: NSErrorPointer) -> [AnyObject] {
         // Create a request with the appropriate information.
         let request = NSFetchRequest(entityName: entityName)
         request.predicate = predicate
         request.sortDescriptors = sortDescriptors
         
-        // Execute the fetch request and attempt to downcast to an array of NSManagedObjects.
-        let results = executeFetchRequest(request, error: error) as? [NSManagedObject]
+        // Execute the fetch request.
+        let results = executeFetchRequest(request, error: error)
         
         // Return the results or an empty array on fetch failure.
-        return results != nil ? results! : [NSManagedObject]()
+        return results != nil ? results! : [AnyObject]()
     }
     
     /**
@@ -66,7 +66,7 @@ public extension NSManagedObjectContext {
      *
      * :returns: An array with the found managed objects which match the given predicate.
      */
-    public func findEntitiesForEntityName(entityName: String, withPredicate predicate: NSPredicate?, error: NSErrorPointer) -> [NSManagedObject] {
+    public func findEntitiesForEntityName(entityName: String, withPredicate predicate: NSPredicate?, error: NSErrorPointer) -> [AnyObject] {
         return findEntitiesForEntityName(entityName,
             withPredicate: predicate,
             andSortDescriptors: nil,
@@ -93,7 +93,7 @@ public extension NSManagedObjectContext {
         wherKey key: String,
         equalsValue value: AnyObject,
         error: NSErrorPointer,
-        orInsert insert: ((object: NSManagedObject) -> Void)?) -> [NSManagedObject] {
+        orInsert insert: ((object: AnyObject) -> Void)?) -> [AnyObject] {
             // Create a request with the appropriate information.
             let request = NSFetchRequest(entityName: entityName)
             
@@ -103,21 +103,20 @@ public extension NSManagedObjectContext {
             request.predicate = NSPredicate(format: "\(key) == \(parsedValue)")
             
             // Initialise a variable to hold the found/created managed objects.
-            var objects = [NSManagedObject]()
+            var objects = [AnyObject]()
             // Check if the fetch will return objects.
             if countForFetchRequest(request, error: error) == 0 {
                 // If there is no found object create and insert one.
-                if let newObject = NSEntityDescription.insertNewObjectForEntityForName(entityName, inManagedObjectContext: self) as? NSManagedObject {
-                    // Set the appropriate key-value pair.
-                    newObject.setValue(value, forKey: key)
-                    // Allow the caller to edit the new managed object.
-                    insert?(object: newObject)
-                    
-                    objects.append(newObject)
-                }
+                let newObject: AnyObject = NSEntityDescription.insertNewObjectForEntityForName(entityName, inManagedObjectContext: self)
+                // Set the appropriate key-value pair.
+                newObject.setValue(value, forKey: key)
+                // Allow the caller to edit the new managed object.
+                insert?(object: newObject)
+                
+                objects.append(newObject)
             } else {
                 // The objects exist so fetch them and store them if the fetch was successful.
-                if let results = executeFetchRequest(request, error: error) as? [NSManagedObject] {
+                if let results = executeFetchRequest(request, error: error) {
                     objects = results
                 }
             }
@@ -133,10 +132,10 @@ public extension NSManagedObjectContext {
      *
      * :returns: An array containing all the managed objects for the given entity name.
      */
-    public func findAllForEntityWithEntityName(entityName: String, error: NSErrorPointer) -> [NSManagedObject] {
-        let results = executeFetchRequest(NSFetchRequest(entityName: entityName), error: error) as? [NSManagedObject]
+    public func findAllForEntityWithEntityName(entityName: String, error: NSErrorPointer) -> [AnyObject] {
+        let results = executeFetchRequest(NSFetchRequest(entityName: entityName), error: error)
         
-        return results != nil ? results! : [NSManagedObject]()
+        return results != nil ? results! : [AnyObject]()
     }
     
     /**
@@ -145,8 +144,8 @@ public extension NSManagedObjectContext {
      * :param: entityName The entity name of for the managed object to find.
      * :param: insertion Insertion closure to allow the setting up of the newly created object. nil if the creation was unsuccessful.
      */
-    public func insertObjectWithEntityName(entityName: String, insertion: ((object: NSManagedObject) -> Void)?) {
-        let newObject = NSEntityDescription.insertNewObjectForEntityForName(entityName, inManagedObjectContext: self) as NSManagedObject
+    public func insertObjectWithEntityName(entityName: String, insertion: ((object: AnyObject) -> Void)?) {
+        let newObject: AnyObject = NSEntityDescription.insertNewObjectForEntityForName(entityName, inManagedObjectContext: self)
         
         insertion?(object: newObject)
     }
