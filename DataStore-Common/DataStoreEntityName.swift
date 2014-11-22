@@ -75,9 +75,7 @@ public extension DataStore {
         }
         
         // Look for the matching entity in the coordinator.
-        for entity in persistentStoreCoordinator.managedObjectModel.entities {
-            println(entity.managedObjectClassName)
-            
+        for entity in persistentStoreCoordinator.managedObjectModel.entities {            
             if entity.managedObjectClassName == className {
                 entityName = className
                 break
