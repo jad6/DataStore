@@ -36,9 +36,11 @@ public class DataStore: NSObject {
     
     /// Closure type giving back a context.
     public typealias ContextClosure = (context: NSManagedObjectContext) -> Void
-    /// Closure type giving back an error.
+    /// Closure type giving back a context and an error.
     public typealias ContextSaveClosure = (context: NSManagedObjectContext, error: NSError?) -> Void
-    
+    /// Closure type giving back an error.
+    public typealias SaveClosure = (error: NSError?) -> Void
+
     // MARK: - Properties
     
     /// The file location of the persistent store.
@@ -165,25 +167,25 @@ public class DataStore: NSObject {
      * :param: contextSave A callback given at each context save.
      * :param: completion A callback at the end of the save operation with error reporting.
      */
-    public func save(onContextSave contextSave: ContextClosure?, completion: ContextSaveClosure?) {
+    public func save(onContextSave contextSave: ContextClosure?, completion: SaveClosure?) {
         saveContext(mainManagedObjectContext, onSave: contextSave) { error in
             if error != nil && completion != nil {
                 // Abort if there is an error with the main queue save.
                 dispatch_async(dispatch_get_main_queue()) {
-                    completion!(context: self.mainManagedObjectContext, error: error)
+                    completion!(error: error)
                 }
             } else {
                 self.saveContext(self.backgroundManagedObjectContext, onSave: contextSave) { error in
                     if error != nil && completion != nil {
                         // Abort if there is an error with the background queue save.
                         dispatch_async(dispatch_get_main_queue()) {
-                            completion!(context: self.backgroundManagedObjectContext, error: error)
+                            completion!(error: error)
                         }
                     } else {
                         self.saveContext(self.writerManagedObjectContext, onSave: contextSave) { error in
                             if completion != nil {
                                 dispatch_async(dispatch_get_main_queue()) {
-                                    completion!(context: self.writerManagedObjectContext, error: error)
+                                    completion!(error: error)
                                 }
                             }
                         }
@@ -198,7 +200,7 @@ public class DataStore: NSObject {
      *
      * :param: completion A callback at the end of the save operation with error reporting.
      */
-    public func save(completion: ContextSaveClosure?) {
+    public func save(completion: SaveClosure?) {
         save(onContextSave: nil, completion: completion)
     }
     

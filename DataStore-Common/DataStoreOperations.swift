@@ -76,7 +76,11 @@ public extension DataStore {
     public func performClosureAndSave(closure: ContextClosure, completion: ContextSaveClosure?) {
         performClosure() { context in
             closure(context: context)
-            self.save(completion)
+            self.save() { error in
+                if completion != nil {
+                    completion!(context: context, error: error)
+                }
+            }
         }
     }
     
@@ -130,7 +134,11 @@ public extension DataStore {
     public func performBackgroundClosureAndSave(closure: ContextClosure, completion: ContextSaveClosure?) {
         performBackgroundClosure() { context in
             closure(context: context)
-            self.save(completion)
+            self.save() { error in
+                if completion != nil {
+                    completion!(context: context, error: error)
+                }
+            }
         }
     }
     

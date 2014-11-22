@@ -641,7 +641,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
             self.dataStore.save(onContextSave: { context in
                 // FIXME: This strangely calls saveAndWait:... I have no clue as to why?!
                 XCTAssertFalse(context.hasChanges, "The context should not have changes")
-            }, completion: { context, error in
+            }, completion: { error in
                 self.dataStore.performClosureAndWait() { context in
                     var fetchError: NSError?
                     let results = context.findAllForEntityWithEntityName(entityName, error: &fetchError)
