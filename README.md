@@ -18,7 +18,7 @@ Follow the following steps to use the DataStore framework in your project:
 2. Open the DataStore folder, and drag `DataStore.xcodeproj` into the file navigator of your app project.
 3. In the Xcode project navigator select `Build Settings` and for the `Header Search Path` key add the following value: **`$(CONFIGURATION_BUILD_DIR)`** to the existing array.
 4. Then select the `Build Phases` tab and under `Target Dependencies` add the appropriate DataStore target for your platform. *Note:* If you do not see any DataStore targets please ensure you correctly did step 2.
-5. Lastly, in the `General` tab add the appropriate `DataStore.framework` for your targeted platform under the `Linked Frameworks and Libraries` section.
+5. Lastly, in the `General` tab add the appropriate `DataStore.framework` for your targeted platform under the `Embedded Binaries` section.
 
 ## Usage
 
