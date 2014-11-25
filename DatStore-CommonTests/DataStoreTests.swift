@@ -33,7 +33,7 @@ import DataStore
 class DataStoreTests: XCTestCase {
     
     var dataStore: DataStore!
-    
+        
     override func setUp() {
         super.setUp()
         
@@ -46,11 +46,12 @@ class DataStoreTests: XCTestCase {
             storeType: NSInMemoryStoreType,
             options: nil,
             error: &error)
+        assert(error == nil, "Could not create data store")
     }
     
     override func tearDown() {
         var error: NSError?
-        dataStore.reset(&error)
+        dataStore?.reset(&error)
         assert(error == nil, "The Data Store must have been completely reset before rebuilding the stack for a new unit test")
         
         dataStore = nil
@@ -58,12 +59,6 @@ class DataStoreTests: XCTestCase {
         DataStore.clearClassNameCache()
 
         super.tearDown()
-    }
-
-    func expectationForSaveOfContext(context: NSManagedObjectContext) -> XCTestExpectation {
-        return expectationForNotification(NSManagedObjectContextDidSaveNotification,
-            object: context,
-            handler: nil)
     }
 }
 

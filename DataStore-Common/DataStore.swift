@@ -34,6 +34,38 @@ import CoreData
  */
 public class DataStore: NSObject {
     
+    /**
+     * Convenient notifications struct containing the names and keys used 
+     * throughout the DataStore.
+     */
+    public struct Notifications {
+        /// Notification sent when one of the sibling contexts saves. The
+        /// notification object is the DataStore object and the userInfo contains:
+        ///     - DSSaveContextKey: the context which has been saved.
+        ///     - DSMergedContextKey: the context which has been merged.
+        public static let contextSavedAndMerge = "DSContextSavedAndMerge"
+        /// Notification sent after a save when the stores are about to be
+        /// swapped and there are changes on the context(s). The notification
+        /// object is the DataStore object and the userInfo contains:
+        ///     - DSPersistentStoreCoordinatorKey: The persistent store who's stores are swapped.
+        ///     - DSErrorKey (optional): If there was an error in the save this key-value will be populated with it.
+        public static let changesSavedFromTemporaryStore = "DSChangesSavedFromTemporaryStore"
+        
+        /**
+         * The keys used for the notifications userInfo.
+         */
+        public struct Keys {
+            /// The error key which will be included when errors are found.
+            public static let error = "DSErrorKey"
+            /// The persistent store coordinator attached to the notification.
+            public static let persistentStoreCoordinator = "DSPersistentStoreCoordinatorKey"
+            /// The context which has been saved.
+            public static let saveContext = "DSSaveContextKey"
+            /// The context which has been merged.
+            public static let mergedContext = "DSMergedContextKey"
+        }
+    }
+    
     /// Closure type giving back a context.
     public typealias ContextClosure = (context: NSManagedObjectContext) -> Void
     /// Closure type giving back a context and an error.
@@ -43,14 +75,14 @@ public class DataStore: NSObject {
 
     // MARK: - Properties
     
-    /// The file location of the persistent store.
-    public private(set) var storePath: String?
     /// The persistent store type which is used by the data store.
     public let storeType: String
     /// The managed object model used by the data store.
     public let managedObjectModel: NSManagedObjectModel
     /// The persistent store coordinator used by the data store.
     public let persistentStoreCoordinator: NSPersistentStoreCoordinator
+    /// The ubiquitous key used to identify the cloud store.
+    public private(set) var cloudUbiquitousNameKey: String?
     
     /// Main context lined to the main queue.
     public private(set) var mainManagedObjectContext = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
@@ -60,7 +92,14 @@ public class DataStore: NSObject {
     /// writig the state of the model to disk. This context is
     /// the parent of the sibling contexts mainManagedObjectContext &
     /// backgroundManagedObjectContext.
-    private var writerManagedObjectContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
+    private(set) var writerManagedObjectContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
+    
+    /// Checks accross all contexts to see if there are changes.
+    public var hasChanges: Bool {
+        return self.writerManagedObjectContext.hasChanges ||
+            self.mainManagedObjectContext.hasChanges ||
+            self.backgroundManagedObjectContext.hasChanges
+    }
     
     // MARK: - Initialisers
 
@@ -81,47 +120,38 @@ public class DataStore: NSObject {
         storeType: String,
         options: [NSObject : AnyObject]?,
         error: NSErrorPointer) {
-            // Create a persistent store coordinator from wih the given model.
-            let coordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
+            // Initialise the class' properties
+            self.storeType = storeType
+            self.managedObjectModel = model
+            self.persistentStoreCoordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
             
+            super.init()
+            
+            // Convert the path to a URL.
             var storeURL: NSURL?
             if storePath != nil {
                 storeURL = NSURL(fileURLWithPath: storePath!)
             }
             
-            // Add a persitent store from the given information.
-            let storeAdded = coordinator.addPersistentStoreWithType(storeType,
-                configuration: configuration,
-                URL: storeURL,
-                options: options,
-                error: error)
-            
-            // Initialise the class properties
-            self.storePath = storePath
-            self.storeType = storeType
-            self.managedObjectModel = model
-            self.persistentStoreCoordinator = coordinator
-            
-            super.init()
-            
-            // Fail initialisation if the persitent store could not be added.
-            if storeAdded == false {
-                return nil
-            }
-            
-            // Register for the sibling contexts save notifications on their 
-            // respective queues.
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleMainContextSaveNotification:", name:
-                NSManagedObjectContextDidSaveNotification, object: self.mainManagedObjectContext)
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleBackgroundContextSaveNotification:", name:
-                NSManagedObjectContextDidSaveNotification, object: self.backgroundManagedObjectContext)
-            
             // Set the coordinator to the write context.
-            self.writerManagedObjectContext.persistentStoreCoordinator = coordinator
+            self.writerManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator
             // Set the writing object context to be the parent of the sibling contexts
             // mainManagedObjectContext & backgroundManagedObjectContext.
             self.mainManagedObjectContext.parentContext = self.writerManagedObjectContext
             self.backgroundManagedObjectContext.parentContext = self.writerManagedObjectContext
+
+            // Register for Core Data notifications
+            self.handleNotifications()
+            
+            // Add a persitent store from the given information.
+            if self.persistentStoreCoordinator.addPersistentStoreWithType(storeType,
+                configuration: configuration,
+                URL: storeURL,
+                options: options,
+                error: error) == nil {
+                    // Fail initialisation if the persitent store could not be added.
+                    return nil
+            }
     }
     
     /**
@@ -136,7 +166,8 @@ public class DataStore: NSObject {
      */
     public convenience init!(model: NSManagedObjectModel, storePath: String?) {
         // Set default options.
-        let options = [NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
+        let options = [NSMigratePersistentStoresAutomaticallyOption: true,
+            NSInferMappingModelAutomaticallyOption: true]
         // Declare possible error for initialisation.
         var error: NSError?
         
@@ -149,6 +180,36 @@ public class DataStore: NSObject {
         
         // Handle any possible errors.
         error?.handle()
+    }
+    
+    /**
+     * Convenience initialiser which sets up a cloud Core Data environment with
+     * a SQLLite store type with a persistent store having no configurations and options
+     * NSMigratePersistentStoresAutomaticallyOption, NSInferMappingModelAutomaticallyOption
+     * & NSPersistentStoreUbiquitousContentNameKey enabled. If the persistent
+     * store coordinator could not be added, the initialisation fails.
+     *
+     * :param: model The model to use througout the application.
+     * :param: storePath The file location of the persistent store.
+     */
+    public convenience init!(model: NSManagedObjectModel,
+        cloudUbiquitousNameKey: String,
+        storePath: String?) {
+            // Set cloud options.
+            let options = [NSMigratePersistentStoresAutomaticallyOption: true,
+                NSInferMappingModelAutomaticallyOption: true,
+                NSPersistentStoreUbiquitousContentNameKey: cloudUbiquitousNameKey]
+            // Declare possible error for initialisation.
+            var error: NSError?
+            
+            self.init(model: model,
+                configuration: nil,
+                storePath: storePath,
+                storeType: NSSQLiteStoreType,
+                options: options,
+                error: &error)
+            
+            self.cloudUbiquitousNameKey = cloudUbiquitousNameKey
     }
     
     /**
@@ -253,9 +314,72 @@ public class DataStore: NSObject {
         return saveSuccessful
     }
     
+    // MARK: - Store Methods
+    
+    /**
+     * Helper method to return the URLs (if there is one) of the persitent stores
+     * managed by the data store's persistentStoreCoordinator.
+     *
+     * O(n)
+     *
+     * :returns: An array of NSURLs with the stores' URLs.
+     */
+    public func persistentStoresURLs() -> [NSURL] {
+        // Insure the stores can be downcasted.
+        if let stores = persistentStoreCoordinator.persistentStores as? [NSPersistentStore] {
+            var storeURLs = [NSURL]()
+            // For each stores add the URL if there is one.
+            for store in stores {
+                if let storeURL = store.URL {
+                    storeURLs.append(storeURL)
+                }
+            }
+            return storeURLs
+        }
+        
+        // Return an empty array on failure.
+        return [NSURL]()
+    }
+    
+    /**
+     * Helper method to return the cloud persitent stores managed by the data
+     * store's persistentStoreCoordinator.
+     *
+     * O(n)
+     *
+     * :returns: The cloud persitent stores.
+     */
+    public func cloudPersistentStores() -> [NSPersistentStore] {
+        // Insure the stores can be downcasted.
+        if let stores = persistentStoreCoordinator.persistentStores as? [NSPersistentStore] {
+            var cloudStores = [NSPersistentStore]()
+            // Look for the cloud stores.
+            for store in stores {
+                if store.options?[NSPersistentStoreUbiquitousContentNameKey] != nil {
+                    cloudStores.append(store)
+                }
+            }
+            return cloudStores
+        }
+        
+        // Return an empty array on failure.
+        return [NSPersistentStore]()
+    }
+    
+    /**
+     * Helper method to reset all contexts.
+     */
+    public func resetContexts() {
+        self.mainManagedObjectContext.reset()
+        self.backgroundManagedObjectContext.reset()
+        self.writerManagedObjectContext.reset()
+    }
+    
     /**
      * Method to reset the Core Data environment. This erases the data in the 
      * persistent stores as well as reseting all managed object contexts.
+     *
+     * O(n)
      *
      * :param: error The error which is populated if an error is encountered in the process.
      *
@@ -265,9 +389,7 @@ public class DataStore: NSObject {
         var resetSuccess = false
         
         // Reset all contexts.
-        writerManagedObjectContext.reset()
-        mainManagedObjectContext.reset()
-        backgroundManagedObjectContext.reset()
+        self.resetContexts()
 
         // Make sure to perform the reset on closures to avoid deadlocks.
         writerManagedObjectContext.performBlockAndWait() {
@@ -318,6 +440,85 @@ public class DataStore: NSObject {
     // MARK: - Notifications
     
     /**
+     * Helper method to handle all the notification registrations and/or handlings.
+     */
+    private func handleNotifications() {
+        let notificationCenter = NSNotificationCenter.defaultCenter()
+        
+        // Register a selector to handle this notification.
+        notificationCenter.addObserver(self, selector: "handlePersistentStoresWillChangeNotification:", name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: persistentStoreCoordinator)
+        
+        // Register a selector for the notification in the case Core Data posts
+        // content changes from iCloud.
+        notificationCenter.addObserver(self, selector: "handleImportChangesNotification:", name:
+            NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: persistentStoreCoordinator)
+
+        // Register for the sibling contexts save notifications on their
+        // respective queues.
+        notificationCenter.addObserver(self, selector: "handleMainContextSaveNotification:", name:
+            NSManagedObjectContextDidSaveNotification, object: mainManagedObjectContext)
+        notificationCenter.addObserver(self, selector: "handleBackgroundContextSaveNotification:", name:
+            NSManagedObjectContextDidSaveNotification, object: backgroundManagedObjectContext)
+    }
+    
+    /**
+     * Notification method to handle logic just before stores swaping.
+     *
+     * :param: notification The notification object posted before the stores swap.
+     */
+    func handlePersistentStoresWillChangeNotification(notification: NSNotification) {
+        var transitionType: NSPersistentStoreUbiquitousTransitionType?
+        
+        // Perform operations on the parent (root) context.
+        writerManagedObjectContext.performBlock {
+            if self.hasChanges {
+                // If there are changes on the temporary contexts before the 
+                // store swap then save them.
+                var error: NSError?
+                self.saveAndWait(&error)
+                
+                // Create the user info dictionary with the error if it occured.
+                var userInfo: [String: AnyObject] = [Notifications.Keys.persistentStoreCoordinator: self.persistentStoreCoordinator]
+                if error != nil {
+                    userInfo = [Notifications.Keys.error: error!]
+                }
+                // Post the save temporary store notification.
+                NSNotificationCenter.defaultCenter().postNotificationName(Notifications.changesSavedFromTemporaryStore, object: self, userInfo: userInfo)
+                
+                // On a transition Core Data gives the app only one chance to save;
+                // it won’t post another NSPersistentStoreCoordinatorStoresWillChangeNotification
+                // notification. Therefore reset the contexts after a save.
+                if transitionType != nil {
+                    // TODO: Test that this occurs on transtions, not initial set-up.
+                    self.resetContexts()
+                }
+            } else {
+                // Reset the managed object contexts as the data they hold is
+                // now invalid due to the store swap.
+                self.resetContexts()
+            }
+        }
+    }
+    
+    /**
+     * Notification method to handle logic for cloud store imports.
+     *
+     * :param: notification The notification object posted when data was imported.
+     */
+    func handleImportChangesNotification(notification: NSNotification) {
+        // Inline closure to merge a context.
+        let mergeContext = { (context: NSManagedObjectContext) -> Void in
+            context.performBlock() {
+                context.mergeChangesFromContextDidSaveNotification(notification)
+            }
+        }
+        // Merge all contexts.
+        mergeContext(writerManagedObjectContext)
+        mergeContext(mainManagedObjectContext)
+        mergeContext(backgroundManagedObjectContext)
+    }
+    
+    /**
      * Notification method to handle logic once the main context has saved.
      *
      * :param: notification The notification object posted when mainManagedObjectContext was saved.
@@ -327,6 +528,11 @@ public class DataStore: NSObject {
             // Merge the changes for the backgroundManagedObjectContext asynchronously.
             backgroundManagedObjectContext.performBlock() {
                 self.backgroundManagedObjectContext.mergeChangesFromContextDidSaveNotification(notification)
+                
+                // Send the save and merge notification.
+                dispatch_async(dispatch_get_main_queue()) {
+                    NSNotificationCenter.defaultCenter().postNotificationName(Notifications.contextSavedAndMerge, object: self, userInfo: [Notifications.Keys.mergedContext: self.backgroundManagedObjectContext, Notifications.Keys.saveContext: self.mainManagedObjectContext])
+                }
             }
         }
     }
@@ -341,6 +547,11 @@ public class DataStore: NSObject {
             // Merge the changes for the mainManagedObjectContext asynchronously.
             mainManagedObjectContext.performBlock() {
                 self.mainManagedObjectContext.mergeChangesFromContextDidSaveNotification(notification)
+                
+                // Send the save and merge notification.
+                dispatch_async(dispatch_get_main_queue()) {
+                    NSNotificationCenter.defaultCenter().postNotificationName(Notifications.contextSavedAndMerge, object: self, userInfo: [Notifications.Keys.mergedContext: self.mainManagedObjectContext, Notifications.Keys.saveContext: self.backgroundManagedObjectContext])
+                }
             }
         }
     }

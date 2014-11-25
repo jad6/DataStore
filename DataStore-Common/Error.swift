@@ -28,8 +28,16 @@
 
 import Foundation
 
-/// The domain name for the errors created within this framework
-private let domain = "com.jadosseiran.datastore.erros"
+struct ErrorConstants {
+    /// The domain name for the errors created within this framework
+    static let domain = "com.jadosseiran.datastore.erros"
+    
+    struct Codes {
+        struct Duplication {
+            static let invalidDeleteObject = 7000
+        }
+    }
+}
 
 extension NSError {
     

@@ -52,6 +52,8 @@ public extension DataStore {
      * method will allow you to give the project prefix and will return the 
      * correct name to use for methods such as entityForName:.
      *
+     * O(n)
+     *
      * :param: objectClass The class for the managed object who's name will be returned.
      * :param: classPrefix The prefix which differs from the model entity name and the class name.
      *
@@ -104,6 +106,8 @@ public extension DataStore {
      * Method to return the correct entity name for a given class. Use this method
      * if the class has a prefix which does not differs from the entity name in
      * your model. If it does differ use entityNameForObjectClass:withClassPrefix:.
+     *
+     * O(n)
      *
      * :param: objectClass The class for the managed object who's name will be returned.
      *

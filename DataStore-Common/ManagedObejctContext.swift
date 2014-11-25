@@ -52,7 +52,7 @@ public extension NSManagedObjectContext {
         let results = executeFetchRequest(request, error: error)
         
         // Return the results or an empty array on fetch failure.
-        return results != nil ? results! : [AnyObject]()
+        return results ?? [AnyObject]()
     }
     
     /**
@@ -135,7 +135,7 @@ public extension NSManagedObjectContext {
     public func findAllForEntityWithEntityName(entityName: String, error: NSErrorPointer) -> [AnyObject] {
         let results = executeFetchRequest(NSFetchRequest(entityName: entityName), error: error)
         
-        return results != nil ? results! : [AnyObject]()
+        return results ?? [AnyObject]()
     }
     
     /**

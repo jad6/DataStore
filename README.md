@@ -134,6 +134,10 @@ dataStore.performBackgroundClosure() { context in
 }
 ```
 
+### iCloud
+
+*Description Incoming...*
+
 ### A Word of Caution With Asynchronous Contexts
 
 There are scenarios where methods provided by the framework (or ones you write yourself) when called in certain sequences may cause behaviours which you would not expect. Let's take a look at the code below:
