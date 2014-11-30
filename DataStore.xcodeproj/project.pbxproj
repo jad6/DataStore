@@ -33,6 +33,12 @@
 		05BE36471A1499EA008AAE7B /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BE36401A1499EA008AAE7B /* Error.swift */; };
 		05BE36481A1499EA008AAE7B /* ManagedObejctContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BE36411A1499EA008AAE7B /* ManagedObejctContext.swift */; };
 		05BE36491A1499EA008AAE7B /* ManagedObejctContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BE36411A1499EA008AAE7B /* ManagedObejctContext.swift */; };
+		05CCA8881A2A799A0062C543 /* DataStoreReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CCA8871A2A799A0062C543 /* DataStoreReset.swift */; };
+		05CCA8891A2A799A0062C543 /* DataStoreReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CCA8871A2A799A0062C543 /* DataStoreReset.swift */; };
+		05CCA88B1A2A802E0062C543 /* DataStoreFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CCA88A1A2A802E0062C543 /* DataStoreFileSystem.swift */; };
+		05CCA88C1A2A802E0062C543 /* DataStoreFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CCA88A1A2A802E0062C543 /* DataStoreFileSystem.swift */; };
+		05CCA88E1A2A9D970062C543 /* DataStoreNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CCA88D1A2A9D970062C543 /* DataStoreNotifications.swift */; };
+		05CCA88F1A2A9D970062C543 /* DataStoreNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CCA88D1A2A9D970062C543 /* DataStoreNotifications.swift */; };
 		05E1A9E11A19EB9F00F9CB63 /* DataStoreAllQueuesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E1A9E01A19EB9F00F9CB63 /* DataStoreAllQueuesTests.swift */; };
 		05E1A9E21A19EB9F00F9CB63 /* DataStoreAllQueuesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E1A9E01A19EB9F00F9CB63 /* DataStoreAllQueuesTests.swift */; };
 		05EDFCF41A14AAA700FB472B /* DataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EDFCF31A14AAA700FB472B /* DataStoreTests.swift */; };
@@ -79,6 +85,9 @@
 		05BE363F1A1499EA008AAE7B /* DataStoreOperations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreOperations.swift; sourceTree = "<group>"; };
 		05BE36401A1499EA008AAE7B /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		05BE36411A1499EA008AAE7B /* ManagedObejctContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManagedObejctContext.swift; sourceTree = "<group>"; };
+		05CCA8871A2A799A0062C543 /* DataStoreReset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreReset.swift; sourceTree = "<group>"; };
+		05CCA88A1A2A802E0062C543 /* DataStoreFileSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreFileSystem.swift; sourceTree = "<group>"; };
+		05CCA88D1A2A9D970062C543 /* DataStoreNotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreNotifications.swift; sourceTree = "<group>"; };
 		05E1A9E01A19EB9F00F9CB63 /* DataStoreAllQueuesTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreAllQueuesTests.swift; sourceTree = "<group>"; };
 		05EDFCF31A14AAA700FB472B /* DataStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreTests.swift; sourceTree = "<group>"; };
 		05EDFCF61A14AE5800FB472B /* DataStoreBackgroundQueueTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreBackgroundQueueTests.swift; sourceTree = "<group>"; };
@@ -224,9 +233,12 @@
 			isa = PBXGroup;
 			children = (
 				05BE363E1A1499EA008AAE7B /* DataStore.swift */,
+				05CCA8871A2A799A0062C543 /* DataStoreReset.swift */,
 				05BE363F1A1499EA008AAE7B /* DataStoreOperations.swift */,
 				050257911A1A2CEB006FD1E5 /* DataStoreEntityName.swift */,
 				051797221A248CF400513894 /* DataStoreDuplicates.swift */,
+				05CCA88A1A2A802E0062C543 /* DataStoreFileSystem.swift */,
+				05CCA88D1A2A9D970062C543 /* DataStoreNotifications.swift */,
 				05BE36411A1499EA008AAE7B /* ManagedObejctContext.swift */,
 				05BE36401A1499EA008AAE7B /* Error.swift */,
 			);
@@ -420,8 +432,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05CCA88E1A2A9D970062C543 /* DataStoreNotifications.swift in Sources */,
+				05CCA88B1A2A802E0062C543 /* DataStoreFileSystem.swift in Sources */,
 				05BE36421A1499EA008AAE7B /* DataStore.swift in Sources */,
 				051797231A248CF400513894 /* DataStoreDuplicates.swift in Sources */,
+				05CCA8881A2A799A0062C543 /* DataStoreReset.swift in Sources */,
 				05BE36461A1499EA008AAE7B /* Error.swift in Sources */,
 				050257921A1A2CEB006FD1E5 /* DataStoreEntityName.swift in Sources */,
 				05BE36481A1499EA008AAE7B /* ManagedObejctContext.swift in Sources */,
@@ -448,8 +463,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05CCA88F1A2A9D970062C543 /* DataStoreNotifications.swift in Sources */,
+				05CCA88C1A2A802E0062C543 /* DataStoreFileSystem.swift in Sources */,
 				051797241A248CF400513894 /* DataStoreDuplicates.swift in Sources */,
 				053690CB1A24DFC300DF5AFB /* DataStore.swift in Sources */,
+				05CCA8891A2A799A0062C543 /* DataStoreReset.swift in Sources */,
 				05BE36471A1499EA008AAE7B /* Error.swift in Sources */,
 				050257931A1A2CEB006FD1E5 /* DataStoreEntityName.swift in Sources */,
 				05BE36491A1499EA008AAE7B /* ManagedObejctContext.swift in Sources */,

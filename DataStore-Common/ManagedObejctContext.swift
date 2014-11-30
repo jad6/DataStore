@@ -32,7 +32,7 @@ public extension NSManagedObjectContext {
     
     /**
      * Method to find ordered entities with a given predicate. The passed in error will
-     * be nil if the method succeeded. If the fetch fails an empty array is
+     * be nil if the method succeeded. If the fetch fails nil is
      * returned and the error parameter is populated.
      *
      * :param: entityName The entity name of for the managed object to find.
@@ -42,22 +42,19 @@ public extension NSManagedObjectContext {
      *
      * :returns: An array with the found managed objects which match the given predicate.
      */
-    public func findEntitiesForEntityName(entityName: String, withPredicate predicate: NSPredicate?, andSortDescriptors sortDescriptors: [NSSortDescriptor]?, error: NSErrorPointer) -> [AnyObject] {
+    public func findEntitiesForEntityName(entityName: String, withPredicate predicate: NSPredicate?, andSortDescriptors sortDescriptors: [NSSortDescriptor]?, error: NSErrorPointer) -> [AnyObject]? {
         // Create a request with the appropriate information.
         let request = NSFetchRequest(entityName: entityName)
         request.predicate = predicate
         request.sortDescriptors = sortDescriptors
         
         // Execute the fetch request.
-        let results = executeFetchRequest(request, error: error)
-        
-        // Return the results or an empty array on fetch failure.
-        return results ?? [AnyObject]()
+        return executeFetchRequest(request, error: error)
     }
     
     /**
      * Method to find entities with a given predicate. The passed in error will
-     * be nil if the method succeeded. If the fetch fails an empty array is
+     * be nil if the method succeeded. If the fetch fails nil is
      * returned and the error parameter is populated.
      *
      * :param: entityName The entity name of for the managed object to find.
@@ -66,7 +63,7 @@ public extension NSManagedObjectContext {
      *
      * :returns: An array with the found managed objects which match the given predicate.
      */
-    public func findEntitiesForEntityName(entityName: String, withPredicate predicate: NSPredicate?, error: NSErrorPointer) -> [AnyObject] {
+    public func findEntitiesForEntityName(entityName: String, withPredicate predicate: NSPredicate?, error: NSErrorPointer) -> [AnyObject]? {
         return findEntitiesForEntityName(entityName,
             withPredicate: predicate,
             andSortDescriptors: nil,
@@ -93,7 +90,7 @@ public extension NSManagedObjectContext {
         wherKey key: String,
         equalsValue value: AnyObject,
         error: NSErrorPointer,
-        orInsert insert: ((object: AnyObject) -> Void)?) -> [AnyObject] {
+        orInsert insert: ((object: AnyObject) -> Void)?) -> [AnyObject]? {
             // Create a request with the appropriate information.
             let request = NSFetchRequest(entityName: entityName)
             
@@ -103,7 +100,7 @@ public extension NSManagedObjectContext {
             request.predicate = NSPredicate(format: "\(key) == \(parsedValue)")
             
             // Initialise a variable to hold the found/created managed objects.
-            var objects = [AnyObject]()
+            var objects: [AnyObject]?
             // Check if the fetch will return objects.
             if countForFetchRequest(request, error: error) == 0 {
                 // If there is no found object create and insert one.
@@ -113,7 +110,7 @@ public extension NSManagedObjectContext {
                 // Allow the caller to edit the new managed object.
                 insert?(object: newObject)
                 
-                objects.append(newObject)
+                objects = [newObject]
             } else {
                 // The objects exist so fetch them and store them if the fetch was successful.
                 if let results = executeFetchRequest(request, error: error) {
@@ -132,10 +129,8 @@ public extension NSManagedObjectContext {
      *
      * :returns: An array containing all the managed objects for the given entity name.
      */
-    public func findAllForEntityWithEntityName(entityName: String, error: NSErrorPointer) -> [AnyObject] {
-        let results = executeFetchRequest(NSFetchRequest(entityName: entityName), error: error)
-        
-        return results ?? [AnyObject]()
+    public func findAllForEntityWithEntityName(entityName: String, error: NSErrorPointer) -> [AnyObject]? {
+        return executeFetchRequest(NSFetchRequest(entityName: entityName), error: error)
     }
     
     /**

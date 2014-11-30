@@ -194,7 +194,7 @@ class DataStoreBackgroundQueueTests: DataStoreTests, DataStoreOperationTests {
                     person?.firstName = "Jad"
                     person?.lastName = "Osseiran"
             }
-            if results.count != 1 {
+            if results?.count != 1 {
                 XCTFail("No matches should exist")
             }
         }, error: &error)

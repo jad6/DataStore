@@ -271,7 +271,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                     person?.firstName = "Jad"
                     person?.lastName = "Osseiran"
             }
-            if results.count != 1 {
+            if results?.count != 1 {
                 XCTFail("No matches should exist")
             }
         }, error: &error)
@@ -291,7 +291,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                     person?.firstName = "Jad"
                     person?.lastName = "Osseiran"
             }
-            if results.count != 1 {
+            if results?.count != 1 {
                 XCTFail("No matches should exist")
             }
         }, error: &error)
@@ -600,7 +600,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dataStore.performClosureAndWait() { context in
             var fetchError: NSError?
             let results = context.findAllForEntityWithEntityName(entityName, error: &fetchError)
-            if results.count != 2 || fetchError != nil {
+            if results?.count != 2 || fetchError != nil {
                 XCTFail("Save failed")
             }
         }
@@ -645,7 +645,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 self.dataStore.performClosureAndWait() { context in
                     var fetchError: NSError?
                     let results = context.findAllForEntityWithEntityName(entityName, error: &fetchError)
-                    if results.count != 2 || fetchError != nil {
+                    if results?.count != 2 || fetchError != nil {
                         XCTFail("Save failed")
                     }
                 }

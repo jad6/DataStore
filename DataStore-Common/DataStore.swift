@@ -29,43 +29,11 @@
 import CoreData
 
 /**
- * Encapsulating class to allow the managing of Core Data operations, contexts, 
+ * Encapsulating class to allow the managing of Core Data operations, contexts,
  * stores and models.
  */
 public class DataStore: NSObject {
-    
-    /**
-     * Convenient notifications struct containing the names and keys used 
-     * throughout the DataStore.
-     */
-    public struct Notifications {
-        /// Notification sent when one of the sibling contexts saves. The
-        /// notification object is the DataStore object and the userInfo contains:
-        ///     - DSSaveContextKey: the context which has been saved.
-        ///     - DSMergedContextKey: the context which has been merged.
-        public static let contextSavedAndMerge = "DSContextSavedAndMerge"
-        /// Notification sent after a save when the stores are about to be
-        /// swapped and there are changes on the context(s). The notification
-        /// object is the DataStore object and the userInfo contains:
-        ///     - DSPersistentStoreCoordinatorKey: The persistent store who's stores are swapped.
-        ///     - DSErrorKey (optional): If there was an error in the save this key-value will be populated with it.
-        public static let changesSavedFromTemporaryStore = "DSChangesSavedFromTemporaryStore"
-        
-        /**
-         * The keys used for the notifications userInfo.
-         */
-        public struct Keys {
-            /// The error key which will be included when errors are found.
-            public static let error = "DSErrorKey"
-            /// The persistent store coordinator attached to the notification.
-            public static let persistentStoreCoordinator = "DSPersistentStoreCoordinatorKey"
-            /// The context which has been saved.
-            public static let saveContext = "DSSaveContextKey"
-            /// The context which has been merged.
-            public static let mergedContext = "DSMergedContextKey"
-        }
-    }
-    
+            
     /// Closure type giving back a context.
     public typealias ContextClosure = (context: NSManagedObjectContext) -> Void
     /// Closure type giving back a context and an error.
@@ -144,13 +112,15 @@ public class DataStore: NSObject {
             self.handleNotifications()
             
             // Add a persitent store from the given information.
-            if self.persistentStoreCoordinator.addPersistentStoreWithType(storeType,
+            let store = self.persistentStoreCoordinator.addPersistentStoreWithType(storeType,
                 configuration: configuration,
                 URL: storeURL,
                 options: options,
-                error: error) == nil {
-                    // Fail initialisation if the persitent store could not be added.
-                    return nil
+                error: error)
+
+            if store == nil {
+                // Fail initialisation if the persitent store could not be added.
+                return nil
             }
     }
     
@@ -373,187 +343,6 @@ public class DataStore: NSObject {
         self.mainManagedObjectContext.reset()
         self.backgroundManagedObjectContext.reset()
         self.writerManagedObjectContext.reset()
-    }
-    
-    /**
-     * Method to reset the Core Data environment. This erases the data in the 
-     * persistent stores as well as reseting all managed object contexts.
-     *
-     * O(n)
-     *
-     * :param: error The error which is populated if an error is encountered in the process.
-     *
-     * :returns: true if the process is successful.
-     */
-    public func reset(error: NSErrorPointer) -> Bool {
-        var resetSuccess = false
-        
-        // Reset all contexts.
-        self.resetContexts()
-
-        // Make sure to perform the reset on closures to avoid deadlocks.
-        writerManagedObjectContext.performBlockAndWait() {
-            self.persistentStoreCoordinator.performBlockAndWait() {
-                // Retrieve the stores which were coordinated.
-                if let stores = self.persistentStoreCoordinator.persistentStores as? [NSPersistentStore] {
-                    
-                    let fileManager = NSFileManager.defaultManager()
-                    for store in stores {
-                        // Remove each persistent stores.
-                        if self.persistentStoreCoordinator.removePersistentStore(store, error: error) == false {
-                            resetSuccess = false
-                            return
-                        }
-                        
-                        // Remove the files if they exist.
-                        if let storeURL = store.URL {
-                            if let storePath = storeURL.path {
-                                if fileManager.fileExistsAtPath(storePath) {
-                                    // Remove the file where the store used to live.
-                                    fileManager.removeItemAtURL(storeURL, error: error)
-                                }
-                            }
-                        }
-                        
-                        // Fail if there is an error.
-                        if error != nil {
-                            resetSuccess = false
-                            return
-                        }
-                    }
-                    
-                    for store in stores {
-                        // create new fresh persistent stores.
-                        let addSuccess = self.persistentStoreCoordinator.addPersistentStoreWithType(store.type, configuration: store.configurationName, URL: store.URL, options: store.options, error: error)
-                        if addSuccess == false {
-                            resetSuccess = false
-                            return
-                        }
-                    }
-                }
-            }
-        }
-        
-        return resetSuccess
-    }
-    
-    // MARK: - Notifications
-    
-    /**
-     * Helper method to handle all the notification registrations and/or handlings.
-     */
-    private func handleNotifications() {
-        let notificationCenter = NSNotificationCenter.defaultCenter()
-        
-        // Register a selector to handle this notification.
-        notificationCenter.addObserver(self, selector: "handlePersistentStoresWillChangeNotification:", name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: persistentStoreCoordinator)
-        
-        // Register a selector for the notification in the case Core Data posts
-        // content changes from iCloud.
-        notificationCenter.addObserver(self, selector: "handleImportChangesNotification:", name:
-            NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: persistentStoreCoordinator)
-
-        // Register for the sibling contexts save notifications on their
-        // respective queues.
-        notificationCenter.addObserver(self, selector: "handleMainContextSaveNotification:", name:
-            NSManagedObjectContextDidSaveNotification, object: mainManagedObjectContext)
-        notificationCenter.addObserver(self, selector: "handleBackgroundContextSaveNotification:", name:
-            NSManagedObjectContextDidSaveNotification, object: backgroundManagedObjectContext)
-    }
-    
-    /**
-     * Notification method to handle logic just before stores swaping.
-     *
-     * :param: notification The notification object posted before the stores swap.
-     */
-    func handlePersistentStoresWillChangeNotification(notification: NSNotification) {
-        var transitionType: NSPersistentStoreUbiquitousTransitionType?
-        
-        // Perform operations on the parent (root) context.
-        writerManagedObjectContext.performBlock {
-            if self.hasChanges {
-                // If there are changes on the temporary contexts before the 
-                // store swap then save them.
-                var error: NSError?
-                self.saveAndWait(&error)
-                
-                // Create the user info dictionary with the error if it occured.
-                var userInfo: [String: AnyObject] = [Notifications.Keys.persistentStoreCoordinator: self.persistentStoreCoordinator]
-                if error != nil {
-                    userInfo = [Notifications.Keys.error: error!]
-                }
-                // Post the save temporary store notification.
-                NSNotificationCenter.defaultCenter().postNotificationName(Notifications.changesSavedFromTemporaryStore, object: self, userInfo: userInfo)
-                
-                // On a transition Core Data gives the app only one chance to save;
-                // it won’t post another NSPersistentStoreCoordinatorStoresWillChangeNotification
-                // notification. Therefore reset the contexts after a save.
-                if transitionType != nil {
-                    // TODO: Test that this occurs on transtions, not initial set-up.
-                    self.resetContexts()
-                }
-            } else {
-                // Reset the managed object contexts as the data they hold is
-                // now invalid due to the store swap.
-                self.resetContexts()
-            }
-        }
-    }
-    
-    /**
-     * Notification method to handle logic for cloud store imports.
-     *
-     * :param: notification The notification object posted when data was imported.
-     */
-    func handleImportChangesNotification(notification: NSNotification) {
-        // Inline closure to merge a context.
-        let mergeContext = { (context: NSManagedObjectContext) -> Void in
-            context.performBlock() {
-                context.mergeChangesFromContextDidSaveNotification(notification)
-            }
-        }
-        // Merge all contexts.
-        mergeContext(writerManagedObjectContext)
-        mergeContext(mainManagedObjectContext)
-        mergeContext(backgroundManagedObjectContext)
-    }
-    
-    /**
-     * Notification method to handle logic once the main context has saved.
-     *
-     * :param: notification The notification object posted when mainManagedObjectContext was saved.
-     */
-    func handleMainContextSaveNotification(notification: NSNotification) {
-        if let context = notification.object as? NSManagedObjectContext {
-            // Merge the changes for the backgroundManagedObjectContext asynchronously.
-            backgroundManagedObjectContext.performBlock() {
-                self.backgroundManagedObjectContext.mergeChangesFromContextDidSaveNotification(notification)
-                
-                // Send the save and merge notification.
-                dispatch_async(dispatch_get_main_queue()) {
-                    NSNotificationCenter.defaultCenter().postNotificationName(Notifications.contextSavedAndMerge, object: self, userInfo: [Notifications.Keys.mergedContext: self.backgroundManagedObjectContext, Notifications.Keys.saveContext: self.mainManagedObjectContext])
-                }
-            }
-        }
-    }
-    
-    /**
-     * Notification method to handle logic once the bacground context has saved.
-     *
-     * :param: notification The notification object posted when backgroundManagedObjectContext was saved.
-     */
-    func handleBackgroundContextSaveNotification(notification: NSNotification) {
-        if let context = notification.object as? NSManagedObjectContext {
-            // Merge the changes for the mainManagedObjectContext asynchronously.
-            mainManagedObjectContext.performBlock() {
-                self.mainManagedObjectContext.mergeChangesFromContextDidSaveNotification(notification)
-                
-                // Send the save and merge notification.
-                dispatch_async(dispatch_get_main_queue()) {
-                    NSNotificationCenter.defaultCenter().postNotificationName(Notifications.contextSavedAndMerge, object: self, userInfo: [Notifications.Keys.mergedContext: self.mainManagedObjectContext, Notifications.Keys.saveContext: self.backgroundManagedObjectContext])
-                }
-            }
-        }
     }
     
     // MARK: - Private Methods
