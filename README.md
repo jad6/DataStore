@@ -55,8 +55,9 @@ class CoreDataManager {
     let dataStore: DataStore
     
     private init() {
-        let directories = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, false)
-        let storePath = directories.last?.stringByAppendingPathComponent("<#filenmae.sqlite3#>")
+        let fileManager = NSFileManager.defaultManager()
+        let documentsDirectoryURL = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).last as? NSURL
+        let storePath = documentsDirectoryURL?.path?.stringByAppendingPathComponent("<#filenmae.sqlite3#>")
         assert(storePath != nil, "For an sqlite store you need a store path")
         
         let model = DataStore.modelForResource("<#Model Name#>", bundle: NSBundle.mainBundle())
