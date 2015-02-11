@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreData
 
 public extension DataStore {
     
@@ -102,7 +103,7 @@ public extension DataStore {
                     self.resetContexts()
                 }
             } else {
-                // Reset the managed object contexts as the data they hold is
+                // Reset the managed object contexts as! the data they hold is
                 // now invalid due to the store swap.
                 self.resetContexts()
             }

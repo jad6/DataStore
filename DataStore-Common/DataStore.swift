@@ -78,7 +78,7 @@ public class DataStore: NSObject {
      * :param: model The model to use througout the application.
      * :param: configuration The name of a configuration in the receiver's managed object model that will be used by the new store. The configuration can be nil, in which case no other configurations are allowed.
      * :param: storePath The file location of the persistent store.
-     * :param: storeType A string constant (such as NSSQLiteStoreType) that specifies the store type.
+     * :param: storeType A string constant (such as! NSSQLiteStoreType) that specifies the store type.
      * :param: options A dictionary containing key-value pairs that specify whether the store should be read-only, and whether (for an XML store) the XML file should be validated against the DTD before it is read. This value may be nil.
      * :param: error If a new store cannot be created an instance of NSError that describes the problem will populate this parameter.
      */
@@ -166,7 +166,7 @@ public class DataStore: NSObject {
         cloudUbiquitousNameKey: String,
         storePath: String?) {
             // Set cloud options.
-            let options = [NSMigratePersistentStoresAutomaticallyOption: true,
+            let options: [NSObject : AnyObject] = [NSMigratePersistentStoresAutomaticallyOption: true,
                 NSInferMappingModelAutomaticallyOption: true,
                 NSPersistentStoreUbiquitousContentNameKey: cloudUbiquitousNameKey]
             // Declare possible error for initialisation.

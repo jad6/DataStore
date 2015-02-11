@@ -26,7 +26,7 @@ public extension DataStore {
     
     /**
      * Method to reset the Core Data environment. This erases the data in the
-     * persistent stores as well as reseting all managed object contexts.
+     * persistent stores as! well as! reseting all managed object contexts.
      *
      * O(n)
      *
@@ -40,7 +40,7 @@ public extension DataStore {
     
     /**
      * Method to reset the Core Data environment. This erases the data in the
-     * persistent stores as well as reseting all managed object contexts.
+     * persistent stores as! well as! reseting all managed object contexts.
      * Further, depening on the option cloud data can also be reset.
      *
      * O(n)

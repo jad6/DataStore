@@ -92,9 +92,9 @@ public extension DataStore {
         for dictionary in valuesWithDupes {
             // Get the count for the iterated dictionary.
             if let count = dictionary["count"] as? NSNumber {
-                // If a duplicate is founf the add the object to the values to return.
+                // If a duplicate is found then add the object to the values to return.
                 if count.integerValue > 1 {
-                    if let object: AnyObject = dictionary[key]? {
+                    if let object: AnyObject = dictionary[key] {
                         values.append(object)
                     }
                 }
