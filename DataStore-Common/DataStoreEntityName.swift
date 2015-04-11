@@ -50,7 +50,9 @@ public extension DataStore {
      * Method to return the correct entity name for a given class. If the 
      * class has a prefix which differs from the entity name in your model this 
      * method will allow you to give the project prefix and will return the 
-     * correct name to use for methods such as entityForName:.
+     * correct name to use for methods such as! entityForName:.
+     *
+     * O(n)
      *
      * :param: objectClass The class for the managed object who's name will be returned.
      * :param: classPrefix The prefix which differs from the model entity name and the class name.
@@ -85,9 +87,9 @@ public extension DataStore {
         // If the entity was found save it for later and check for the prefix.
         if entityName != nil {
             if let prefix = classPrefix {
-                let prefixCount = countElements(prefix)
+                let prefixCount = count(prefix)
                 // Check if the prefix is valid.
-                if className.hasPrefix(prefix) && countElements(className) > prefixCount {
+                if className.hasPrefix(prefix) && count(className) > prefixCount {
                     // Adjust the entity name by removing the prefix.
                     let index: String.Index = advance(className.startIndex, prefixCount)
                     entityName = className.substringFromIndex(index)
@@ -104,6 +106,8 @@ public extension DataStore {
      * Method to return the correct entity name for a given class. Use this method
      * if the class has a prefix which does not differs from the entity name in
      * your model. If it does differ use entityNameForObjectClass:withClassPrefix:.
+     *
+     * O(n)
      *
      * :param: objectClass The class for the managed object who's name will be returned.
      *

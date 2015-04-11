@@ -29,11 +29,11 @@
 import CoreData
 
 /**
- * Encapsulating class to allow the managing of Core Data operations, contexts, 
+ * Encapsulating class to allow the managing of Core Data operations, contexts,
  * stores and models.
  */
 public class DataStore: NSObject {
-    
+            
     /// Closure type giving back a context.
     public typealias ContextClosure = (context: NSManagedObjectContext) -> Void
     /// Closure type giving back a context and an error.
@@ -43,14 +43,14 @@ public class DataStore: NSObject {
 
     // MARK: - Properties
     
-    /// The file location of the persistent store.
-    public private(set) var storePath: String?
     /// The persistent store type which is used by the data store.
     public let storeType: String
     /// The managed object model used by the data store.
     public let managedObjectModel: NSManagedObjectModel
     /// The persistent store coordinator used by the data store.
     public let persistentStoreCoordinator: NSPersistentStoreCoordinator
+    /// The ubiquitous key used to identify the cloud store.
+    public private(set) var cloudUbiquitousNameKey: String?
     
     /// Main context lined to the main queue.
     public private(set) var mainManagedObjectContext = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
@@ -60,7 +60,14 @@ public class DataStore: NSObject {
     /// writig the state of the model to disk. This context is
     /// the parent of the sibling contexts mainManagedObjectContext &
     /// backgroundManagedObjectContext.
-    private var writerManagedObjectContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
+    private(set) var writerManagedObjectContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
+    
+    /// Checks accross all contexts to see if there are changes.
+    public var hasChanges: Bool {
+        return self.writerManagedObjectContext.hasChanges ||
+            self.mainManagedObjectContext.hasChanges ||
+            self.backgroundManagedObjectContext.hasChanges
+    }
     
     // MARK: - Initialisers
 
@@ -71,7 +78,7 @@ public class DataStore: NSObject {
      * :param: model The model to use througout the application.
      * :param: configuration The name of a configuration in the receiver's managed object model that will be used by the new store. The configuration can be nil, in which case no other configurations are allowed.
      * :param: storePath The file location of the persistent store.
-     * :param: storeType A string constant (such as NSSQLiteStoreType) that specifies the store type.
+     * :param: storeType A string constant (such as! NSSQLiteStoreType) that specifies the store type.
      * :param: options A dictionary containing key-value pairs that specify whether the store should be read-only, and whether (for an XML store) the XML file should be validated against the DTD before it is read. This value may be nil.
      * :param: error If a new store cannot be created an instance of NSError that describes the problem will populate this parameter.
      */
@@ -81,47 +88,40 @@ public class DataStore: NSObject {
         storeType: String,
         options: [NSObject : AnyObject]?,
         error: NSErrorPointer) {
-            // Create a persistent store coordinator from wih the given model.
-            let coordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
+            // Initialise the class' properties
+            self.storeType = storeType
+            self.managedObjectModel = model
+            self.persistentStoreCoordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
             
+            super.init()
+            
+            // Convert the path to a URL.
             var storeURL: NSURL?
             if storePath != nil {
                 storeURL = NSURL(fileURLWithPath: storePath!)
             }
             
-            // Add a persitent store from the given information.
-            let storeAdded = coordinator.addPersistentStoreWithType(storeType,
-                configuration: configuration,
-                URL: storeURL,
-                options: options,
-                error: error)
-            
-            // Initialise the class properties
-            self.storePath = storePath
-            self.storeType = storeType
-            self.managedObjectModel = model
-            self.persistentStoreCoordinator = coordinator
-            
-            super.init()
-            
-            // Fail initialisation if the persitent store could not be added.
-            if storeAdded == false {
-                return nil
-            }
-            
-            // Register for the sibling contexts save notifications on their 
-            // respective queues.
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleMainContextSaveNotification:", name:
-                NSManagedObjectContextDidSaveNotification, object: self.mainManagedObjectContext)
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleBackgroundContextSaveNotification:", name:
-                NSManagedObjectContextDidSaveNotification, object: self.backgroundManagedObjectContext)
-            
             // Set the coordinator to the write context.
-            self.writerManagedObjectContext.persistentStoreCoordinator = coordinator
+            self.writerManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator
             // Set the writing object context to be the parent of the sibling contexts
             // mainManagedObjectContext & backgroundManagedObjectContext.
             self.mainManagedObjectContext.parentContext = self.writerManagedObjectContext
             self.backgroundManagedObjectContext.parentContext = self.writerManagedObjectContext
+
+            // Register for Core Data notifications
+            self.handleNotifications()
+            
+            // Add a persitent store from the given information.
+            let store = self.persistentStoreCoordinator.addPersistentStoreWithType(storeType,
+                configuration: configuration,
+                URL: storeURL,
+                options: options,
+                error: error)
+
+            if store == nil {
+                // Fail initialisation if the persitent store could not be added.
+                return nil
+            }
     }
     
     /**
@@ -136,7 +136,8 @@ public class DataStore: NSObject {
      */
     public convenience init!(model: NSManagedObjectModel, storePath: String?) {
         // Set default options.
-        let options = [NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
+        let options = [NSMigratePersistentStoresAutomaticallyOption: true,
+            NSInferMappingModelAutomaticallyOption: true]
         // Declare possible error for initialisation.
         var error: NSError?
         
@@ -149,6 +150,36 @@ public class DataStore: NSObject {
         
         // Handle any possible errors.
         error?.handle()
+    }
+    
+    /**
+     * Convenience initialiser which sets up a cloud Core Data environment with
+     * a SQLLite store type with a persistent store having no configurations and options
+     * NSMigratePersistentStoresAutomaticallyOption, NSInferMappingModelAutomaticallyOption
+     * & NSPersistentStoreUbiquitousContentNameKey enabled. If the persistent
+     * store coordinator could not be added, the initialisation fails.
+     *
+     * :param: model The model to use througout the application.
+     * :param: storePath The file location of the persistent store.
+     */
+    public convenience init!(model: NSManagedObjectModel,
+        cloudUbiquitousNameKey: String,
+        storePath: String?) {
+            // Set cloud options.
+            let options: [NSObject : AnyObject] = [NSMigratePersistentStoresAutomaticallyOption: true,
+                NSInferMappingModelAutomaticallyOption: true,
+                NSPersistentStoreUbiquitousContentNameKey: cloudUbiquitousNameKey]
+            // Declare possible error for initialisation.
+            var error: NSError?
+            
+            self.init(model: model,
+                configuration: nil,
+                storePath: storePath,
+                storeType: NSSQLiteStoreType,
+                options: options,
+                error: &error)
+            
+            self.cloudUbiquitousNameKey = cloudUbiquitousNameKey
     }
     
     /**
@@ -253,96 +284,65 @@ public class DataStore: NSObject {
         return saveSuccessful
     }
     
+    // MARK: - Store Methods
+    
     /**
-     * Method to reset the Core Data environment. This erases the data in the 
-     * persistent stores as well as reseting all managed object contexts.
+     * Helper method to return the URLs (if there is one) of the persitent stores
+     * managed by the data store's persistentStoreCoordinator.
      *
-     * :param: error The error which is populated if an error is encountered in the process.
+     * O(n)
      *
-     * :returns: true if the process is successful.
+     * :returns: An array of NSURLs with the stores' URLs.
      */
-    public func reset(error: NSErrorPointer) -> Bool {
-        var resetSuccess = false
-        
-        // Reset all contexts.
-        writerManagedObjectContext.reset()
-        mainManagedObjectContext.reset()
-        backgroundManagedObjectContext.reset()
-
-        // Make sure to perform the reset on closures to avoid deadlocks.
-        writerManagedObjectContext.performBlockAndWait() {
-            self.persistentStoreCoordinator.performBlockAndWait() {
-                // Retrieve the stores which were coordinated.
-                if let stores = self.persistentStoreCoordinator.persistentStores as? [NSPersistentStore] {
-                    
-                    let fileManager = NSFileManager.defaultManager()
-                    for store in stores {
-                        // Remove each persistent stores.
-                        if self.persistentStoreCoordinator.removePersistentStore(store, error: error) == false {
-                            resetSuccess = false
-                            return
-                        }
-                        
-                        // Remove the files if they exist.
-                        if let storeURL = store.URL {
-                            if let storePath = storeURL.path {
-                                if fileManager.fileExistsAtPath(storePath) {
-                                    // Remove the file where the store used to live.
-                                    fileManager.removeItemAtURL(storeURL, error: error)
-                                }
-                            }
-                        }
-                        
-                        // Fail if there is an error.
-                        if error != nil {
-                            resetSuccess = false
-                            return
-                        }
-                    }
-                    
-                    for store in stores {
-                        // create new fresh persistent stores.
-                        let addSuccess = self.persistentStoreCoordinator.addPersistentStoreWithType(store.type, configuration: store.configurationName, URL: store.URL, options: store.options, error: error)
-                        if addSuccess == false {
-                            resetSuccess = false
-                            return
-                        }
-                    }
+    public func persistentStoresURLs() -> [NSURL] {
+        // Insure the stores can be downcasted.
+        if let stores = persistentStoreCoordinator.persistentStores as? [NSPersistentStore] {
+            var storeURLs = [NSURL]()
+            // For each stores add the URL if there is one.
+            for store in stores {
+                if let storeURL = store.URL {
+                    storeURLs.append(storeURL)
                 }
             }
+            return storeURLs
         }
         
-        return resetSuccess
-    }
-    
-    // MARK: - Notifications
-    
-    /**
-     * Notification method to handle logic once the main context has saved.
-     *
-     * :param: notification The notification object posted when mainManagedObjectContext was saved.
-     */
-    func handleMainContextSaveNotification(notification: NSNotification) {
-        if let context = notification.object as? NSManagedObjectContext {
-            // Merge the changes for the backgroundManagedObjectContext asynchronously.
-            backgroundManagedObjectContext.performBlock() {
-                self.backgroundManagedObjectContext.mergeChangesFromContextDidSaveNotification(notification)
-            }
-        }
+        // Return an empty array on failure.
+        return [NSURL]()
     }
     
     /**
-     * Notification method to handle logic once the bacground context has saved.
+     * Helper method to return the cloud persitent stores managed by the data
+     * store's persistentStoreCoordinator.
      *
-     * :param: notification The notification object posted when backgroundManagedObjectContext was saved.
+     * O(n)
+     *
+     * :returns: The cloud persitent stores.
      */
-    func handleBackgroundContextSaveNotification(notification: NSNotification) {
-        if let context = notification.object as? NSManagedObjectContext {
-            // Merge the changes for the mainManagedObjectContext asynchronously.
-            mainManagedObjectContext.performBlock() {
-                self.mainManagedObjectContext.mergeChangesFromContextDidSaveNotification(notification)
+    public func cloudPersistentStores() -> [NSPersistentStore] {
+        // Insure the stores can be downcasted.
+        if let stores = persistentStoreCoordinator.persistentStores as? [NSPersistentStore] {
+            var cloudStores = [NSPersistentStore]()
+            // Look for the cloud stores.
+            for store in stores {
+                if store.options?[NSPersistentStoreUbiquitousContentNameKey] != nil {
+                    cloudStores.append(store)
+                }
             }
+            return cloudStores
         }
+        
+        // Return an empty array on failure.
+        return [NSPersistentStore]()
+    }
+    
+    /**
+     * Helper method to reset all contexts.
+     */
+    public func resetContexts() {
+        self.mainManagedObjectContext.reset()
+        self.backgroundManagedObjectContext.reset()
+        self.writerManagedObjectContext.reset()
     }
     
     // MARK: - Private Methods

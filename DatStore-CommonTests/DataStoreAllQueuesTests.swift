@@ -55,7 +55,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_enter(group)
         dataStore.performClosure() { context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
                 
@@ -67,7 +67,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_enter(group)
         dataStore.performBackgroundClosure() { context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
                 
@@ -99,7 +99,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
@@ -110,7 +110,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_enter(group)
         dataStore.performBackgroundClosureAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
             }
@@ -135,7 +135,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         dataStore.performClosureAndWait() { context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
                 
@@ -145,7 +145,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         dataStore.performBackgroundClosureAndWait() { context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
                 
@@ -168,7 +168,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         dataStore.performClosureWaitAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
@@ -176,7 +176,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         dataStore.performBackgroundClosureWaitAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
             }
@@ -196,23 +196,23 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         dataStore.performClosureWaitAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
         }, error: &error)
         dataStore.performBackgroundClosureWaitAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
             }
         }, error: &error)
         
-        let predicate = NSPredicate(format: "lastName == \"Osseiran\"")!
+        let predicate = NSPredicate(format: "lastName == \"Osseiran\"")
         
         dataStore.performClosureAndWait() { context in
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as [DSTPerson]
+            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
             if results.count != 2 {
                 XCTFail("Only two people were inserted")
             }
@@ -230,23 +230,23 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         dataStore.performClosureWaitAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
         }, error: &error)
         dataStore.performBackgroundClosureWaitAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
             }
         }, error: &error)
         
-        let predicate = NSPredicate(format: "lastName == \"Wood\"")!
+        let predicate = NSPredicate(format: "lastName == \"Wood\"")
         
         dataStore.performClosureAndWait() { context in
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as [DSTPerson]
+            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
             if results.count != 0 {
                 XCTFail("No match should have been found.")
             }
@@ -271,7 +271,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                     person?.firstName = "Jad"
                     person?.lastName = "Osseiran"
             }
-            if results.count != 1 {
+            if results?.count != 1 {
                 XCTFail("No matches should exist")
             }
         }, error: &error)
@@ -285,13 +285,13 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 wherKey: "firstName",
                 equalsValue: "Jad",
                 error: &error) { insertedObject in
-                    XCTFail("This closure should not enter as the object has already been created and saved on the other context.")
+                    XCTFail("This closure should not enter as! the object has already been created and saved on the other context.")
                     
                     let person = insertedObject as? DSTPerson
                     person?.firstName = "Jad"
                     person?.lastName = "Osseiran"
             }
-            if results.count != 1 {
+            if results?.count != 1 {
                 XCTFail("No matches should exist")
             }
         }, error: &error)
@@ -300,7 +300,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dataStore.performClosureAndWait() { context in
             let predicate = NSPredicate(format: "firstName == \"Jad\" AND lastName == \"Osseiran\"")
             
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as [DSTPerson]
+            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
             if results.count != 1 {
                 XCTFail("Only one person was inserted")
             }
@@ -325,7 +325,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
             
             for i in 0 ..< (smallNumber / 2) {
                 context.insertObjectWithEntityName(entityName) { object in
-                    let person = object as DSTPerson
+                    let person = object as! DSTPerson
                     person.firstName = "\(i)"
                     person.lastName = "\(i*2)"
                 }
@@ -337,7 +337,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
             
             for i in (smallNumber / 2) ..< smallNumber {
                 context.insertObjectWithEntityName(entityName) { object in
-                    let person = object as DSTPerson
+                    let person = object as! DSTPerson
                     person.firstName = "\(i)"
                     person.lastName = "\(i*2)"
                 }
@@ -347,7 +347,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         var fetchedConcatinatedFirstNameString = String()
         dataStore.performClosureAndWait() { context in
             let sortDescriptor = NSSortDescriptor(key: "firstName", ascending: false)
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor], error: &error) as [DSTPerson]
+            let results = context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor], error: &error) as! [DSTPerson]
             
             if results.count != smallNumber {
                 XCTFail("The count does not match")
@@ -377,7 +377,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
@@ -388,7 +388,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_enter(group)
         dataStore.performBackgroundClosureAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
             }
@@ -401,7 +401,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 let predicate = NSPredicate(format: "lastName == \"Osseiran\"")
                 
                 var error: NSError?
-                let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as [DSTPerson]
+                let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
                 if results.count != 2 {
                     XCTFail("Only two people were inserted")
                 }
@@ -424,7 +424,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
@@ -435,7 +435,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_enter(group)
         dataStore.performBackgroundClosureAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
             }
@@ -448,7 +448,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 let predicate = NSPredicate(format: "firstName == \"Nathan\" AND lastName == \"Wood\"")
                 
                 var error: NSError?
-                let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as [DSTPerson]
+                let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
                 
                 XCTAssert(results.count == 0 && error == nil && context.hasChanges == false, "Pass")
                 expectation.fulfill()
@@ -499,7 +499,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 let predicate = NSPredicate(format: "lastName == \"Osseiran\"")
                 
                 var error: NSError?
-                let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as [DSTPerson]
+                let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
                 if results.count != 2 {
                     XCTFail("Only two people were inserted")
                 }
@@ -524,7 +524,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dataStore.performClosureAndSave({ context in
             for i in 0 ..< (smallNumber / 2) {
                 context.insertObjectWithEntityName(entityName) { object in
-                    let person = object as DSTPerson
+                    let person = object as! DSTPerson
                     person.firstName = "\(i)"
                     person.lastName = "\(i*2)"
                 }
@@ -537,7 +537,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dataStore.performBackgroundClosureAndSave({ context in
             for i in (smallNumber / 2) ..< smallNumber {
                 context.insertObjectWithEntityName(entityName) { object in
-                    let person = object as DSTPerson
+                    let person = object as! DSTPerson
                     person.firstName = "\(i)"
                     person.lastName = "\(i*2)"
                 }
@@ -551,7 +551,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 let sortDescriptor = NSSortDescriptor(key: "firstName", ascending: false)
                 var error: NSError?
                 
-                let results = context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor], error: &error) as [DSTPerson]
+                let results = context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor], error: &error) as! [DSTPerson]
                 
                 let desiredConcatinatedFirstNameString = "9876543210"
                 
@@ -577,7 +577,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         dataStore.performClosureAndWait() { context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
@@ -585,7 +585,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         dataStore.performBackgroundClosureAndWait() { context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
             }
@@ -593,14 +593,14 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         var error: NSError?
         let success = dataStore.saveAndWait(onContextSave: { context in
-            // FIXME: This strangely calls save:completion:... I have no clue as to why?!
+            // FIXME: This strangely calls save:completion:... I have no clue as! to why?!
             XCTAssertFalse(context.hasChanges, "The context should not have changes")
         }, error: &error)
         
         dataStore.performClosureAndWait() { context in
             var fetchError: NSError?
             let results = context.findAllForEntityWithEntityName(entityName, error: &fetchError)
-            if results.count != 2 || fetchError != nil {
+            if results?.count != 2 || fetchError != nil {
                 XCTFail("Save failed")
             }
         }
@@ -620,7 +620,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_enter(group)
         dataStore.performClosure() { context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
@@ -630,7 +630,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_enter(group)
         dataStore.performBackgroundClosure() { context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
             }
@@ -639,13 +639,13 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         dispatch_group_notify(group, dispatch_get_main_queue()) {
             self.dataStore.save(onContextSave: { context in
-                // FIXME: This strangely calls saveAndWait:... I have no clue as to why?!
+                // FIXME: This strangely calls saveAndWait:... I have no clue as! to why?!
                 XCTAssertFalse(context.hasChanges, "The context should not have changes")
             }, completion: { error in
                 self.dataStore.performClosureAndWait() { context in
                     var fetchError: NSError?
                     let results = context.findAllForEntityWithEntityName(entityName, error: &fetchError)
-                    if results.count != 2 || fetchError != nil {
+                    if results?.count != 2 || fetchError != nil {
                         XCTFail("Save failed")
                     }
                 }

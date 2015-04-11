@@ -51,7 +51,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
             let entityName = self.dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
             
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
                 
@@ -73,7 +73,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
             let entityName = self.dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
             
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
@@ -91,7 +91,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
             let entityName = self.dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
             
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
                 
@@ -111,7 +111,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
             let entityName = self.dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
             
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
@@ -130,7 +130,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
         
         dataStore.performClosureWaitAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
@@ -138,9 +138,9 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
         
         var person: DSTPerson!
         dataStore.performClosureAndWait() { context in
-            let predicate = NSPredicate(format: "firstName == \"Jad\" AND lastName == \"Osseiran\"")!
+            let predicate = NSPredicate(format: "firstName == \"Jad\" AND lastName == \"Osseiran\"")
             
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as [DSTPerson]
+            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
             if results.count != 1 {
                 XCTFail("Only one person was inserted")
             }
@@ -160,16 +160,16 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
         
         dataStore.performClosureWaitAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
         }, error: &error)
         
         dataStore.performClosureAndWait() { context in
-            let predicate = NSPredicate(format: "firstName == \"Nils\" AND lastName == \"Osseiran\"")!
+            let predicate = NSPredicate(format: "firstName == \"Nils\" AND lastName == \"Osseiran\"")
             
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as [DSTPerson]
+            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
             
             if results.count != 0 {
                 XCTFail("There should be no matches")
@@ -194,7 +194,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
                     person?.firstName = "Jad"
                     person?.lastName = "Osseiran"
             }
-            if results.count != 1 {
+            if results?.count != 1 {
                 XCTFail("No matches should exist")
             }
         }, error: &error)
@@ -203,11 +203,11 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
         dataStore.performClosureAndWait() { context in
             let predicate = NSPredicate(format: "firstName == \"Jad\" AND lastName == \"Osseiran\"")
             
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as [DSTPerson]
+            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
             if results.count != 1 {
                 XCTFail("Only one person was inserted")
             }
-            
+
             person = results.last
         }
         
@@ -228,7 +228,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
             
             for i in 0 ..< smallNumber {
                 context.insertObjectWithEntityName(entityName) { object in
-                    let person = object as DSTPerson
+                    let person = object as! DSTPerson
                     person.firstName = "\(i)"
                     person.lastName = "\(i*2)"
                 }
@@ -238,7 +238,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
         var fetchedConcatinatedFirstNameString = String()
         dataStore.performClosureAndWait() { context in
             let sortDescriptor = NSSortDescriptor(key: "firstName", ascending: false)
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor], error: &error) as [DSTPerson]
+            let results = context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor], error: &error) as! [DSTPerson]
             
             if results.count != smallNumber {
                 XCTFail("The count does not match")
@@ -265,7 +265,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
         
         dataStore.performClosureAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
@@ -273,7 +273,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
             let predicate = NSPredicate(format: "firstName == \"Jad\" AND lastName == \"Osseiran\"")
             
             var error: NSError?
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as [DSTPerson]
+            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
             if results.count != 1 {
                 XCTFail("Only one person was inserted")
             }
@@ -296,7 +296,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
         
         dataStore.performClosureAndSave({ context in
             context.insertObjectWithEntityName(entityName) { object in
-                let person = object as DSTPerson
+                let person = object as! DSTPerson
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
@@ -304,7 +304,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
             let predicate = NSPredicate(format: "firstName == \"Nils\" AND lastName == \"Osseiran\"")
             
             var error: NSError?
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as [DSTPerson]
+            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
             
             XCTAssert(results.count == 0 && error == nil && context.hasChanges == false, "Pass")
             expectation.fulfill()
@@ -331,7 +331,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
             let predicate = NSPredicate(format: "firstName == \"Jad\" AND lastName == \"Osseiran\"")
             
             var error: NSError?
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as [DSTPerson]
+            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
             if results.count != 1 {
                 XCTFail("Only one person was inserted")
             }
@@ -356,7 +356,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
         dataStore.performClosureAndSave({ context in
             for i in 0 ..< smallNumber {
                 context.insertObjectWithEntityName(entityName) { object in
-                    let person = object as DSTPerson
+                    let person = object as! DSTPerson
                     person.firstName = "\(i)"
                     person.lastName = "\(i*2)"
                 }
@@ -365,7 +365,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
             let sortDescriptor = NSSortDescriptor(key: "firstName", ascending: false)
             var error: NSError?
             
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor], error: &error) as [DSTPerson]
+            let results = context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor], error: &error) as! [DSTPerson]
             
             let desiredConcatinatedFirstNameString = "9876543210"
             
