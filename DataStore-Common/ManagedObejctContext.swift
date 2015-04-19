@@ -74,23 +74,23 @@ public extension NSManagedObjectContext {
      * Method which allows searching for objects by filtering on a specific
      * key-value paring. If the no objects are found with the given key-value pair a
      * new managed object is created and inserted in the calling managed object context.
-     * A callback closure is passed to allow modification of the newly created object, 
-     * typically to set its attributes. If the fetch fails an empty array is
+     * A callback closure is passed to allow modification of each of the resulting objects,
+     * typically to set their attributes. If the fetch fails an empty array is
      * returned and the error parameter is populated.
      *
      * :param: entityName The entity name of for the managed object to find.
      * :param: key The key to use to find the possible existing objects. If no matching objects exist, it is used to set a value on the newly created object.
      * :param: value The value to match with the given key to find an objects. If no matching  objects exist it is set on the given key for the newly created object.
      * :param: error An error which will be populated if something goes wrong in the fetch request.
-     * :param: insert A closure which will be called with the new object when it is created.
+     * :param: resultObjectHandler A closure which will be called on each resulting object. These could be a newly created object or found objects.
      *
      * :returns: An array of managed objects matching the key-value paring or an array containing the newly created managed object.
      */
-    public func findEntitiesWithEntityName(entityName: String,
-        wherKey key: String,
+    public func findOrInsertEntitiesWithEntityName(entityName: String,
+        whereKey key: String,
         equalsValue value: AnyObject,
         error: NSErrorPointer,
-        orInsert insert: ((object: AnyObject) -> Void)?) -> [AnyObject]? {
+        resultObjectHandler objectHandler: ((object: AnyObject, inserted: Bool) -> Void)?) -> [AnyObject]? {
             // Create a request with the appropriate information.
             let request = NSFetchRequest(entityName: entityName)
             
@@ -108,12 +108,15 @@ public extension NSManagedObjectContext {
                 // Set the appropriate key-value pair.
                 newObject.setValue(value, forKey: key)
                 // Allow the caller to edit the new managed object.
-                insert?(object: newObject)
+                objectHandler?(object: newObject, inserted: true)
                 
                 objects = [newObject]
             } else {
                 // The objects exist so fetch them and store them if the fetch was successful.
                 if let results = executeFetchRequest(request, error: error) {
+                    for object in results {
+                        objectHandler?(object: object, inserted: false)
+                    }
                     objects = results
                 }
             }

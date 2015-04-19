@@ -57,7 +57,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
                 
                 insertedPerson = person
             }
-            
+
             XCTAssert(insertedPerson?.firstName == "Jad" &&
                 insertedPerson?.lastName == "Osseiran" && context.hasChanges, "Pass")
             expectation.fulfill()
@@ -186,17 +186,17 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
         
         let success = dataStore.performClosureWaitAndSave({ context in
-            let results = context.findEntitiesWithEntityName(entityName,
-                wherKey: "firstName",
+            let results = context.findOrInsertEntitiesWithEntityName(entityName,
+                whereKey: "firstName",
                 equalsValue: "Jad",
-                error: &error) { insertedObject in
+                error: &error) { insertedObject, inserted in
                     let person = insertedObject as? DSTPerson
                     person?.firstName = "Jad"
                     person?.lastName = "Osseiran"
+                    XCTAssertTrue(inserted)
             }
-            if results?.count != 1 {
-                XCTFail("No matches should exist")
-            }
+            XCTAssertNotNil(results)
+            XCTAssertEqual(results!.count, 1)
         }, error: &error)
         
         var person: DSTPerson!
@@ -319,13 +319,14 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
         
         dataStore.performClosureAndSave({ context in
             var error: NSError?
-            context.findEntitiesWithEntityName(entityName,
-                wherKey: "firstName",
+            context.findOrInsertEntitiesWithEntityName(entityName,
+                whereKey: "firstName",
                 equalsValue: "Jad",
-                error: &error) { insertedObject in
+                error: &error) { insertedObject, inserted in
                     let person = insertedObject as? DSTPerson
                     person?.firstName = "Jad"
                     person?.lastName = "Osseiran"
+                    XCTAssertTrue(inserted)
             }
         }, completion: { context, error in
             let predicate = NSPredicate(format: "firstName == \"Jad\" AND lastName == \"Osseiran\"")

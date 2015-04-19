@@ -263,13 +263,14 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
         
         var success = dataStore.performClosureWaitAndSave({ context in
-            let results = context.findEntitiesWithEntityName(entityName,
-                wherKey: "firstName",
+            let results = context.findOrInsertEntitiesWithEntityName(entityName,
+                whereKey: "firstName",
                 equalsValue: "Jad",
-                error: &error) { insertedObject in
+                error: &error) { insertedObject, inserted in
                     let person = insertedObject as? DSTPerson
                     person?.firstName = "Jad"
                     person?.lastName = "Osseiran"
+                    XCTAssertTrue(inserted)
             }
             if results?.count != 1 {
                 XCTFail("No matches should exist")
@@ -281,15 +282,14 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         }
         
         success = dataStore.performClosureWaitAndSave({ context in
-            let results = context.findEntitiesWithEntityName(entityName,
-                wherKey: "firstName",
+            let results = context.findOrInsertEntitiesWithEntityName(entityName,
+                whereKey: "firstName",
                 equalsValue: "Jad",
-                error: &error) { insertedObject in
-                    XCTFail("This closure should not enter as! the object has already been created and saved on the other context.")
-                    
+                error: &error) { insertedObject, inserted in                    
                     let person = insertedObject as? DSTPerson
                     person?.firstName = "Jad"
                     person?.lastName = "Osseiran"
+                    XCTAssertFalse(inserted)
             }
             if results?.count != 1 {
                 XCTFail("No matches should exist")
@@ -467,13 +467,14 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
             var error: NSError?
-            context.findEntitiesWithEntityName(entityName,
-                wherKey: "firstName",
+            context.findOrInsertEntitiesWithEntityName(entityName,
+                whereKey: "firstName",
                 equalsValue: "Jad",
-                error: &error) { insertedObject in
+                error: &error) { insertedObject, inserted in
                     let person = insertedObject as? DSTPerson
                     person?.firstName = "Jad"
                     person?.lastName = "Osseiran"
+                    XCTAssertTrue(inserted)
             }
         }, completion: { context, error in
             dispatch_group_leave(group)
@@ -482,13 +483,14 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_enter(group)
         dataStore.performBackgroundClosureAndSave({ context in
             var error: NSError?
-            context.findEntitiesWithEntityName(entityName,
-                wherKey: "firstName",
+            context.findOrInsertEntitiesWithEntityName(entityName,
+                whereKey: "firstName",
                 equalsValue: "Nils",
-                error: &error) { insertedObject in
+                error: &error) { insertedObject, inserted in
                     let person = insertedObject as? DSTPerson
                     person?.firstName = "Nils"
                     person?.lastName = "Osseiran"
+                    XCTAssertTrue(inserted)
             }
         }, completion: { context, error in
             dispatch_group_leave(group)
