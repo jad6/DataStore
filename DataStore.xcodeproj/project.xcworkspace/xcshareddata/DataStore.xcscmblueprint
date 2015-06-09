@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "7F6BA990E616131B6A12C224F76CFAD9EFB4627C",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "7F6BA990E616131B6A12C224F76CFAD9EFB4627C" : 0,
+    "1689287D7E5D16CAD1352D6486CB894051BA0B4D" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "B2BFE320-7E25-49B3-BE7C-FFAC7DAA3F02",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "7F6BA990E616131B6A12C224F76CFAD9EFB4627C" : "DataStore\/",
+    "1689287D7E5D16CAD1352D6486CB894051BA0B4D" : ""
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "DataStore",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 203,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "DataStore.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/jad6\/BucketLists.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "1689287D7E5D16CAD1352D6486CB894051BA0B4D"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:jad6\/DataStore.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "7F6BA990E616131B6A12C224F76CFAD9EFB4627C"
+    }
+  ]
+}
