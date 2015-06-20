@@ -30,109 +30,116 @@ public extension DataStore {
      *
      * O(n)
      *
-     * :param: error The error which is populated if an error is encountered in the process.
+     * - parameter error: The error which is populated if an error is encountered in the process.
      *
-     * :returns: true if the process is successful.
+     * - returns: true if the process is successful.
      */
-    public func reset(error: NSErrorPointer) -> Bool {
-        return reset(error) { store in .CopyExisting }
+    public func reset() throws {
+        try reset { store in .CopyExisting }
     }
     
     /**
      * Method to reset the Core Data environment. This erases the data in the
-     * persistent stores as! well as! reseting all managed object contexts.
+     * persistent stores as well as reseting all managed object contexts.
      * Further, depening on the option cloud data can also be reset.
      *
      * O(n)
      *
-     * :param: error The error which is populated if an error is encountered in the process.
-     * :param: newStoreOption A closure to return a reset option for the given store.
-     *
-     * :returns: true if the process is successful.
+     * - parameter newStoreOption: A closure to return a reset option for the given store.
+     * - throws error: The error if an error is encountered in the process.
      */
-    public func reset(error: NSErrorPointer, newStoreOption: (store: NSPersistentStore) -> StoreResetOption) -> Bool {
-        var resetSuccess = true
-        
+    public func reset(newStoreOption: (store: NSPersistentStore) -> StoreResetOption) throws {
+        var resetError: NSError?
+
         // Reset all contexts.
         self.resetContexts()
-        
+
         // Make sure to perform the reset on closures to avoid deadlocks.
         writerManagedObjectContext.performBlockAndWait() {
             self.persistentStoreCoordinator.performBlockAndWait() {
                 // Retrieve the stores which were coordinated.
-                if let stores = self.persistentStoreCoordinator.persistentStores as? [NSPersistentStore] {
-                    
-                    let fileManager = NSFileManager.defaultManager()
-                    for store in stores {
-                        // Remove each persistent stores.
-                        if self.persistentStoreCoordinator.removePersistentStore(store, error: error) == false {
-                            resetSuccess = false
-                            return
-                        }
-                        
+                let stores = self.persistentStoreCoordinator.persistentStores
+
+                let fileManager = NSFileManager.defaultManager()
+                for store in stores {
+                    // Remove each persistent stores.
+                    do {
+                        try self.persistentStoreCoordinator.removePersistentStore(store)
+
                         // Remove the files if they exist.
                         if let storeURL = store.URL {
                             if let storePath = storeURL.path {
                                 if fileManager.fileExistsAtPath(storePath) {
-                                    // Remove the file where the store used to live.
-                                    fileManager.removeItemAtURL(storeURL, error: error)
+                                    do {
+                                        // Remove the file where the store used to live.
+                                        try fileManager.removeItemAtURL(storeURL)
+                                    } catch let error as NSError {
+                                        resetError = error
+                                    } catch {
+                                        fatalError()
+                                    }
                                 }
                             }
                         }
-                        
-                        // Fail if there is an error.
-                        if error != nil {
-                            resetSuccess = false
-                            return
-                        }
+                    } catch let error as NSError {
+                        resetError = error
+                    } catch {
+                        fatalError()
                     }
-                    
+                }
+
+                if (resetError == nil) {
                     for store in stores {
-                        // Get the correct options.
-                        let option = newStoreOption(store: store)
-                        let options = self.resetOptionsForOption(option, onStore: store, error: error)
-                        // If there is an error return unsuccessfully.
-                        if error != nil {
-                            resetSuccess = false
-                            return
-                        }
-                        
-                        // create new fresh persistent stores.
-                        let addSuccess = self.persistentStoreCoordinator.addPersistentStoreWithType(store.type, configuration: store.configurationName, URL: store.URL, options: options, error: error)
-                        if addSuccess == false {
-                            resetSuccess = false
-                            return
+                        do {
+                            // Get the correct options.
+                            let options = try self.resetOptionsForOption(newStoreOption(store: store), onStore: store)
+                            do {
+                                // create new fresh persistent stores.
+                                try self.persistentStoreCoordinator.addPersistentStoreWithType(store.type, configuration: store.configurationName, URL: store.URL, options: options)
+                            } catch let error as NSError {
+                                resetError = error
+                            } catch {
+                                fatalError()
+                            }
+                        } catch let error as NSError {
+                            resetError = error
+                        } catch {
+                            fatalError()
                         }
                     }
                 }
             }
         }
-        
-        return resetSuccess
+
+        if resetError != nil {
+            throw resetError!
+        }
     }
-    
+
     // MARK: - Protected Methods
-    
-    private func resetOptionsForOption(option: StoreResetOption, onStore store: NSPersistentStore, error: NSErrorPointer) -> [NSObject: AnyObject]? {
-        var options = store.options
+
+    private func resetOptionsForOption(option: StoreResetOption, onStore store: NSPersistentStore) throws -> [NSObject: AnyObject]? {
+        let options = store.options
+
         switch option {
         case .CopyExisting:
             return options
         case .Clear:
             if let storeURL = store.URL {
-                NSPersistentStoreCoordinator.removeUbiquitousContentAndPersistentStoreAtURL(storeURL, options: nil, error: error)
-                placeStoreInLocalDirectory(store, options: nil, error: error)
+                try NSPersistentStoreCoordinator.removeUbiquitousContentAndPersistentStoreAtURL(storeURL, options: nil)
+                try placeStoreInLocalDirectory(store, options: nil)
             }
             return nil
         case .RebuildFromCloud:
-            options?[NSPersistentStoreRebuildFromUbiquitousContentOption] = true
+            // FIXME: Swift can suck my dick
+//            options?[NSPersistentStoreRebuildFromUbiquitousContentOption] = true
             return options
         case .DisableCloud:
-            options?[NSPersistentStoreRemoveUbiquitousMetadataOption] = true
-            options?[NSPersistentStoreUbiquitousContentNameKey] = nil
-            
-            placeStoreInCloudDirectory(store, options: options, error: error)
-            
+            // FIXME: Swift can suck my dick
+//            options?[NSPersistentStoreRemoveUbiquitousMetadataOption] = true
+//            options?[NSPersistentStoreUbiquitousContentNameKey] = nil
+
+            try placeStoreInCloudDirectory(store, options: options)
             return options
         }
     }

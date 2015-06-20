@@ -54,17 +54,17 @@ public extension DataStore {
      *
      * O(n)
      *
-     * :param: objectClass The class for the managed object who's name will be returned.
-     * :param: classPrefix The prefix which differs from the model entity name and the class name.
+     * - parameter objectClass: The class for the managed object who's name will be returned.
+     * - parameter classPrefix: The prefix which differs from the model entity name and the class name.
      *
-     * :returns: The entity name for the given class, nil if the class given did not match any of the model's entities.
+     * - returns: The entity name for the given class, nil if the class given did not match any of the model's entities.
      */
     public func entityNameForObjectClass(objectClass: NSManagedObject.Type, withClassPrefix classPrefix: String?) -> String! {
         // Get a reference to the singleton names dictionary.
         var dictionary = DataStore.entityClassNamesDictionary
         
         // FIXME: When Apple sorts out how they will treat the Swift namespacing and class name retieving this can be improved on.
-        var classString = NSStringFromClass(objectClass)
+        let classString = NSStringFromClass(objectClass)
         let range = classString.rangeOfString(".", options: NSStringCompareOptions.CaseInsensitiveSearch, range: Range<String.Index>(start:classString.startIndex, end: classString.endIndex), locale: nil)
         let className = range != nil ? classString.substringFromIndex(range!.endIndex) : classString
         
@@ -87,9 +87,9 @@ public extension DataStore {
         // If the entity was found save it for later and check for the prefix.
         if entityName != nil {
             if let prefix = classPrefix {
-                let prefixCount = count(prefix)
+                let prefixCount = prefix.characters.count
                 // Check if the prefix is valid.
-                if className.hasPrefix(prefix) && count(className) > prefixCount {
+                if className.hasPrefix(prefix) && className.characters.count > prefixCount {
                     // Adjust the entity name by removing the prefix.
                     let index: String.Index = advance(className.startIndex, prefixCount)
                     entityName = className.substringFromIndex(index)
@@ -109,9 +109,9 @@ public extension DataStore {
      *
      * O(n)
      *
-     * :param: objectClass The class for the managed object who's name will be returned.
+     * - parameter objectClass: The class for the managed object who's name will be returned.
      *
-     * :returns: The entity name for the given class, nil if the class given did not match any of the model's entities.
+     * - returns: The entity name for the given class, nil if the class given did not match any of the model's entities.
      */
     public func entityNameForObjectClass(objectClass: NSManagedObject.Type) -> String! {
         return entityNameForObjectClass(objectClass, withClassPrefix: nil)

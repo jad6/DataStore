@@ -74,34 +74,38 @@ public extension DataStore {
     /**
      * Notification method to handle logic just before stores swaping.
      *
-     * :param: notification The notification object posted before the stores swap.
+     * - parameter notification: The notification object posted before the stores swap.
      */
     func handlePersistentStoresWillChangeNotification(notification: NSNotification) {
-        var transitionType: NSPersistentStoreUbiquitousTransitionType?
-        
+        // FIXME: What was this meant to do?
+//        let transitionType: NSPersistentStoreUbiquitousTransitionType?
+
         // Perform operations on the parent (root) context.
         writerManagedObjectContext.performBlock {
             if self.hasChanges {
+                // Create the user info dictionary.
+                var userInfo: [String: AnyObject] = [Notifications.Keys.persistentStoreCoordinator: self.persistentStoreCoordinator]
+
                 // If there are changes on the temporary contexts before the
                 // store swap then save them.
-                var error: NSError?
-                self.saveAndWait(&error)
-                
-                // Create the user info dictionary with the error if it occured.
-                var userInfo: [String: AnyObject] = [Notifications.Keys.persistentStoreCoordinator: self.persistentStoreCoordinator]
-                if error != nil {
-                    userInfo = [Notifications.Keys.error: error!]
+                do {
+                    try self.saveAndWait()
+                } catch let error as NSError {
+                    userInfo = [Notifications.Keys.error: error]
+                } catch {
+                    assertionFailure("Well looks like the save method on NSManagedObjectContext throws something that is not an NSError... - \(__FUNCTION__) @ \(__LINE__)")
                 }
+
                 // Post the save temporary store notification.
                 NSNotificationCenter.defaultCenter().postNotificationName(Notifications.changesSavedFromTemporaryStore, object: self, userInfo: userInfo)
                 
                 // On a transition Core Data gives the app only one chance to save;
                 // it won’t post another NSPersistentStoreCoordinatorStoresWillChangeNotification
                 // notification. Therefore reset the contexts after a save.
-                if transitionType != nil {
+//                if transitionType != nil {
                     // TODO: Test that this occurs on transtions, not initial set-up.
                     self.resetContexts()
-                }
+//                }
             } else {
                 // Reset the managed object contexts as! the data they hold is
                 // now invalid due to the store swap.
@@ -112,39 +116,36 @@ public extension DataStore {
     
     func handlePersistentStoresDidChangeNotification(notification: NSNotification) {
         if let coordinator = notification.object as? NSPersistentStoreCoordinator {
-            if let stores = coordinator.persistentStores as? [NSPersistentStore] {
-                for store in stores {
-                    var error: NSError?
-                    
-                    var userInfo: [NSObject: AnyObject]?
+            let stores = coordinator.persistentStores
+            for store in stores {
+                var userInfo: [NSObject: AnyObject]?
 
-                    // Move the store to the right directory.
-                    if store.options?[NSPersistentStoreUbiquitousContentNameKey] != nil {
-                        placeStoreInCloudDirectory(store, options: store.options, error: &error)
-                        
-                        if error != nil {
-                            userInfo = [Notifications.Keys.error: error!]
-                        }
-                        
-                        NSNotificationCenter.defaultCenter().postNotificationName(Notifications.storeDidMoveToCloudFileSystemDirectory, object: store, userInfo: userInfo)
-                    } else {
-                        placeStoreInLocalDirectory(store, options: store.options, error: &error)
-                        
-                        if error != nil {
-                            userInfo = [Notifications.Keys.error: error!]
-                        }
-                        
-                        NSNotificationCenter.defaultCenter().postNotificationName(Notifications.storeDidMoveToLocalFileSystemDirectory, object: store, userInfo: userInfo)
+                // Move the store to the right directory.
+                if store.options?[NSPersistentStoreUbiquitousContentNameKey] != nil {
+                    do {
+                        try placeStoreInCloudDirectory(store, options: store.options)
+                    } catch let error as NSError {
+                        userInfo = [Notifications.Keys.error: error]
                     }
+
+                    NSNotificationCenter.defaultCenter().postNotificationName(Notifications.storeDidMoveToCloudFileSystemDirectory, object: store, userInfo: userInfo)
+                } else {
+                    do {
+                        try placeStoreInLocalDirectory(store, options: store.options)
+                    } catch let error as NSError {
+                        userInfo = [Notifications.Keys.error: error]
+                    }
+
+                    NSNotificationCenter.defaultCenter().postNotificationName(Notifications.storeDidMoveToLocalFileSystemDirectory, object: store, userInfo: userInfo)
                 }
             }
         }
     }
-    
+
     /**
      * Notification method to handle logic for cloud store imports.
      *
-     * :param: notification The notification object posted when data was imported.
+     * - parameter notification: The notification object posted when data was imported.
      */
     func handleImportChangesNotification(notification: NSNotification) {
         // Inline closure to merge a context.
@@ -162,17 +163,17 @@ public extension DataStore {
     /**
      * Notification method to handle logic once the main context has saved.
      *
-     * :param: notification The notification object posted when mainManagedObjectContext was saved.
+     * - parameter notification: The notification object posted when mainManagedObjectContext was saved.
      */
     func handleMainContextSaveNotification(notification: NSNotification) {
-        if let context = notification.object as? NSManagedObjectContext {
+        if let mainContext = notification.object as? NSManagedObjectContext where mainContext == mainManagedObjectContext {
             // Merge the changes for the backgroundManagedObjectContext asynchronously.
             backgroundManagedObjectContext.performBlock() {
                 self.backgroundManagedObjectContext.mergeChangesFromContextDidSaveNotification(notification)
                 
                 // Send the save and merge notification.
                 dispatch_async(dispatch_get_main_queue()) {
-                    NSNotificationCenter.defaultCenter().postNotificationName(Notifications.contextSavedAndMerge, object: self, userInfo: [Notifications.Keys.mergedContext: self.backgroundManagedObjectContext, Notifications.Keys.saveContext: self.mainManagedObjectContext])
+                    NSNotificationCenter.defaultCenter().postNotificationName(Notifications.contextSavedAndMerge, object: self, userInfo: [Notifications.Keys.mergedContext: self.backgroundManagedObjectContext, Notifications.Keys.saveContext: mainContext])
                 }
             }
         }
@@ -181,17 +182,17 @@ public extension DataStore {
     /**
      * Notification method to handle logic once the bacground context has saved.
      *
-     * :param: notification The notification object posted when backgroundManagedObjectContext was saved.
+     * - parameter notification: The notification object posted when backgroundManagedObjectContext was saved.
      */
     func handleBackgroundContextSaveNotification(notification: NSNotification) {
-        if let context = notification.object as? NSManagedObjectContext {
+        if let backgroundContext = notification.object as? NSManagedObjectContext where backgroundContext == backgroundManagedObjectContext {
             // Merge the changes for the mainManagedObjectContext asynchronously.
             mainManagedObjectContext.performBlock() {
                 self.mainManagedObjectContext.mergeChangesFromContextDidSaveNotification(notification)
                 
                 // Send the save and merge notification.
                 dispatch_async(dispatch_get_main_queue()) {
-                    NSNotificationCenter.defaultCenter().postNotificationName(Notifications.contextSavedAndMerge, object: self, userInfo: [Notifications.Keys.mergedContext: self.mainManagedObjectContext, Notifications.Keys.saveContext: self.backgroundManagedObjectContext])
+                    NSNotificationCenter.defaultCenter().postNotificationName(Notifications.contextSavedAndMerge, object: self, userInfo: [Notifications.Keys.mergedContext: self.mainManagedObjectContext, Notifications.Keys.saveContext: backgroundContext])
                 }
             }
         }

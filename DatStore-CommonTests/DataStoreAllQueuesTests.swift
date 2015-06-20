@@ -50,7 +50,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
         
-        var group = dispatch_group_create()
+        let group = dispatch_group_create()
         
         dispatch_group_enter(group)
         dataStore.performClosure() { context in
@@ -94,7 +94,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
         
-        var group = dispatch_group_create()
+        let group = dispatch_group_create()
         
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
@@ -162,207 +162,247 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
     }
     
     func testCreatingWaitAndSave() {
-        var error: NSError?
-        
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
+        do {
+            try dataStore.performClosureWaitAndSave({ context in
+                context.insertObjectWithEntityName(entityName) { object in
+                    let person = object as! DSTPerson
+                    person.firstName = "Jad"
+                    person.lastName = "Osseiran"
+                }
+            })
+        } catch let error {
+            XCTFail("Insertion failed \(error)")
+        }
         
-        dataStore.performClosureWaitAndSave({ context in
-            context.insertObjectWithEntityName(entityName) { object in
-                let person = object as! DSTPerson
-                person.firstName = "Jad"
-                person.lastName = "Osseiran"
-            }
-        }, error: &error)
+        do {
+            try dataStore.performBackgroundClosureWaitAndSave({ context in
+                context.insertObjectWithEntityName(entityName) { object in
+                    let person = object as! DSTPerson
+                    person.firstName = "Nils"
+                    person.lastName = "Osseiran"
+                }
+            })
+        } catch let error {
+            XCTFail("Insertion failed \(error)")
+        }
         
-        dataStore.performBackgroundClosureWaitAndSave({ context in
-            context.insertObjectWithEntityName(entityName) { object in
-                let person = object as! DSTPerson
-                person.firstName = "Nils"
-                person.lastName = "Osseiran"
-            }
-        }, error: &error)
-        
-        XCTAssert(error == nil &&
-            dataStore.mainManagedObjectContext.hasChanges == false &&
-            dataStore.backgroundManagedObjectContext.hasChanges == false, "Pass")
+        XCTAssertFalse(dataStore.mainManagedObjectContext.hasChanges)
+        XCTAssertFalse(dataStore.backgroundManagedObjectContext.hasChanges)
     }
     
     // MARK: - Synchrnous Tests
     
     func testFetchingExistingSync() {
-        var error: NSError?
-
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
-        
-        dataStore.performClosureWaitAndSave({ context in
-            context.insertObjectWithEntityName(entityName) { object in
-                let person = object as! DSTPerson
-                person.firstName = "Jad"
-                person.lastName = "Osseiran"
-            }
-        }, error: &error)
-        dataStore.performBackgroundClosureWaitAndSave({ context in
-            context.insertObjectWithEntityName(entityName) { object in
-                let person = object as! DSTPerson
-                person.firstName = "Nils"
-                person.lastName = "Osseiran"
-            }
-        }, error: &error)
+        do {
+            try dataStore.performClosureWaitAndSave({ context in
+                context.insertObjectWithEntityName(entityName) { object in
+                    let person = object as! DSTPerson
+                    person.firstName = "Jad"
+                    person.lastName = "Osseiran"
+                }
+            })
+        } catch let error {
+            XCTFail("Insertion failed \(error)")
+        }
+
+        do {
+            try dataStore.performBackgroundClosureWaitAndSave({ context in
+                context.insertObjectWithEntityName(entityName) { object in
+                    let person = object as! DSTPerson
+                    person.firstName = "Nils"
+                    person.lastName = "Osseiran"
+                }
+            })
+        } catch let error {
+            XCTFail("Insertion failed \(error)")
+        }
         
         let predicate = NSPredicate(format: "lastName == \"Osseiran\"")
         
         dataStore.performClosureAndWait() { context in
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
-            if results.count != 2 {
-                XCTFail("Only two people were inserted")
+            do {
+                let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [DSTPerson]
+                XCTAssertEqual(2, results.count, "Only two people should be inserted")
+            } catch let error {
+                XCTFail("Fetch failed \(error)")
             }
         }
         
-        XCTAssert(error == nil &&
-            dataStore.mainManagedObjectContext.hasChanges == false &&
-            dataStore.backgroundManagedObjectContext.hasChanges == false, "Pass")
+        XCTAssertFalse(dataStore.mainManagedObjectContext.hasChanges)
+        XCTAssertFalse(dataStore.backgroundManagedObjectContext.hasChanges)
     }
     
     func testFetchingNonExistingSync() {
-        var error: NSError?
-        
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
         
-        dataStore.performClosureWaitAndSave({ context in
-            context.insertObjectWithEntityName(entityName) { object in
-                let person = object as! DSTPerson
-                person.firstName = "Jad"
-                person.lastName = "Osseiran"
-            }
-        }, error: &error)
-        dataStore.performBackgroundClosureWaitAndSave({ context in
-            context.insertObjectWithEntityName(entityName) { object in
-                let person = object as! DSTPerson
-                person.firstName = "Nils"
-                person.lastName = "Osseiran"
-            }
-        }, error: &error)
+        do {
+            try dataStore.performClosureWaitAndSave({ context in
+                context.insertObjectWithEntityName(entityName) { object in
+                    let person = object as! DSTPerson
+                    person.firstName = "Jad"
+                    person.lastName = "Osseiran"
+                }
+            })
+        } catch let error {
+            XCTFail("Insertion failed \(error)")
+        }
+
+        do {
+            try dataStore.performBackgroundClosureWaitAndSave({ context in
+                context.insertObjectWithEntityName(entityName) { object in
+                    let person = object as! DSTPerson
+                    person.firstName = "Nils"
+                    person.lastName = "Osseiran"
+                }
+            })
+        } catch let error {
+            XCTFail("Insertion failed \(error)")
+        }
         
         let predicate = NSPredicate(format: "lastName == \"Wood\"")
         
         dataStore.performClosureAndWait() { context in
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
-            if results.count != 0 {
-                XCTFail("No match should have been found.")
+            do {
+                let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [DSTPerson]
+                XCTAssertNotEqual(results.count, 0, "No match should have been found.")
+            } catch let error {
+                XCTFail("Fetch failed \(error)")
             }
         }
         
-        XCTAssert(error == nil &&
-            dataStore.mainManagedObjectContext.hasChanges == false &&
-            dataStore.backgroundManagedObjectContext.hasChanges == false, "Pass")
+        XCTAssertFalse(dataStore.mainManagedObjectContext.hasChanges)
+        XCTAssertFalse(dataStore.backgroundManagedObjectContext.hasChanges)
     }
     
     func testFetchingWithValueAndKeySync() {
-        var error: NSError?
-        
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
-        
-        var success = dataStore.performClosureWaitAndSave({ context in
-            let results = context.findOrInsertEntitiesWithEntityName(entityName,
-                whereKey: "firstName",
-                equalsValue: "Jad",
-                error: &error) { insertedObject, inserted in
-                    let person = insertedObject as? DSTPerson
-                    person?.firstName = "Jad"
-                    person?.lastName = "Osseiran"
-                    XCTAssertTrue(inserted)
+        do {
+            try dataStore.performClosureWaitAndSave { context in
+                let results: [AnyObject]?
+                do {
+                    results = try context.findOrInsertEntitiesWithEntityName(entityName,
+                        whereKey: "firstName",
+                        equalsValue: "Jad") { insertedObject, inserted in
+                            let person = insertedObject as? DSTPerson
+                            person?.firstName = "Jad"
+                            person?.lastName = "Osseiran"
+                            XCTAssertTrue(inserted)
+                    }
+                } catch let error {
+                    XCTFail("Insertion failed \(error)")
+                    results = nil
+                }
+
+                if let unwrappedResults = results {
+                    XCTAssertEqual(unwrappedResults.count, 1)
+                }
             }
-            if results?.count != 1 {
-                XCTFail("No matches should exist")
-            }
-        }, error: &error)
-        
-        if success == false {
-            XCTFail("No success for you!")
+        } catch let error {
+            XCTFail("Insertion failed \(error)")
         }
-        
-        success = dataStore.performClosureWaitAndSave({ context in
-            let results = context.findOrInsertEntitiesWithEntityName(entityName,
-                whereKey: "firstName",
-                equalsValue: "Jad",
-                error: &error) { insertedObject, inserted in                    
-                    let person = insertedObject as? DSTPerson
-                    person?.firstName = "Jad"
-                    person?.lastName = "Osseiran"
-                    XCTAssertFalse(inserted)
+
+        do {
+            try dataStore.performClosureWaitAndSave{ context in
+                let results: [AnyObject]?
+                do {
+                    results = try context.findOrInsertEntitiesWithEntityName(entityName,
+                        whereKey: "firstName",
+                        equalsValue: "Jad") { insertedObject, inserted in
+                            let person = insertedObject as? DSTPerson
+                            person?.firstName = "Jad"
+                            person?.lastName = "Osseiran"
+                            XCTAssertFalse(inserted)
+                    }
+                } catch let error {
+                    XCTFail("Insertion failed \(error)")
+                    results = nil
+                }
+                if let unwrappedResults = results {
+                    XCTAssertEqual(unwrappedResults.count, 1)
+                }
             }
-            if results?.count != 1 {
-                XCTFail("No matches should exist")
-            }
-        }, error: &error)
-        
+        } catch let error {
+            XCTFail("Insertion failed \(error)")
+        }
+
         var person: DSTPerson!
         dataStore.performClosureAndWait() { context in
             let predicate = NSPredicate(format: "firstName == \"Jad\" AND lastName == \"Osseiran\"")
-            
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
-            if results.count != 1 {
-                XCTFail("Only one person was inserted")
+
+            do {
+                let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [DSTPerson]
+
+                XCTAssertEqual(results.count, 1)
+                person = results.last
+            } catch let error {
+                XCTFail("Insertion failed \(error)")
             }
-            
-            person = results.last
         }
-        
-        XCTAssert(person.firstName == "Jad" &&
-            person.lastName == "Osseiran" &&
-            error == nil && success &&
-            dataStore.mainManagedObjectContext.hasChanges == false, "Pass")
+
+        XCTAssertEqual(person.firstName, "Jad")
+        XCTAssertEqual(person.lastName, "Osseiran")
+        XCTAssertFalse(dataStore.mainManagedObjectContext.hasChanges)
     }
     
     func testFetchingWithOrderSync() {
-        var error: NSError?
-        
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
         let smallNumber = 10
         
-        dataStore.performClosureWaitAndSave({ context in
-            let entityName = self.dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
+        do {
+            try dataStore.performClosureWaitAndSave({ context in
+                let entityName = self.dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
             
-            for i in 0 ..< (smallNumber / 2) {
-                context.insertObjectWithEntityName(entityName) { object in
-                    let person = object as! DSTPerson
-                    person.firstName = "\(i)"
-                    person.lastName = "\(i*2)"
+                for i in 0 ..< (smallNumber / 2) {
+                    context.insertObjectWithEntityName(entityName) { object in
+                        let person = object as! DSTPerson
+                        person.firstName = "\(i)"
+                        person.lastName = "\(i*2)"
+                    }
                 }
-            }
-        }, error: &error)
+            })
+        } catch let error {
+            XCTFail("Insertion failed \(error)")
+        }
         
-        dataStore.performBackgroundClosureWaitAndSave({ context in
-            let entityName = self.dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
+        do {
+            try dataStore.performBackgroundClosureWaitAndSave({ context in
+                let entityName = self.dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
             
-            for i in (smallNumber / 2) ..< smallNumber {
-                context.insertObjectWithEntityName(entityName) { object in
-                    let person = object as! DSTPerson
-                    person.firstName = "\(i)"
-                    person.lastName = "\(i*2)"
+                for i in (smallNumber / 2) ..< smallNumber {
+                    context.insertObjectWithEntityName(entityName) { object in
+                        let person = object as! DSTPerson
+                        person.firstName = "\(i)"
+                        person.lastName = "\(i*2)"
+                    }
                 }
-            }
-        }, error: &error)
+            })
+        } catch let error {
+            XCTFail("Insertion failed \(error)")
+        }
         
         var fetchedConcatinatedFirstNameString = String()
         dataStore.performClosureAndWait() { context in
             let sortDescriptor = NSSortDescriptor(key: "firstName", ascending: false)
-            let results = context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor], error: &error) as! [DSTPerson]
-            
-            if results.count != smallNumber {
-                XCTFail("The count does not match")
-            }
-            
-            for person in results {
-                fetchedConcatinatedFirstNameString += person.firstName
+
+            do {
+                let results = try context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor]) as! [DSTPerson]
+
+                XCTAssertEqual(results.count, smallNumber, "The count does not match")
+
+                for person in results {
+                    fetchedConcatinatedFirstNameString += person.firstName
+                }
+            } catch let error {
+                XCTFail("Insertion failed \(error)")
             }
         }
         
         let desiredConcatinatedFirstNameString = "9876543210"
         
-        XCTAssert(error == nil &&
-            desiredConcatinatedFirstNameString == fetchedConcatinatedFirstNameString &&
-            dataStore.mainManagedObjectContext.hasChanges == false, "Pass")
+        XCTAssertEqual(desiredConcatinatedFirstNameString, fetchedConcatinatedFirstNameString)
+        XCTAssertFalse(dataStore.mainManagedObjectContext.hasChanges)
     }
     
     // MARK: - Asynchrnous Tests
@@ -372,7 +412,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
         
-        var group = dispatch_group_create()
+        let group = dispatch_group_create()
         
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
@@ -399,14 +439,15 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_notify(group, dispatch_get_main_queue()) {
             self.dataStore.performClosureAndWait() { context in
                 let predicate = NSPredicate(format: "lastName == \"Osseiran\"")
-                
-                var error: NSError?
-                let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
-                if results.count != 2 {
-                    XCTFail("Only two people were inserted")
+
+                do {
+                    let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [DSTPerson]
+                    XCTAssertEqual(results.count, 2, "Only two people were inserted")
+                } catch let error {
+                    XCTFail("Fetch failed \(error)")
                 }
-                
-                XCTAssert(error == nil && context.hasChanges == false, "Pass")
+
+                XCTAssertFalse(context.hasChanges)
                 expectation.fulfill()
             }
         }
@@ -419,7 +460,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
         
-        var group = dispatch_group_create()
+        let group = dispatch_group_create()
         
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
@@ -447,10 +488,14 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
             self.dataStore.performClosureAndWait() { context in
                 let predicate = NSPredicate(format: "firstName == \"Nathan\" AND lastName == \"Wood\"")
                 
-                var error: NSError?
-                let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
-                
-                XCTAssert(results.count == 0 && error == nil && context.hasChanges == false, "Pass")
+                do {
+                    let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [DSTPerson]
+                    XCTAssertEqual(results.count, 0)
+                } catch let error {
+                    XCTFail("Fetch failed \(error)")
+                }
+
+                XCTAssertFalse(context.hasChanges)
                 expectation.fulfill()
             }
         }
@@ -462,19 +507,21 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         let expectation = expectationWithDescription("Fetch existing key-value")
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
 
-        var group = dispatch_group_create()
+        let group = dispatch_group_create()
 
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
-            var error: NSError?
-            context.findOrInsertEntitiesWithEntityName(entityName,
-                whereKey: "firstName",
-                equalsValue: "Jad",
-                error: &error) { insertedObject, inserted in
-                    let person = insertedObject as? DSTPerson
-                    person?.firstName = "Jad"
-                    person?.lastName = "Osseiran"
-                    XCTAssertTrue(inserted)
+            do {
+                try context.findOrInsertEntitiesWithEntityName(entityName,
+                    whereKey: "firstName",
+                    equalsValue: "Jad") { insertedObject, inserted in
+                        let person = insertedObject as? DSTPerson
+                        person?.firstName = "Jad"
+                        person?.lastName = "Osseiran"
+                        XCTAssertTrue(inserted)
+                }
+            } catch let error {
+                XCTFail("Fetch failed \(error)")
             }
         }, completion: { context, error in
             dispatch_group_leave(group)
@@ -482,15 +529,17 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
 
         dispatch_group_enter(group)
         dataStore.performBackgroundClosureAndSave({ context in
-            var error: NSError?
-            context.findOrInsertEntitiesWithEntityName(entityName,
-                whereKey: "firstName",
-                equalsValue: "Nils",
-                error: &error) { insertedObject, inserted in
-                    let person = insertedObject as? DSTPerson
-                    person?.firstName = "Nils"
-                    person?.lastName = "Osseiran"
-                    XCTAssertTrue(inserted)
+            do {
+                try context.findOrInsertEntitiesWithEntityName(entityName,
+                    whereKey: "firstName",
+                    equalsValue: "Nils") { insertedObject, inserted in
+                        let person = insertedObject as? DSTPerson
+                        person?.firstName = "Nils"
+                        person?.lastName = "Osseiran"
+                        XCTAssertTrue(inserted)
+                }
+            } catch let error {
+                XCTFail("Fetch failed \(error)")
             }
         }, completion: { context, error in
             dispatch_group_leave(group)
@@ -500,13 +549,14 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
             self.dataStore.performClosureAndWait() { context in
                 let predicate = NSPredicate(format: "lastName == \"Osseiran\"")
                 
-                var error: NSError?
-                let results = context.findEntitiesForEntityName(entityName, withPredicate: predicate, error: &error) as! [DSTPerson]
-                if results.count != 2 {
-                    XCTFail("Only two people were inserted")
+                do {
+                    let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [DSTPerson]
+                    XCTAssertEqual(results.count, 2, "Only two people were inserted")
+                } catch let error {
+                    XCTFail("Fetch failed \(error)")
                 }
-                
-                XCTAssert(error == nil && context.hasChanges == false, "Pass")
+
+                XCTAssertFalse(context.hasChanges)
                 expectation.fulfill()
             }
         }
@@ -520,7 +570,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
         
-        var group = dispatch_group_create()
+        let group = dispatch_group_create()
         
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
@@ -551,20 +601,24 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dispatch_group_notify(group, dispatch_get_main_queue()) {
             self.dataStore.performClosureAndWait() { context in
                 let sortDescriptor = NSSortDescriptor(key: "firstName", ascending: false)
-                var error: NSError?
-                
-                let results = context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor], error: &error) as! [DSTPerson]
-                
-                let desiredConcatinatedFirstNameString = "9876543210"
-                
-                var fetchedConcatinatedFirstNameString = String()
-                for person in results {
-                    fetchedConcatinatedFirstNameString += person.firstName
+
+                do {
+                    let results = try context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor]) as! [DSTPerson]
+
+                    let desiredConcatinatedFirstNameString = "9876543210"
+
+                    var fetchedConcatinatedFirstNameString = String()
+                    for person in results {
+                        fetchedConcatinatedFirstNameString += person.firstName
+                    }
+
+                    XCTAssertEqual(results.count, smallNumber)
+                    XCTAssertEqual(desiredConcatinatedFirstNameString, fetchedConcatinatedFirstNameString)
+                } catch let error {
+                    XCTFail("Fetch failed \(error)")
                 }
-                
-                XCTAssert(results.count == smallNumber && error == nil &&
-                    desiredConcatinatedFirstNameString == fetchedConcatinatedFirstNameString &&
-                    context.hasChanges == false, "Pass")
+
+                XCTAssertFalse(context.hasChanges)
                 expectation.fulfill()
             }
         }
@@ -593,23 +647,31 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
             }
         }
         
-        var error: NSError?
-        let success = dataStore.saveAndWait(onContextSave: { context in
-            // FIXME: This strangely calls save:completion:... I have no clue as! to why?!
-            XCTAssertFalse(context.hasChanges, "The context should not have changes")
-        }, error: &error)
+        do {
+            try dataStore.saveAndWait(onContextSave: { context in
+                        // FIXME: This strangely calls save:completion:... I have no clue as! to why?!
+                        XCTAssertFalse(context.hasChanges, "The context should not have changes")
+                    })
+        } catch let error {
+            XCTFail("Failed to save \(error)")
+        }
         
         dataStore.performClosureAndWait() { context in
-            var fetchError: NSError?
-            let results = context.findAllForEntityWithEntityName(entityName, error: &fetchError)
-            if results?.count != 2 || fetchError != nil {
-                XCTFail("Save failed")
+            let results: [AnyObject]?
+            do {
+                results = try context.findAllForEntityWithEntityName(entityName)
+            } catch let error {
+                XCTFail("Fetch failed \(error)")
+                results = nil
+            }
+
+            if let unwrappedResults = results {
+                XCTAssertEqual(2, unwrappedResults.count)
             }
         }
         
-        XCTAssert(success && error == nil &&
-            dataStore.mainManagedObjectContext.hasChanges == false &&
-            dataStore.backgroundManagedObjectContext.hasChanges == false, "Pass")
+        XCTAssertFalse(dataStore.mainManagedObjectContext.hasChanges)
+        XCTAssertFalse(dataStore.backgroundManagedObjectContext.hasChanges)
     }
     
     func testCreatingOnMultipleContextsAndSaveAsync() {
@@ -617,7 +679,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
         
-        var group = dispatch_group_create()
+        let group = dispatch_group_create()
         
         dispatch_group_enter(group)
         dataStore.performClosure() { context in
@@ -645,16 +707,23 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 XCTAssertFalse(context.hasChanges, "The context should not have changes")
             }, completion: { error in
                 self.dataStore.performClosureAndWait() { context in
-                    var fetchError: NSError?
-                    let results = context.findAllForEntityWithEntityName(entityName, error: &fetchError)
-                    if results?.count != 2 || fetchError != nil {
-                        XCTFail("Save failed")
+                    let results: [AnyObject]?
+                    do {
+                        results = try context.findAllForEntityWithEntityName(entityName)
+                    } catch let error {
+                        XCTFail("Fetch failed \(error)")
+                        results = nil
+                    }
+
+                    if let unwrappedResults = results {
+                        XCTAssertEqual(2, unwrappedResults.count)
                     }
                 }
-                
-                XCTAssert(error == nil &&
-                    self.dataStore.mainManagedObjectContext.hasChanges == false &&
-                    self.dataStore.backgroundManagedObjectContext.hasChanges == false, "Pass")
+
+                XCTAssertNil(error)
+                XCTAssertFalse(self.dataStore.mainManagedObjectContext.hasChanges)
+                XCTAssertFalse(self.dataStore.backgroundManagedObjectContext.hasChanges)
+
                 expectation.fulfill()
             })
         }

@@ -17,39 +17,36 @@ public extension DataStore {
     
     // MARK: - Public Methods
     
-    public func placeStoreInLocalDirectory(store: NSPersistentStore, options: [NSObject: AnyObject]?,  error: NSErrorPointer) -> Bool {
-        return placeStoreInDirectoryTyoe(.Local, store: store, options: options, error: error)
+    public func placeStoreInLocalDirectory(store: NSPersistentStore, options: [NSObject: AnyObject]?) throws {
+        try placeStoreInDirectoryTyoe(.Local, store: store, options: options)
     }
     
-    public func placeStoreInCloudDirectory(store: NSPersistentStore, options: [NSObject: AnyObject]?,  error: NSErrorPointer) -> Bool {
-        return placeStoreInDirectoryTyoe(.Cloud, store: store, options: options, error: error)
+    public func placeStoreInCloudDirectory(store: NSPersistentStore, options: [NSObject: AnyObject]?) throws {
+        try placeStoreInDirectoryTyoe(.Cloud, store: store, options: options)
     }
     
     // MARK: - Private Methods
-    
-    private func placeStoreInDirectoryTyoe(type: CoreDataDirectoryType, store: NSPersistentStore, options: [NSObject: AnyObject]?, error: NSErrorPointer) -> Bool {
-        
-        let migrateStore = { (store: NSPersistentStore, toPath: String,  error: NSErrorPointer) -> Void in
-            if let newStoreURL = NSURL(fileURLWithPath: toPath) {
-                self.persistentStoreCoordinator.migratePersistentStore(store, toURL: newStoreURL , options: options, withType: store.type, error: error)
-            }
-        }
-        
+
+    private func migrateStore(store: NSPersistentStore, withOptions options: [NSObject: AnyObject]?, toPath: String) throws {
+        let newStoreURL = NSURL(fileURLWithPath: toPath)
+        try self.persistentStoreCoordinator.migratePersistentStore(store, toURL: newStoreURL , options: options, withType: store.type)
+    }
+
+    private func placeStoreInDirectoryTyoe(type: CoreDataDirectoryType, store: NSPersistentStore, options: [NSObject: AnyObject]?) throws {
         let fileManager = NSFileManager.defaultManager()
         
-        if let storePath = store.URL?.path {
+        if store.URL?.path != nil {
             let path = directoryPathForType(type)
             let parentPath = directoryPathForType(.Parent)
                         
             if fileManager.fileExistsAtPath(path) {
-                migrateStore(store, path, error)
+                try migrateStore(store, withOptions: options, toPath: path)
             } else {
-                if fileManager.createDirectoryAtPath(parentPath, withIntermediateDirectories: false, attributes: nil, error: error) {
-                    if error != nil {
-                        return false
-                    }
-                    
-                    migrateStore(store, path, error)
+                do {
+                    try fileManager.createDirectoryAtPath(parentPath, withIntermediateDirectories: false, attributes: nil)
+                    /* TODO: Finish migration: rewrite code to move the next statement out of enclosing do/catch */
+                } catch let error {
+                    throw error
                 }
             }
             
@@ -64,33 +61,29 @@ public extension DataStore {
             }
             
             let otherPath = directoryPathForType(otherType)
-            deleteDirectoryIfEmptyAtPath(otherPath, fileManager: fileManager, error: error)
+            try deleteDirectoryIfEmptyAtPath(otherPath, fileManager: fileManager)
         }
-        
-        return error == nil
     }
     
-    private func deleteDirectoryIfEmptyAtPath(path: String, fileManager: NSFileManager, error: NSErrorPointer) {
-        
-        if let files = fileManager.contentsOfDirectoryAtPath(path, error: error) as? [String] {
+    private func deleteDirectoryIfEmptyAtPath(path: String, fileManager: NSFileManager) throws {
+        let files = try fileManager.contentsOfDirectoryAtPath(path)
+
+        for file in files {
+            let fullPath = path.stringByAppendingPathComponent(file)
             
-            for file in files {
-                let fullPath = path.stringByAppendingPathComponent(file)
-                if let subFiles = fileManager.contentsOfDirectoryAtPath(fullPath, error: error) {
-                    if subFiles.count == 0 {
-                        let result = fileManager.removeItemAtPath(fullPath, error: error)
-                    } else {
-                        deleteDirectoryIfEmptyAtPath(fullPath, fileManager: fileManager, error: error)
-                    }
-                }
+            let subFiles = try fileManager.contentsOfDirectoryAtPath(fullPath)
+            if subFiles.count == 0 {
+                try fileManager.removeItemAtPath(fullPath)
+            } else {
+                try deleteDirectoryIfEmptyAtPath(fullPath, fileManager: fileManager)
             }
         }
     }
-    
+
     private func directoryPathForType(type: CoreDataDirectoryType) -> String {
         let directories = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, false)
         
-        let documentDirectory = directories.last as? String
+        let documentDirectory = directories.last
         assert(documentDirectory != nil)
         
         var name: String!

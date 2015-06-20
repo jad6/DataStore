@@ -360,7 +360,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Jad Osseiran";
 				TargetAttributes = {
 					057C537C1A0DDBC800DC6360 = {
@@ -528,6 +528,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -605,6 +606,7 @@
 				INFOPLIST_FILE = "DataStore-iOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = DataStore;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -622,6 +624,7 @@
 				INFOPLIST_FILE = "DataStore-iOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = DataStore;
 				SKIP_INSTALL = YES;
 			};
@@ -630,16 +633,13 @@
 		057C53971A0DDBC900DC6360 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "DataStore-iOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = DataStoreTests;
 			};
 			name = Debug;
@@ -647,12 +647,9 @@
 		057C53981A0DDBC900DC6360 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
 				INFOPLIST_FILE = "DataStore-iOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = DataStoreTests;
 			};
 			name = Release;
@@ -675,6 +672,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = DataStore;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -697,6 +695,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = DataStore;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -718,6 +717,7 @@
 				INFOPLIST_FILE = "DataStore-MacTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = DataStoreTests;
 				SDKROOT = macosx;
 			};
@@ -735,6 +735,7 @@
 				INFOPLIST_FILE = "DataStore-MacTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = DataStoreTests;
 				SDKROOT = macosx;
 			};

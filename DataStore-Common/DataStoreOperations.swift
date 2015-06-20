@@ -35,10 +35,10 @@ public extension DataStore {
     /**
      * Helper method to create an object model from a resource.
      *
-     * :param: resource The name of the managed object model file.
-     * :param: bundle The bundle in which to look for.
+     * - parameter resource: The name of the managed object model file.
+     * - parameter bundle: The bundle in which to look for.
      *
-     * :returns: The initialised object model if found.
+     * - returns: The initialised object model if found.
      */
     public class func modelForResource(resource: String, bundle: NSBundle) -> NSManagedObjectModel? {
         // Try finding the model with both known model file extensions.
@@ -59,7 +59,7 @@ public extension DataStore {
     /**
      * Method which performs operations asynchronously on the main queue.
      *
-     * :param: closure The closure to perform on the main queue.
+     * - parameter closure: The closure to perform on the main queue.
      */
     public func performClosure(closure: ContextClosure) {
         mainManagedObjectContext.performBlock() {
@@ -70,8 +70,8 @@ public extension DataStore {
     /**
      * Method which performs operations and saves asynchronously on the main queue.
      *
-     * :param: closure The closure to perform on the main queue.
-     * :param: completion Closure containing an error pointer which is called when the operations and save are completed.
+     * - parameter closure: The closure to perform on the main queue.
+     * - parameter completion: Closure containing an error pointer which is called when the operations and save are completed.
      */
     public func performClosureAndSave(closure: ContextClosure, completion: ContextSaveClosure?) {
         performClosure() { context in
@@ -87,7 +87,7 @@ public extension DataStore {
     /**
      * Method which performs operations synchronously on the main queue.
      *
-     * :param: closure The closure to perform on the main queue.
+     * - parameter closure: The closure to perform on the main queue.
      */
     public func performClosureAndWait(closure: ContextClosure) {
         mainManagedObjectContext.performBlockAndWait() {
@@ -98,18 +98,20 @@ public extension DataStore {
     /**
      * Method which performs operations and saves synchronously on the main queue.
      *
-     * :param: closure The closure to perform on the main queue.
-     * :param: error An error pointer which is populated when an error is encountered at save time.
+     * - parameter closure: The closure to perform on the main queue.
+     * - parameter error: An error pointer which is populated when an error is encountered at save time.
      *
-     * :returns: true if the saving operation was a success.
+     * - returns: true if the saving operation was a success.
      */
-    public func performClosureWaitAndSave(closure: ContextClosure, error: NSErrorPointer) -> Bool {
+    public func performClosureWaitAndSave(closure: ContextClosure) throws {
         performClosureAndWait() { context in
             closure(context: context)
         }
-        let saveSuccessful = self.saveAndWait(error)
-        
-        return saveSuccessful
+        do {
+            try self.saveAndWait()
+        } catch let error {
+            throw error
+        }
     }
     
     // MARK: - Background Queue
@@ -117,7 +119,7 @@ public extension DataStore {
     /**
      * Method which performs operations asynchronously on the background queue.
      *
-     * :param: closure The closure to perform on the background queue.
+     * - parameter closure: The closure to perform on the background queue.
      */
     public func performBackgroundClosure(closure: ContextClosure) {
         backgroundManagedObjectContext.performBlock() {
@@ -128,8 +130,8 @@ public extension DataStore {
     /**
      * Method which performs operations and saves asynchronously on the background queue.
      *
-     * :param: closure The closure to perform on the background queue.
-     * :param: completion Closure containing an error pointer which is called when the operations and save are completed.
+     * - parameter closure: The closure to perform on the background queue.
+     * - parameter completion: Closure containing an error pointer which is called when the operations and save are completed.
      */
     public func performBackgroundClosureAndSave(closure: ContextClosure, completion: ContextSaveClosure?) {
         performBackgroundClosure() { context in
@@ -145,7 +147,7 @@ public extension DataStore {
     /**
      * Method which performs operations synchronously on the background queue.
      *
-     * :param: closure The closure to perform on the background queue.
+     * - parameter closure: The closure to perform on the background queue.
      */
     public func performBackgroundClosureAndWait(closure: ContextClosure) {
         backgroundManagedObjectContext.performBlockAndWait() {
@@ -156,17 +158,20 @@ public extension DataStore {
     /**
      * Method which performs operations and saves synchronously on the background queue.
      *
-     * :param: closure The closure to perform on the background queue.
-     * :param: error An error pointer which is populated when an error is encountered at save time.
+     * - parameter closure: The closure to perform on the background queue.
+     * - parameter error: An error pointer which is populated when an error is encountered at save time.
      *
-     * :returns: true if the saving operation was a success.
+     * - returns: true if the saving operation was a success.
      */
-    public func performBackgroundClosureWaitAndSave(closure: ContextClosure, error: NSErrorPointer) -> Bool {
+    public func performBackgroundClosureWaitAndSave(closure: ContextClosure) throws {
         performBackgroundClosureAndWait() { context in
             closure(context: context)
         }
-        let saveSuccessful = saveAndWait(error)
-        
-        return saveSuccessful
+
+        do {
+            try saveAndWait()
+        } catch let error {
+            throw error
+        }
     }
 }

@@ -38,24 +38,25 @@ class DataStoreTests: XCTestCase {
         super.setUp()
         
         let model = DataStore.modelForResource("DataStoreTests", bundle: NSBundle(forClass: DataStoreTests.self))!
-        
-        var error: NSError?
-        dataStore = DataStore(model: model,
-            configuration: nil,
-            storePath: nil,
-            storeType: NSInMemoryStoreType,
-            options: nil,
-            error: &error)
-        assert(error == nil, "Could not create data store")
+        do {
+            dataStore = try DataStore(model: model,
+                configuration: nil,
+                storePath: nil,
+                storeType: NSInMemoryStoreType,
+                options: nil)
+        } catch let error {
+            assertionFailure("Could not create data store \(error)")
+        }
     }
     
     override func tearDown() {
-        var error: NSError?
-        dataStore?.reset(&error)
-        assert(error == nil, "The Data Store must have been completely reset before rebuilding the stack for a new unit test")
-        
+        do {
+            try dataStore?.reset()
+        } catch let error {
+            assertionFailure("The Data Store must have been completely reset before rebuilding the stack for a new unit test \(error)")
+        }
+
         dataStore = nil
-        
         DataStore.clearClassNameCache()
 
         super.tearDown()

@@ -45,7 +45,7 @@ extension NSError {
      * Helper method to print out the error information.
      */
     func printErrorInformation() {
-        println("Error detected {\n\tDescription: \(localizedDescription)\n\tReason: \(localizedFailureReason)\n\tRecovery: \(localizedRecoverySuggestion)")
+        print("Error detected {\n\tDescription: \(localizedDescription)\n\tReason: \(localizedFailureReason)\n\tRecovery: \(localizedRecoverySuggestion)")
     }
     
     /** 
