@@ -12,13 +12,12 @@ public extension DataStore {
     
     /**
      * Method which removes duplicates for an entity.
+     * THROWS: An error if anything goes wrong
      *
      * - parameter entityName: The name of the entity for which to remove duplicates.
      * - parameter key: The key attribute to use for unique identification of the object.
      * - parameter type: The attribute type of the identification key.
-     * - parameter error: An error pointer populated if anything goes wrong.
      * - parameter duplicateToDelete: A closure which will be called when two duplicate objects are found. Return the duplicate to delete.
-     *
      * - returns: True if the operation succeeded.
      */
     public func removeDuplicatesInStoreForEntityName(entityName: String,
@@ -35,15 +34,11 @@ public extension DataStore {
             let entity = NSEntityDescription.entityForName(entityName, inManagedObjectContext: writerManagedObjectContext)
             // If the attribute eists for the given key.
             if let uniqueAttribute: AnyObject = entity?.attributesByName[key] {
-                do {
-                    // TODO: (Jad) re-visit this
-                    // Get the info dictionaries for the duplicate.
-                    try fetchDuplicateInfo(entityName: entityName,
-                        uniqueAttribute: uniqueAttribute,
-                        countExpressionDescription: countExpressionDescription)
-                } catch let error {
-                    throw error
-                }
+                // TODO: (Jad) re-visit this
+                // Get the info dictionaries for the duplicate.
+                try fetchDuplicateInfo(entityName: entityName,
+                    uniqueAttribute: uniqueAttribute,
+                    countExpressionDescription: countExpressionDescription)
             }
     }
 
@@ -54,7 +49,6 @@ public extension DataStore {
      *
      * - parameter valuesWithDupes: Dctionary of values without duplicates
      * - parameter key: The key attribute to use for unique identification of the object.
-     * 
      * - returns: An array of duplicated values.
      */
     private func retrieveDuplicateFromValues(valuesWithDupes: [AnyObject], withUniqueAttributeKey key: String) -> [AnyObject] {
@@ -63,12 +57,10 @@ public extension DataStore {
         // Iterate through each duplicate dictionaries.
         for dictionary in valuesWithDupes {
             // Get the count for the iterated dictionary.
-            if let count = dictionary["count"] as? NSNumber {
+            if let count = dictionary["count"] as? NSNumber where count.integerValue > 1{
                 // If a duplicate is found then add the object to the values to return.
-                if count.integerValue > 1 {
-                    if let object: AnyObject = dictionary[key] {
-                        values.append(object)
-                    }
+                if let object: AnyObject = dictionary[key] {
+                    values.append(object)
                 }
             }
         }
@@ -77,23 +69,21 @@ public extension DataStore {
     
     /**
      * Fetches the number of times each unique value appears in the store.
+     * THROWS: An error if anything goes wrong.
      * 
      * - parameter entityName: The name of the entity for which to remove duplicates.
      * - parameter uniqueAttribute: The value of the unique attribute to group the fetch with.
      * - parameter countExpressionDescription: The count description expression for the fetch.
-     * - parameter error: An error pointer populated if anything goes wrong.
-     * 
      * - returns: An array of dictionaries containing the duplicated info, nil if an error was ecountered.
      */
     private func fetchDuplicateInfo(entityName entityName: String,
         uniqueAttribute: AnyObject,
         countExpressionDescription: NSExpressionDescription) throws -> [AnyObject] {
-            
             let fetchRequest = NSFetchRequest(entityName: entityName)
             fetchRequest.propertiesToFetch = [uniqueAttribute, countExpressionDescription]
             fetchRequest.propertiesToGroupBy = [uniqueAttribute]
             fetchRequest.resultType = .DictionaryResultType
-            
+
             return try writerManagedObjectContext.executeFetchRequest(fetchRequest)
     }
     
@@ -103,8 +93,7 @@ public extension DataStore {
      * - parameter entityName: The name of the entity for which to remove duplicates.
      * - parameter key: The key attribute to use for unique identification of the object.
      * - parameter type: The attribute type of the identification key.
-     * 
-    * - returns: Expression description to get the count for an entity name with the give key
+     * - returns: Expression description to get the count for an entity name with the give key
      */
     private func countExpressionDescriptionForEntityName(entityName: String,
         withUniqueAttributeKey key: String,
@@ -116,18 +105,17 @@ public extension DataStore {
             countExpressionDescription.name = "count"
             countExpressionDescription.expression = countExpression
             countExpressionDescription.expressionResultType = type
-            
+
             return countExpressionDescription
     }
     
     /**
      * Helper method to delete the duplicates in an array using a given algorithm.
+     * THROWS: An error if anything goes wrong.
      *
      * - parameter dupes: An array of duplicated objects.
      * - parameter key: The key attribute to use for unique identification of the object.
-     * - parameter error: An error pointer populated if anything goes wrong.
      * - parameter duplicateToDelete: A closure which will be called when two duplicate objects are found. Return the duplicate to delete.
-     *
      * - returns: True if the operation succeeded.
      */
     private func deleteDuplicates(dupes: [AnyObject],

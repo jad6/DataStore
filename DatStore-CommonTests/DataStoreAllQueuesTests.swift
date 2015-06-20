@@ -40,7 +40,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         super.tearDown()
     }
 
-    // MARK: - Creating
+    // MARK: Creating
     
     func testCreating() {
         let expectation = expectationWithDescription("Inserted")
@@ -191,7 +191,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         XCTAssertFalse(dataStore.backgroundManagedObjectContext.hasChanges)
     }
     
-    // MARK: - Synchrnous Tests
+    // MARK: Synchrnous Tests
     
     func testFetchingExistingSync() {
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
@@ -266,7 +266,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         dataStore.performClosureAndWait() { context in
             do {
                 let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [DSTPerson]
-                XCTAssertNotEqual(results.count, 0, "No match should have been found.")
+                XCTAssertEqual(results.count, 0, "No match should have been found.")
             } catch let error {
                 XCTFail("Fetch failed \(error)")
             }
@@ -405,7 +405,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         XCTAssertFalse(dataStore.mainManagedObjectContext.hasChanges)
     }
     
-    // MARK: - Asynchrnous Tests
+    // MARK: Asynchrnous Tests
     
     func testFetchingExistingAsync() {
         let expectation = expectationWithDescription("Fetch existing")
@@ -626,7 +626,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         waitForExpectationsWithTimeout(2.0, handler: nil)
     }
     
-    // MARK: - Parallel Saving
+    // MARK: Parallel Saving
     
     func testCreatingOnMultipleContextsAndSaveSync() {
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")

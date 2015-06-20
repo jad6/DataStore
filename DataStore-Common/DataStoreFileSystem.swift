@@ -10,13 +10,7 @@ import Foundation
 import CoreData
 
 public extension DataStore {
-    
-    private enum CoreDataDirectoryType {
-        case Local, Cloud, Parent
-    }
-    
-    // MARK: - Public Methods
-    
+
     public func placeStoreInLocalDirectory(store: NSPersistentStore, options: [NSObject: AnyObject]?) throws {
         try placeStoreInDirectoryTyoe(.Local, store: store, options: options)
     }
@@ -25,7 +19,11 @@ public extension DataStore {
         try placeStoreInDirectoryTyoe(.Cloud, store: store, options: options)
     }
     
-    // MARK: - Private Methods
+    // MARK: - Private
+
+    private enum CoreDataDirectoryType {
+        case Local, Cloud, Parent
+    }
 
     private func migrateStore(store: NSPersistentStore, withOptions options: [NSObject: AnyObject]?, toPath: String) throws {
         let newStoreURL = NSURL(fileURLWithPath: toPath)
@@ -42,12 +40,8 @@ public extension DataStore {
             if fileManager.fileExistsAtPath(path) {
                 try migrateStore(store, withOptions: options, toPath: path)
             } else {
-                do {
-                    try fileManager.createDirectoryAtPath(parentPath, withIntermediateDirectories: false, attributes: nil)
-                    /* TODO: Finish migration: rewrite code to move the next statement out of enclosing do/catch */
-                } catch let error {
-                    throw error
-                }
+                try fileManager.createDirectoryAtPath(parentPath, withIntermediateDirectories: false, attributes: nil)
+                /* TODO: Finish migration: rewrite code to move the next statement out of enclosing do/catch */
             }
             
             var otherType: CoreDataDirectoryType!

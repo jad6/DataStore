@@ -28,30 +28,13 @@
 
 import Foundation
 
-struct ErrorConstants {
+public struct ErrorConstants {
     /// The domain name for the errors created within this framework
-    static let domain = "com.jadosseiran.datastore.erros"
+    public static let domain = "com.jadosseiran.datastore.erros"
     
-    struct Codes {
-        struct Duplication {
-            static let invalidDeleteObject = 7000
+    public struct Codes {
+        public struct Duplication {
+            public static let invalidDeleteObject = 7000
         }
-    }
-}
-
-extension NSError {
-    
-    /**
-     * Helper method to print out the error information.
-     */
-    func printErrorInformation() {
-        print("Error detected {\n\tDescription: \(localizedDescription)\n\tReason: \(localizedFailureReason)\n\tRecovery: \(localizedRecoverySuggestion)")
-    }
-    
-    /** 
-     * Method to appropriately handle the error.
-     */
-    func handle() {
-        printErrorInformation()
     }
 }

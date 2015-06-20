@@ -52,11 +52,9 @@ public extension DataStore {
      * method will allow you to give the project prefix and will return the 
      * correct name to use for methods such as! entityForName:.
      *
-     * O(n)
-     *
+     * - complexity: O(n)
      * - parameter objectClass: The class for the managed object who's name will be returned.
      * - parameter classPrefix: The prefix which differs from the model entity name and the class name.
-     *
      * - returns: The entity name for the given class, nil if the class given did not match any of the model's entities.
      */
     public func entityNameForObjectClass(objectClass: NSManagedObject.Type, withClassPrefix classPrefix: String?) -> String! {
@@ -70,7 +68,7 @@ public extension DataStore {
         
         // Check if the value has already been calculated.
         var entityName = dictionary[className]
-        
+
         if entityName != nil {
             // Reutrn the existing value.
             return entityName
@@ -107,10 +105,8 @@ public extension DataStore {
      * if the class has a prefix which does not differs from the entity name in
      * your model. If it does differ use entityNameForObjectClass:withClassPrefix:.
      *
-     * O(n)
-     *
+     * - complexity: O(n)
      * - parameter objectClass: The class for the managed object who's name will be returned.
-     *
      * - returns: The entity name for the given class, nil if the class given did not match any of the model's entities.
      */
     public func entityNameForObjectClass(objectClass: NSManagedObject.Type) -> String! {

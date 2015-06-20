@@ -30,15 +30,14 @@ import CoreData
 
 public extension DataStore {
     
-    // MARK: - Class Methods
+    // MARK: Class Methods
     
     /**
      * Helper method to create an object model from a resource.
      *
      * - parameter resource: The name of the managed object model file.
      * - parameter bundle: The bundle in which to look for.
-     *
-     * - returns: The initialised object model if found.
+     * - returns: The initialised object model if found, nil otherwise.
      */
     public class func modelForResource(resource: String, bundle: NSBundle) -> NSManagedObjectModel? {
         // Try finding the model with both known model file extensions.
@@ -46,15 +45,16 @@ public extension DataStore {
         if modelURL == nil {
             modelURL = bundle.URLForResource(resource, withExtension: "mom")
         }
+
         // Return nil upon failure.
-        if modelURL == nil {
+        guard modelURL != nil else {
             return nil
         }
         
         return NSManagedObjectModel(contentsOfURL: modelURL!)
     }
     
-    // MARK: - Main Queue
+    // MARK: Main Queue
     
     /**
      * Method which performs operations asynchronously on the main queue.
@@ -77,9 +77,7 @@ public extension DataStore {
         performClosure() { context in
             closure(context: context)
             self.save() { error in
-                if completion != nil {
-                    completion!(context: context, error: error)
-                }
+                completion?(context: context, error: error)
             }
         }
     }
@@ -97,24 +95,18 @@ public extension DataStore {
     
     /**
      * Method which performs operations and saves synchronously on the main queue.
+     * THROWS: An error if issues are encountered at save time.
      *
      * - parameter closure: The closure to perform on the main queue.
-     * - parameter error: An error pointer which is populated when an error is encountered at save time.
-     *
-     * - returns: true if the saving operation was a success.
      */
     public func performClosureWaitAndSave(closure: ContextClosure) throws {
         performClosureAndWait() { context in
             closure(context: context)
         }
-        do {
-            try self.saveAndWait()
-        } catch let error {
-            throw error
-        }
+        try self.saveAndWait()
     }
     
-    // MARK: - Background Queue
+    // MARK: Background Queue
 
     /**
      * Method which performs operations asynchronously on the background queue.
@@ -137,9 +129,7 @@ public extension DataStore {
         performBackgroundClosure() { context in
             closure(context: context)
             self.save() { error in
-                if completion != nil {
-                    completion!(context: context, error: error)
-                }
+                completion?(context: context, error: error)
             }
         }
     }
@@ -157,21 +147,14 @@ public extension DataStore {
 
     /**
      * Method which performs operations and saves synchronously on the background queue.
+     * THROWS: An error if issues are encountered at save time.
      *
      * - parameter closure: The closure to perform on the background queue.
-     * - parameter error: An error pointer which is populated when an error is encountered at save time.
-     *
-     * - returns: true if the saving operation was a success.
      */
     public func performBackgroundClosureWaitAndSave(closure: ContextClosure) throws {
         performBackgroundClosureAndWait() { context in
             closure(context: context)
         }
-
-        do {
-            try saveAndWait()
-        } catch let error {
-            throw error
-        }
+        try saveAndWait()
     }
 }

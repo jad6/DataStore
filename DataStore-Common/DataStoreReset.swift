@@ -28,26 +28,13 @@ public extension DataStore {
      * Method to reset the Core Data environment. This erases the data in the
      * persistent stores as! well as! reseting all managed object contexts.
      *
-     * O(n)
-     *
-     * - parameter error: The error which is populated if an error is encountered in the process.
-     *
+     * - complexity: O(n)
      * - returns: true if the process is successful.
      */
     public func reset() throws {
         try reset { store in .CopyExisting }
     }
-    
-    /**
-     * Method to reset the Core Data environment. This erases the data in the
-     * persistent stores as well as reseting all managed object contexts.
-     * Further, depening on the option cloud data can also be reset.
-     *
-     * O(n)
-     *
-     * - parameter newStoreOption: A closure to return a reset option for the given store.
-     * - throws error: The error if an error is encountered in the process.
-     */
+
     public func reset(newStoreOption: (store: NSPersistentStore) -> StoreResetOption) throws {
         var resetError: NSError?
 
@@ -60,63 +47,73 @@ public extension DataStore {
                 // Retrieve the stores which were coordinated.
                 let stores = self.persistentStoreCoordinator.persistentStores
 
-                let fileManager = NSFileManager.defaultManager()
-                for store in stores {
-                    // Remove each persistent stores.
-                    do {
-                        try self.persistentStoreCoordinator.removePersistentStore(store)
-
-                        // Remove the files if they exist.
-                        if let storeURL = store.URL {
-                            if let storePath = storeURL.path {
-                                if fileManager.fileExistsAtPath(storePath) {
-                                    do {
-                                        // Remove the file where the store used to live.
-                                        try fileManager.removeItemAtURL(storeURL)
-                                    } catch let error as NSError {
-                                        resetError = error
-                                    } catch {
-                                        fatalError()
-                                    }
-                                }
-                            }
-                        }
-                    } catch let error as NSError {
-                        resetError = error
-                    } catch {
-                        fatalError()
+                do {
+                    if #available(iOS 9, OSX 10.11, *) {
+                        try self.replaceStores(stores, newStoreOption: newStoreOption)
+                    } else {
+                        try self.replaceStoresManually(stores, newStoreOption: newStoreOption)
                     }
-                }
-
-                if (resetError == nil) {
-                    for store in stores {
-                        do {
-                            // Get the correct options.
-                            let options = try self.resetOptionsForOption(newStoreOption(store: store), onStore: store)
-                            do {
-                                // create new fresh persistent stores.
-                                try self.persistentStoreCoordinator.addPersistentStoreWithType(store.type, configuration: store.configurationName, URL: store.URL, options: options)
-                            } catch let error as NSError {
-                                resetError = error
-                            } catch {
-                                fatalError()
-                            }
-                        } catch let error as NSError {
-                            resetError = error
-                        } catch {
-                            fatalError()
-                        }
-                    }
+                } catch let error as NSError {
+                    resetError = error
+                } catch {
+                    fatalError()
                 }
             }
         }
 
-        if resetError != nil {
-            throw resetError!
+        if let error = resetError {
+            throw error
         }
     }
 
-    // MARK: - Protected Methods
+    // MARK: - Private Methods
+
+    /**
+     * Method to reset the Core Data environment. This erases the data in the
+     * persistent stores as well as reseting all managed object contexts.
+     * Further, depening on the option cloud data can also be reset.
+     * THROWS: The error if an error is encountered in the process.
+     *
+     * - complexity: O(n)
+     * - parameter newStoreOption: A closure to return a reset option for the given store.
+     */
+    @available(iOS 8, OSX 10.10, *)
+    private func replaceStoresManually(stores: [NSPersistentStore], newStoreOption: (store: NSPersistentStore) -> StoreResetOption) throws {
+        let fileManager = NSFileManager.defaultManager()
+        for store in stores {
+            // Remove each persistent stores.
+            try self.persistentStoreCoordinator.removePersistentStore(store)
+
+            // Remove the files if they exist.
+            if let storeURL = store.URL {
+                if let storePath = storeURL.path where fileManager.fileExistsAtPath(storePath) {
+                    // Remove the file where the store used to live.
+                    try fileManager.removeItemAtURL(storeURL)
+                }
+            }
+        }
+
+        for store in stores {
+            // Get the correct options.
+            let options = try self.resetOptionsForOption(newStoreOption(store: store), onStore: store)
+
+            // create new fresh persistent stores.
+            try self.persistentStoreCoordinator.addPersistentStoreWithType(store.type, configuration: store.configurationName, URL: store.URL, options: options)
+        }
+    }
+
+    @available(iOS 9, OSX 10.11, *)
+    private func replaceStores(stores: [NSPersistentStore], newStoreOption: (store: NSPersistentStore) -> StoreResetOption) throws {
+        for store in stores {
+            if let storeURL = store.URL {
+                // Get the correct options.
+                let options = try self.resetOptionsForOption(newStoreOption(store: store), onStore: store)
+
+                // FIXME: This is 99% wrong I am pretty sure.
+                try self.persistentStoreCoordinator.replacePersistentStoreAtURL(storeURL, destinationOptions: options, withPersistentStoreFromURL: storeURL, sourceOptions: options, storeType: "blah")
+            }
+        }
+    }
 
     private func resetOptionsForOption(option: StoreResetOption, onStore store: NSPersistentStore) throws -> [NSObject: AnyObject]? {
         let options = store.options

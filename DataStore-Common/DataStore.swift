@@ -41,7 +41,7 @@ public class DataStore: NSObject {
     /// Closure type giving back an error.
     public typealias SaveClosure = (error: NSError?) -> Void
 
-    // MARK: - Properties
+    // MARK: Properties
     
     /// The persistent store type which is used by the data store.
     public let storeType: String
@@ -69,18 +69,18 @@ public class DataStore: NSObject {
             self.backgroundManagedObjectContext.hasChanges
     }
     
-    // MARK: - Initialisers
+    // MARK: Initialisers
 
     /**
      * Designated initialiser to set up the environment for Core Data. If the 
      * persistent store coordinator could not be added, the initialisation fails.
+     * THROWS: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
      *
      * - parameter model: The model to use througout the application.
      * - parameter configuration: The name of a configuration in the receiver's managed object model that will be used by the new store. The configuration can be nil, in which case no other configurations are allowed.
      * - parameter storePath: The file location of the persistent store.
      * - parameter storeType: A string constant (such as! NSSQLiteStoreType) that specifies the store type.
      * - parameter options: A dictionary containing key-value pairs that specify whether the store should be read-only, and whether (for an XML store) the XML file should be validated against the DTD before it is read. This value may be nil.
-     * - throws error: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
      */
     public init(model: NSManagedObjectModel,
         configuration: String?,
@@ -123,10 +123,10 @@ public class DataStore: NSObject {
      * NSMigratePersistentStoresAutomaticallyOption & NSInferMappingModelAutomaticallyOption
      * enabled. If the persistent store coordinator could not be added, 
      * the initialisation fails.
+     * THROWS: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
      *
      * - parameter model: The model to use througout the application.
      * - parameter storePath: The file location of the persistent store.
-     * - throws error: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
      */
     public convenience init!(model: NSManagedObjectModel, storePath: String?) throws {
         // Set default options.
@@ -146,10 +146,11 @@ public class DataStore: NSObject {
      * NSMigratePersistentStoresAutomaticallyOption, NSInferMappingModelAutomaticallyOption
      * & NSPersistentStoreUbiquitousContentNameKey enabled. If the persistent
      * store coordinator could not be added, the initialisation fails.
+     * THROWS: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
      *
      * - parameter model: The model to use througout the application.
+     * - parameter cloudUbiquitousNameKey: Option to specify that a persistent store has a given name in ubiquity.
      * - parameter storePath: The file location of the persistent store.
-     * - throws error: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
      */
     public convenience init!(model: NSManagedObjectModel,
         cloudUbiquitousNameKey: String,
@@ -175,7 +176,7 @@ public class DataStore: NSObject {
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
-    // MARK: - Asynchronous Methods
+    // MARK: Asynchronous Methods
     
     /**
      * Method to save all contexts in the data store asynchronously. A callback is 
@@ -221,14 +222,14 @@ public class DataStore: NSObject {
         save(onContextSave: nil, completion: completion)
     }
     
-    // MARK: - Synchronous Methods
+    // MARK: Synchronous Methods
     
     /**
      * Method to save all contexts in the data store synchronously. A callback is
      * given at each context save.
+     * THROWS: An error if the save operations fail.
      *
      * - parameter contextSave: A callback given at each context save.
-     * - throws error: An error if the save operations fail.
      */
     public func saveAndWait(onContextSave contextSave: ContextClosure?) throws {
         // Try saving the main context.
@@ -241,21 +242,19 @@ public class DataStore: NSObject {
     
     /**
      * Method to save all contexts in the data store synchronously.
-     *
-     * - throws error: An error if the save operations fail.
+     * THROWS: An error if the save operations fail.
      */
     public func saveAndWait() throws {
         try saveAndWait(onContextSave: nil)
     }
     
-    // MARK: - Store Methods
+    // MARK: Store Methods
     
     /**
      * Helper method to return the URLs (if there is one) of the persitent stores
      * managed by the data store's persistentStoreCoordinator.
      *
-     * O(n)
-     *
+     * - complexity: O(n)
      * - returns: An array of NSURLs with the stores' URLs.
      */
     public func persistentStoresURLs() -> [NSURL] {
@@ -275,8 +274,7 @@ public class DataStore: NSObject {
      * Helper method to return the cloud persitent stores managed by the data
      * store's persistentStoreCoordinator.
      *
-     * O(n)
-     *
+     * - complexity: O(n)
      * - returns: The cloud persitent stores.
      */
     public func cloudPersistentStores() -> [NSPersistentStore] {
@@ -301,7 +299,7 @@ public class DataStore: NSObject {
         self.writerManagedObjectContext.reset()
     }
     
-    // MARK: - Private Methods
+    // MARK: Private Methods
     
     /**
      * Asynchronous context saving helper method.
@@ -329,10 +327,10 @@ public class DataStore: NSObject {
     
     /**
      * Synchronous context saving helper method.
+     * THROWS: An error if the save operations fail.
      *
      * - parameter context: The context to save.
      * - parameter contextSave: A callback given at each context save.
-     * - throws: An error if the save operations fail.
      */
     private func saveContextAndWait(context: NSManagedObjectContext, onSave contextSave: ContextClosure?) throws {
         var caughtError: NSError?
@@ -345,12 +343,12 @@ public class DataStore: NSObject {
             } catch let error as NSError {
                 caughtError = error
             } catch {
-                assertionFailure("Well looks like the save method on NSManagedObjectContext throws something that is not an NSError... - \(__FUNCTION__) @ \(__LINE__)")
+                fatalError()
             }
         }
 
-        if caughtError != nil {
-            throw caughtError!
+        if let error = caughtError {
+            throw error
         }
     }
 }

@@ -34,12 +34,11 @@ public extension NSManagedObjectContext {
      * Method to find ordered entities with a given predicate. The passed in error will
      * be nil if the method succeeded. If the fetch fails nil is
      * returned and the error parameter is populated.
+     * THROWS: An error if something goes wrong in the fetch request.
      *
      * - parameter entityName: The entity name of for the managed object to find.
      * - parameter predicate: The predicate to use for the NSFetchRequest
-     * - parameter error: An error which will be populated if something goes wrong in the fetch request.
      * - parameter sortDescriptors: An array of sort descriptors to order the results.
-     *
      * - returns: An array with the found managed objects which match the given predicate.
      */
     public func findEntitiesForEntityName(entityName: String, withPredicate predicate: NSPredicate?, andSortDescriptors sortDescriptors: [NSSortDescriptor]?) throws -> [AnyObject] {
@@ -56,11 +55,10 @@ public extension NSManagedObjectContext {
      * Method to find entities with a given predicate. The passed in error will
      * be nil if the method succeeded. If the fetch fails nil is
      * returned and the error parameter is populated.
+     * THROWS: An error if something goes wrong in the fetch request.
      *
      * - parameter entityName: The entity name of for the managed object to find.
      * - parameter predicate: The predicate to use for the NSFetchRequest
-     * - parameter error: An error which will be populated if something goes wrong in the fetch request.
-     *
      * - returns: An array with the found managed objects which match the given predicate.
      */
     public func findEntitiesForEntityName(entityName: String, withPredicate predicate: NSPredicate?) throws -> [AnyObject] {
@@ -74,15 +72,15 @@ public extension NSManagedObjectContext {
      * key-value paring. If the no objects are found with the given key-value pair a
      * new managed object is created and inserted in the calling managed object context.
      * A callback closure is passed to allow modification of each of the resulting objects,
-     * typically to set their attributes. If the fetch fails an empty array is
-     * returned and the error parameter is populated.
+     * typically to set their attributes.
+     * THROWS: An error if something goes wrong in the fetch request.
      *
+     * - note: If you are build for iOS 9+ or Mac OS X 10.11+ please consider using unique constraints.
+     * https://developer.apple.com/videos/wwdc/2015/?id=220
      * - parameter entityName: The entity name of for the managed object to find.
      * - parameter key: The key to use to find the possible existing objects. If no matching objects exist, it is used to set a value on the newly created object.
      * - parameter value: The value to match with the given key to find an objects. If no matching  objects exist it is set on the given key for the newly created object.
-     * - parameter error: An error which will be populated if something goes wrong in the fetch request.
      * - parameter resultObjectHandler: A closure which will be called on each resulting object. These could be a newly created object or found objects.
-     *
      * - returns: An array of managed objects matching the key-value paring or an array containing the newly created managed object.
      */
     public func findOrInsertEntitiesWithEntityName(entityName: String,
@@ -114,25 +112,19 @@ public extension NSManagedObjectContext {
                 return [newObject]
             } else {
                 // The objects exist so fetch them and store them if the fetch was successful.
-                do {
-                    let results = try executeFetchRequest(request)
-                    for object in results {
-                        objectHandler?(object: object, inserted: false)
-                    }
-
-                    return results
-                } catch let error {
-                    throw error
+                let results = try executeFetchRequest(request)
+                for object in results {
+                    objectHandler?(object: object, inserted: false)
                 }
+                return results
             }
     }
 
     /**
      * Method which returns all the objects for the given entity name.
+     * THROWS: An error if something goes wrong in the fetch request.
      *
      * - parameter entityName: The entity name of for the managed object to find.
-     * - parameter error: An error which will be populated if something goes wrong in the fetch request.
-     *
      * - returns: An array containing all the managed objects for the given entity name.
      */
     public func findAllForEntityWithEntityName(entityName: String) throws -> [AnyObject] {
@@ -147,7 +139,6 @@ public extension NSManagedObjectContext {
      */
     public func insertObjectWithEntityName(entityName: String, insertion: ((object: AnyObject) -> Void)?) {
         let newObject: AnyObject = NSEntityDescription.insertNewObjectForEntityForName(entityName, inManagedObjectContext: self)
-        
         insertion?(object: newObject)
     }
 }

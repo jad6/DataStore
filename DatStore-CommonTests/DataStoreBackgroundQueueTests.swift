@@ -40,7 +40,7 @@
 //        super.tearDown()
 //    }
 //
-//    // MARK: - Creating
+//    // MARK: Creating
 //    
 //    func testCreating() {
 //        let expectation = expectationWithDescription("Inserted")
@@ -125,7 +125,7 @@
 //            dataStore.backgroundManagedObjectContext.hasChanges == false, "Pass")
 //    }
 //    
-//    // MARK: - Synchrnous Tests
+//    // MARK: Synchrnous Tests
 //    
 //    func testFetchingExistingSync() {
 //        var error: NSError?
@@ -287,7 +287,7 @@
 //            dataStore.backgroundManagedObjectContext.hasChanges == false, "Pass")
 //    }
 //    
-//    // MARK: - Asynchrnous Tests
+//    // MARK: Asynchrnous Tests
 //    
 //    func testFetchingExistingAsync() {
 //        let expectation = expectationWithDescription("Fetch existing")

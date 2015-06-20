@@ -40,7 +40,7 @@
 //        super.tearDown()
 //    }
 //    
-//    // MARK: - Creating
+//    // MARK: Creating
 //    
 //    func testCreating() {
 //        let expectation = expectationWithDescription("Inserted")
@@ -122,7 +122,7 @@
 //        XCTAssertFalse(dataStore.mainManagedObjectContext.hasChanges, "Pass")
 //    }
 //    
-//    // MARK: - Synchrnous Tests
+//    // MARK: Synchrnous Tests
 //    
 //    func testFetchingExistingSync() {
 //        let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
@@ -275,7 +275,7 @@
 //            dataStore.mainManagedObjectContext.hasChanges == false, "Pass")
 //    }
 //    
-//    // MARK: - Asynchrnous Tests
+//    // MARK: Asynchrnous Tests
 //    
 //    func testFetchingExistingAsync() {
 //        let expectation = expectationWithDescription("Fetch existing")
