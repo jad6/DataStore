@@ -5,6 +5,26 @@
 //  Created by Jad Osseiran on 25/11/2014.
 //  Copyright (c) 2015 Jad Osseiran. All rights reserved.
 //
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions are met:
+//
+//  * Redistributions of source code must retain the above copyright notice, this
+//  list of conditions and the following disclaimer.
+//
+//  * Redistributions in binary form must reproduce the above copyright notice,
+//  this list of conditions and the following disclaimer in the documentation
+//  and/or other materials provided with the distribution.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+//  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+//  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+//  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+//  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+//  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+//  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import CoreData
 
@@ -136,8 +156,7 @@ public extension DataStore {
                         // If the delete object is not the either of the two which 
                         // were passed on then create an error and terminate.
                         if deleteObject !== current || deleteObject !== previous {
-                            let deleteError = NSError(domain: ErrorConstants.domain, code: ErrorConstants.Codes.Duplication.invalidDeleteObject, userInfo: [NSLocalizedDescriptionKey: "Invalid duplicate object to delete", NSLocalizedFailureReasonErrorKey: "The returned object: \(deleteObject) is not one of the given duplicates: \(previous) or \(current)", NSLocalizedRecoverySuggestionErrorKey: "Please return one of the given objects"])
-                            throw deleteError
+                            throw DataStoreError.InvalidDeleteObject
                         } else {
                             // Delete the selected object.
                             writerManagedObjectContext.deleteObject(deleteObject)

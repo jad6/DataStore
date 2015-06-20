@@ -1,9 +1,9 @@
 //
-//  Error.swift
+//  DataStoreErrors.swift
 //  DataStore
 //
-//  Created by Jad Osseiran on 12/11/2014.
-//  Copyright (c) 2015 Jad Osseiran. All rights reserved.
+//  Created by Jad Osseiran on 20/06/2015.
+//  Copyright © 2015 Jad Osseiran. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
 //  modification, are permitted provided that the following conditions are met:
@@ -28,13 +28,6 @@
 
 import Foundation
 
-public struct ErrorConstants {
-    /// The domain name for the errors created within this framework
-    public static let domain = "com.jadosseiran.datastore.erros"
-    
-    public struct Codes {
-        public struct Duplication {
-            public static let invalidDeleteObject = 7000
-        }
-    }
+public enum DataStoreError: ErrorType {
+    case InvalidDeleteObject
 }
