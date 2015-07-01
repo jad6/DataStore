@@ -19,6 +19,7 @@
 		051398CF1B361EFD00681B24 /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051398CD1B361EFD00681B24 /* Place.swift */; };
 		051398D41B36205500681B24 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 051398D31B36205500681B24 /* Main.storyboard */; };
 		051398D61B36232B00681B24 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051398D51B36232B00681B24 /* SettingsViewController.swift */; };
+		05C7D3AC1B40F3F8005226DE /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C7D3AB1B40F3F8005226DE /* Settings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +88,7 @@
 		051398CD1B361EFD00681B24 /* Place.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Place.swift; sourceTree = "<group>"; };
 		051398D31B36205500681B24 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		051398D51B36232B00681B24 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		05C7D3AB1B40F3F8005226DE /* Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +127,7 @@
 				0513989C1B36181800681B24 /* AppDelegate.swift */,
 				0513989E1B36181800681B24 /* PlacesViewController.swift */,
 				051398D51B36232B00681B24 /* SettingsViewController.swift */,
+				05C7D3AB1B40F3F8005226DE /* Settings.swift */,
 				051398D01B361F0600681B24 /* Core Data */,
 				051398A31B36181800681B24 /* Assets.xcassets */,
 				051398D31B36205500681B24 /* Main.storyboard */,
@@ -277,6 +280,7 @@
 				051398CE1B361EFD00681B24 /* Place+CoreDataProperties.swift in Sources */,
 				0513989D1B36181800681B24 /* AppDelegate.swift in Sources */,
 				051398C71B361E5600681B24 /* Places.xcdatamodeld in Sources */,
+				05C7D3AC1B40F3F8005226DE /* Settings.swift in Sources */,
 				051398CF1B361EFD00681B24 /* Place.swift in Sources */,
 				051398D61B36232B00681B24 /* SettingsViewController.swift in Sources */,
 			);

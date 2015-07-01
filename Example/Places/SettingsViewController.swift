@@ -8,87 +8,9 @@
 
 import UIKit
 
-private enum SaveKey: String {
-    case Invalid = "InvalidKey"
-    case Thread = "SelectedThreadIndexPathKey"
-    case Delay = "SelectedDelayIndexPathKey"
-    case Batch = "SelectedBatchIndexPathKey"
-    case AtomicBatch = "AtomicBatchIndexPathKey"
-
-    static var defaults: NSUserDefaults {
-        return NSUserDefaults.standardUserDefaults()
-    }
-
-    static func keyForSection(section: Int) -> SaveKey {
-        guard section >= 0 && section < 3 else {
-            assertionFailure("Invalid section to grab SaveKey")
-            return Invalid
-        }
-
-        if section == 0 {
-            return Thread
-        } else if section == 1 {
-            return Delay
-        } else if section == 2 {
-            return Batch
-        }
-
-        return Invalid;
-    }
-
-    static func sectionForKey(key: SaveKey) -> Int {
-        switch key {
-        case .Thread:
-            return 0
-        case .Delay:
-            return 1
-        case .Batch:
-            return 2
-        default:
-            assertionFailure("The \"AtomicBatch\" key does not store an indexPath")
-        }
-
-        return -1
-    }
-
-    static func savedIndexPathForKey(key: SaveKey) -> NSIndexPath {
-        if key == AtomicBatch || key == Invalid {
-            assertionFailure("The \"AtomicBatch\" key does not store an indexPath")
-        }
-
-        if let encoded = defaults.objectForKey(key.rawValue) as? NSData {
-            if let indexPath = NSKeyedUnarchiver.unarchiveObjectWithData(encoded) as? NSIndexPath {
-                return indexPath
-            }
-        }
-
-        let section = sectionForKey(key)
-        return NSIndexPath(forRow: key == Batch ? 1 : 0, inSection: section)
-    }
-
-    static func saveIndexPath(indexPath: NSIndexPath, withKey key: SaveKey) {
-        let encoded = NSKeyedArchiver.archivedDataWithRootObject(indexPath)
-        defaults.setValue(encoded, forKey: key.rawValue)
-        defaults.synchronize()
-    }
-
-    static func savedAtomicBatchForKey(key: SaveKey) -> Bool {
-        return defaults.boolForKey(AtomicBatch.rawValue)
-    }
-
-    static func saveAtomicBatch(isAtomicBatch: Bool) {
-        defaults.setBool(isAtomicBatch, forKey: AtomicBatch.rawValue)
-        defaults.synchronize()
-    }
-}
-
 class SettingsViewController : UITableViewController {
 
     @IBOutlet weak var atomicBatchSwitch: UISwitch!
-
-    private var threadIndexPath = NSIndexPath(forRow: 0, inSection: 0)
-    private var delayIndexPath = NSIndexPath(forRow: 0, inSection: 1)
-    private var batchIndexPath = NSIndexPath(forRow: 1, inSection: 2)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -104,26 +26,22 @@ class SettingsViewController : UITableViewController {
 
     @IBAction func atomicBatchSwitchAction(sender: UISwitch?) {
         if let atomicBatchSwitch = sender {
-            SaveKey.saveAtomicBatch(atomicBatchSwitch.on)
+            sharedSettings.atomicBatchSave = atomicBatchSwitch.on
         }
     }
 
     // MARK: Logic
 
     private func applySavedSettings() {
-        atomicBatchSwitch.on = SaveKey.savedAtomicBatchForKey(.AtomicBatch)
-
-        threadIndexPath = SaveKey.savedIndexPathForKey(.Thread)
-        delayIndexPath = SaveKey.savedIndexPathForKey(.Delay)
-        batchIndexPath = SaveKey.savedIndexPathForKey(.Batch)
+        atomicBatchSwitch.on = sharedSettings.atomicBatchSave
     }
 
     // MARK: Table View
 
     override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath == threadIndexPath ||
-            indexPath == delayIndexPath ||
-            indexPath == batchIndexPath {
+        if indexPath == sharedSettings.checkedThreadIndexPath ||
+            indexPath == sharedSettings.checkedDelayIndexPath ||
+            indexPath == sharedSettings.checkedBatchIndexPath {
                 cell.accessoryType = .Checkmark
         }
     }
@@ -131,15 +49,33 @@ class SettingsViewController : UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
 
-        let savedKey = SaveKey.keyForSection(indexPath.section)
-        let oldIndexPath = SaveKey.savedIndexPathForKey(savedKey)
+        var oldIndexPath: NSIndexPath!
+        switch indexPath.section {
+        case sharedSettings.threadSection:
+            if let thread = Settings.Thread(rawValue: indexPath.row) {
+                oldIndexPath = sharedSettings.checkedThreadIndexPath.copy() as! NSIndexPath
+                sharedSettings.thread = thread
+            }
+        case sharedSettings.delaySection:
+            if let delayDuration = Settings.DelayDuration(rawValue: indexPath.row) {
+                oldIndexPath = sharedSettings.checkedDelayIndexPath.copy() as! NSIndexPath
+                sharedSettings.delayDuration = delayDuration
+            }
+        case sharedSettings.batchSection:
+            if let batchSize = Settings.BatchSize(rawValue: indexPath.row) {
+                oldIndexPath = sharedSettings.checkedBatchIndexPath.copy() as! NSIndexPath
+                sharedSettings.batchSize = batchSize
+            }
+        default:
+            return
+        }
 
-        let oldCell = tableView.cellForRowAtIndexPath(oldIndexPath)
-        oldCell?.accessoryType = .None
+        if oldIndexPath != nil {
+            let oldCell = tableView.cellForRowAtIndexPath(oldIndexPath)
+            oldCell?.accessoryType = .None
 
-        let newCell = tableView.cellForRowAtIndexPath(indexPath)
-        newCell?.accessoryType = .Checkmark
-
-        SaveKey.saveIndexPath(indexPath, withKey: savedKey)
+            let newCell = tableView.cellForRowAtIndexPath(indexPath)
+            newCell?.accessoryType = .Checkmark
+        }
     }
 }

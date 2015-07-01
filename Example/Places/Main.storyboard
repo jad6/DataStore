@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8121.20" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Ods-nh-LDX">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8121.20" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Ods-nh-LDX">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8101.16"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -8,7 +8,7 @@
         <!--Places-->
         <scene sceneID="pfv-JC-xnA">
             <objects>
-                <tableViewController id="ii8-bi-y4z" sceneMemberID="viewController">
+                <tableViewController id="ii8-bi-y4z" customClass="PlacesViewController" customModule="Places" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="LaR-s3-pWB">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -43,7 +43,11 @@
                                 <segue destination="mm9-H5-fUD" kind="presentation" modalTransitionStyle="flipHorizontal" id="IBN-3U-nUZ"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="LlF-B0-6g8"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="LlF-B0-6g8">
+                            <connections>
+                                <action selector="addPlaceOption:" destination="ii8-bi-y4z" id="amG-mc-nMV"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p0D-2q-p5o" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -240,8 +244,25 @@ Selecting Mixed will randomly select a thread for each object when saving a batc
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="OSh-Al-uiQ" style="IBUITableViewCellStyleDefault" id="EIY-p4-yNv">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="6YV-N9-36R" style="IBUITableViewCellStyleDefault" id="Hgb-NS-kzd">
                                         <rect key="frame" x="0.0" y="697.5" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Hgb-NS-kzd" id="OpG-oO-eXk">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text=" 1 item" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="6YV-N9-36R">
+                                                    <rect key="frame" x="15" y="0.0" width="570" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="OSh-Al-uiQ" style="IBUITableViewCellStyleDefault" id="EIY-p4-yNv">
+                                        <rect key="frame" x="0.0" y="741.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="EIY-p4-yNv" id="8Kg-gn-xUn">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -258,7 +279,7 @@ Selecting Mixed will randomly select a thread for each object when saving a batc
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="lki-wX-DGm" style="IBUITableViewCellStyleDefault" id="gR4-LT-U5k">
-                                        <rect key="frame" x="0.0" y="741.5" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="785.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gR4-LT-U5k" id="30s-F7-vcn">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -275,7 +296,7 @@ Selecting Mixed will randomly select a thread for each object when saving a batc
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="3eq-zJ-JMn" style="IBUITableViewCellStyleDefault" id="0c4-AA-x2U">
-                                        <rect key="frame" x="0.0" y="785.5" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="829.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="0c4-AA-x2U" id="T1p-Yp-85d">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -292,7 +313,7 @@ Selecting Mixed will randomly select a thread for each object when saving a batc
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="YGv-fX-JRd" style="IBUITableViewCellStyleDefault" id="kK4-Hm-VmX">
-                                        <rect key="frame" x="0.0" y="829.5" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="873.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="kK4-Hm-VmX" id="irC-8t-B7N">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -309,7 +330,7 @@ Selecting Mixed will randomly select a thread for each object when saving a batc
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="Kuq-Xa-7SD" style="IBUITableViewCellStyleDefault" id="toj-xq-2rd">
-                                        <rect key="frame" x="0.0" y="873.5" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="917.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="toj-xq-2rd" id="mLY-vr-DSc">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
