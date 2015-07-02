@@ -1,5 +1,15 @@
 # DataStore
 
+## State of Repository
+
+This is the Swift 2.0 version of the repository and requires [Xcode 7.0+](https://developer.apple.com/xcode/downloads/) to compile. Ultimately this will be merged into master as version 1.1 of the framework once the following things are implemented:
+
+- Core Data iCloud support
+- Xcode Bot CI (if it decides to work) to achieve full test code coverage
+- Example project to demonstrate the use of DataStore.
+
+## Overview
+
 DataStore is a unit tested iOS & Mac OS X framework to handle multithreaded Core Data operations. It is a convenient wrapper around fetching, saving and reseting Core Data operations.
 
 The API allows the developer to easily launch synchronous or asynchronous operations on either the main queue or the background queue. DataStore ensures that the contexts remain in sync removing this often erroneous and tedious task from the developer responsibilities.
