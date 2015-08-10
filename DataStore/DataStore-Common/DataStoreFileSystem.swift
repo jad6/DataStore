@@ -83,7 +83,9 @@ public extension DataStore {
         let files = try fileManager.contentsOfDirectoryAtPath(path)
 
         for file in files {
-            let fullPath = path.stringByAppendingPathComponent(file)
+            // FIXME: Swift bug?
+            let pathString = path as NSString
+            let fullPath = pathString.stringByAppendingPathComponent(file)
             
             let subFiles = try fileManager.contentsOfDirectoryAtPath(fullPath)
             if subFiles.count == 0 {
