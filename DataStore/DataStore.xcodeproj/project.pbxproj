@@ -358,6 +358,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = JO;
+				LastSwiftMigration = 0700;
 				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Jad Osseiran";
