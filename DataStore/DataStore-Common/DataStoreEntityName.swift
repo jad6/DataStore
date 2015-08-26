@@ -89,7 +89,7 @@ public extension DataStore {
                 // Check if the prefix is valid.
                 if className.hasPrefix(prefix) && className.characters.count > prefixCount {
                     // Adjust the entity name by removing the prefix.
-                    let index: String.Index = advance(className.startIndex, prefixCount)
+                    let index: String.Index = className.startIndex.advancedBy(prefixCount)
                     entityName = className.substringFromIndex(index)
                 }
             }
