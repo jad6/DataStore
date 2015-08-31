@@ -46,36 +46,24 @@ public extension DataStore {
         cache.removeAll(keepCapacity: false)
     }
     
-    /**
-     * Method to return the correct entity name for a given class. If the 
-     * class has a prefix which differs from the entity name in your model this 
-     * method will allow you to give the project prefix and will return the 
-     * correct name to use for methods such as! entityForName:.
-     *
-     * - complexity: O(n)
-     * - parameter objectClass: The class for the managed object who's name will be returned.
-     * - parameter classPrefix: The prefix which differs from the model entity name and the class name.
-     * - returns: The entity name for the given class, nil if the class given did not match any of the model's entities.
-     */
-    public func entityNameForObjectClass(objectClass: NSManagedObject.Type, withClassPrefix classPrefix: String?) -> String! {
-        // Get a reference to the singleton names dictionary.
-        var dictionary = DataStore.entityClassNamesDictionary
-        
+    public func entityNameForObjectClassName(classString: String, withClassPrefix classPrefix: String?) -> String! {
         // FIXME: When Apple sorts out how they will treat the Swift namespacing and class name retieving this can be improved on.
-        let classString = NSStringFromClass(objectClass)
         let range = classString.rangeOfString(".", options: NSStringCompareOptions.CaseInsensitiveSearch, range: Range<String.Index>(start:classString.startIndex, end: classString.endIndex), locale: nil)
         let className = range != nil ? classString.substringFromIndex(range!.endIndex) : classString
         
+        // Get a reference to the singleton names dictionary.
+        var dictionary = DataStore.entityClassNamesDictionary
+
         // Check if the value has already been calculated.
         var entityName = dictionary[className]
-
+        
         if entityName != nil {
             // Reutrn the existing value.
             return entityName
         }
         
         // Look for the matching entity in the coordinator.
-        for entity in persistentStoreCoordinator.managedObjectModel.entities {            
+        for entity in persistentStoreCoordinator.managedObjectModel.entities {
             if entity.managedObjectClassName == className {
                 entityName = className
                 break
@@ -98,6 +86,23 @@ public extension DataStore {
         }
         
         return entityName
+    }
+    
+    /**
+     * Method to return the correct entity name for a given class. If the 
+     * class has a prefix which differs from the entity name in your model this 
+     * method will allow you to give the project prefix and will return the 
+     * correct name to use for methods such as! entityForName:.
+     *
+     * - complexity: O(n)
+     * - parameter objectClass: The class for the managed object who's name will be returned.
+     * - parameter classPrefix: The prefix which differs from the model entity name and the class name.
+     * - returns: The entity name for the given class, nil if the class given did not match any of the model's entities.
+     */
+    public func entityNameForObjectClass(objectClass: NSManagedObject.Type, withClassPrefix classPrefix: String?) -> String! {
+        let classString = NSStringFromClass(objectClass)
+        
+        return entityNameForObjectClassName(classString, withClassPrefix: classPrefix)
     }
     
     /**
