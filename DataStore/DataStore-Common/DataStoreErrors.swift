@@ -28,6 +28,18 @@
 
 import Foundation
 
+let errorDomain = "com.jadosseiran.DataStore.errors"
+let entitiesFialedKey = "entitiesFialed"
+
 public enum DataStoreError: ErrorType {
     case InvalidDeleteObject
+    case FailedEntityDeletion
+    case DeleteNonManagedObject
+}
+
+func failedDeletionErrorForEntitieNames(entitiesInfo: [String: NSError]) -> NSError {
+    assert(entitiesInfo.count > 0)
+    
+    let userInfo: [String: AnyObject] = [NSLocalizedDescriptionKey: "Failed to delete objects for at least one entity.", NSLocalizedRecoveryOptionsErrorKey: "Check the \"\(entitiesFialedKey)\" key in the error's userInfo.", entitiesFialedKey: entitiesInfo]
+    return NSError(domain: errorDomain, code: DataStoreError.FailedEntityDeletion._code, userInfo: userInfo)
 }

@@ -44,9 +44,53 @@ public extension DataStore {
         case Clear
     }
     
+    public func deleteAllObjectsWithEntityNames(entityNames: [String]) throws {
+        try deleteAllObjectsWithEntityNames(entityNames, onContext: mainManagedObjectContext)
+    }
+    
+    public func deleteAllObjectsWithEntityNamesInBackground(entityNames: [String]) throws {
+        try deleteAllObjectsWithEntityNames(entityNames, onContext: backgroundManagedObjectContext)
+    }
+    
+    private func deleteAllObjectsWithEntityNames(entityNames: [String], onContext context: NSManagedObjectContext) throws {
+        var failedEntitiesInfo = [String: NSError]()
+        
+        for entityName in entityNames {
+            let fetchRequest = NSFetchRequest(entityName: entityName)
+            if #available(iOS 9, OSX 10.11, *) {
+                do {
+                    let batchRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+                    try persistentStoreCoordinator.executeRequest(batchRequest, withContext: context)
+                } catch let error as NSError {
+                    failedEntitiesInfo[entityName] = error
+                }
+            } else {
+                do {
+                    if let objects = try context.executeFetchRequest(fetchRequest) as? [NSManagedObject] {
+                        for object in objects {
+                            context.deleteObject(object)
+                        }
+                    } else {
+                        throw DataStoreError.DeleteNonManagedObject
+                    }
+                } catch let error as NSError {
+                    failedEntitiesInfo[entityName] = error
+                }
+            }
+        }
+    
+        // Reset the contexts before the save to make sure we are on an empty state.
+        self.resetContexts()
+        
+        if failedEntitiesInfo.count > 0 {
+            // There was an error encountered in the deletion. report it back.
+            throw failedDeletionErrorForEntitieNames(failedEntitiesInfo)
+        }
+    }
+    
     /**
      * Method to reset the Core Data environment. This erases the data in the
-     * persistent stores as! well as! reseting all managed object contexts.
+     * persistent stores as well as! reseting all managed object contexts.
      *
      * - complexity: O(n)
      * - returns: true if the process is successful.
