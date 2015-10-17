@@ -95,7 +95,7 @@ public extension DataStore {
     
     /**
      * Method which performs operations and saves synchronously on the main queue.
-     * THROWS: An error if issues are encountered at save time.
+     * - throws: An error if issues are encountered at save time.
      *
      * - parameter closure: The closure to perform on the main queue.
      */
@@ -147,7 +147,7 @@ public extension DataStore {
 
     /**
      * Method which performs operations and saves synchronously on the background queue.
-     * THROWS: An error if issues are encountered at save time.
+     * - throws: An error if issues are encountered at save time.
      *
      * - parameter closure: The closure to perform on the background queue.
      */

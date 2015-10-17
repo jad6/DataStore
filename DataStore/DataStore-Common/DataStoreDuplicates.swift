@@ -32,7 +32,7 @@ public extension DataStore {
     
     /**
      * Method which removes duplicates for an entity.
-     * THROWS: An error if anything goes wrong
+     * - throws: An error if anything goes wrong
      *
      * - parameter entityName: The name of the entity for which to remove duplicates.
      * - parameter key: The key attribute to use for unique identification of the object.
@@ -89,7 +89,7 @@ public extension DataStore {
     
     /**
      * Fetches the number of times each unique value appears in the store.
-     * THROWS: An error if anything goes wrong.
+     * - throws: An error if anything goes wrong.
      * 
      * - parameter entityName: The name of the entity for which to remove duplicates.
      * - parameter uniqueAttribute: The value of the unique attribute to group the fetch with.
@@ -131,7 +131,7 @@ public extension DataStore {
     
     /**
      * Helper method to delete the duplicates in an array using a given algorithm.
-     * THROWS: An error if anything goes wrong.
+     * - throws: An error if anything goes wrong.
      *
      * - parameter dupes: An array of duplicated objects.
      * - parameter key: The key attribute to use for unique identification of the object.

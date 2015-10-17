@@ -34,7 +34,7 @@ public extension NSManagedObjectContext {
      * Method to find ordered entities with a given predicate. The passed in error will
      * be nil if the method succeeded. If the fetch fails nil is
      * returned and the error parameter is populated.
-     * THROWS: An error if something goes wrong in the fetch request.
+     * - throws: An error if something goes wrong in the fetch request.
      *
      * - parameter entityName: The entity name of for the managed object to find.
      * - parameter predicate: The predicate to use for the NSFetchRequest
@@ -55,7 +55,7 @@ public extension NSManagedObjectContext {
      * Method to find entities with a given predicate. The passed in error will
      * be nil if the method succeeded. If the fetch fails nil is
      * returned and the error parameter is populated.
-     * THROWS: An error if something goes wrong in the fetch request.
+     * - throws: An error if something goes wrong in the fetch request.
      *
      * - parameter entityName: The entity name of for the managed object to find.
      * - parameter predicate: The predicate to use for the NSFetchRequest
@@ -73,7 +73,7 @@ public extension NSManagedObjectContext {
      * new managed object is created and inserted in the calling managed object context.
      * A callback closure is passed to allow modification of each of the resulting objects,
      * typically to set their attributes.
-     * THROWS: An error if something goes wrong in the fetch request.
+     * - throws: An error if something goes wrong in the fetch request.
      *
      * - note: If you are build for iOS 9+ or Mac OS X 10.11+ please consider using unique constraints.
      * https://developer.apple.com/videos/wwdc/2015/?id=220
@@ -122,7 +122,7 @@ public extension NSManagedObjectContext {
 
     /**
      * Method which returns all the objects for the given entity name.
-     * THROWS: An error if something goes wrong in the fetch request.
+     * - throws: An error if something goes wrong in the fetch request.
      *
      * - parameter entityName: The entity name of for the managed object to find.
      * - returns: An array containing all the managed objects for the given entity name.

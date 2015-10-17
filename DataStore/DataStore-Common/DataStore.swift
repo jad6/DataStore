@@ -62,6 +62,20 @@ public class DataStore: NSObject {
     /// backgroundManagedObjectContext.
     private(set) var writerManagedObjectContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
     
+    // FIXME: Yuck... http://www.klundberg.com/blog/Swift-2-and-@available-properties/
+    private var _mergePolicy: NSMergePolicy?
+    /// If this merge policy is set then the Core Data constraints will use it to merge the uniqueness conflicts it comes accross.
+    /// This is not set by default and a `NSMergeByPropertyObjectTrumpMergePolicy` type is used by default.
+    @available(iOS 9, OSX 10.11, *)
+    var mergePolicy: NSMergePolicy? {
+        get {
+            return _mergePolicy
+        }
+        set {
+            _mergePolicy = newValue
+        }
+    }
+    
     /// Checks accross all contexts to see if there are changes.
     public var hasChanges: Bool {
         return self.writerManagedObjectContext.hasChanges ||
@@ -70,11 +84,11 @@ public class DataStore: NSObject {
     }
     
     // MARK: Initialisers
-
+    
     /**
      * Designated initialiser to set up the environment for Core Data. If the 
      * persistent store coordinator could not be added, the initialisation fails.
-     * THROWS: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
+     * - throws: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
      *
      * - parameter model: The model to use througout the application.
      * - parameter configuration: The name of a configuration in the receiver's managed object model that will be used by the new store. The configuration can be nil, in which case no other configurations are allowed.
@@ -106,6 +120,14 @@ public class DataStore: NSObject {
             // mainManagedObjectContext & backgroundManagedObjectContext.
             self.mainManagedObjectContext.parentContext = self.writerManagedObjectContext
             self.backgroundManagedObjectContext.parentContext = self.writerManagedObjectContext
+            
+            if #available(iOS 9, OSX 10.11, *) {
+                // Set the default merge policy type
+                let mergePolicy = NSMergePolicy(mergeType: .MergeByPropertyObjectTrumpMergePolicyType)
+                self.writerManagedObjectContext.mergePolicy = mergePolicy
+                self.mainManagedObjectContext.mergePolicy = mergePolicy
+                self.backgroundManagedObjectContext.mergePolicy = mergePolicy
+            }
 
             // Register for Core Data notifications
             self.handleNotifications()
@@ -123,7 +145,7 @@ public class DataStore: NSObject {
      * NSMigratePersistentStoresAutomaticallyOption & NSInferMappingModelAutomaticallyOption
      * enabled. If the persistent store coordinator could not be added, 
      * the initialisation fails.
-     * THROWS: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
+     * - throws: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
      *
      * - parameter model: The model to use througout the application.
      * - parameter storePath: The file location of the persistent store.
@@ -146,7 +168,7 @@ public class DataStore: NSObject {
      * NSMigratePersistentStoresAutomaticallyOption, NSInferMappingModelAutomaticallyOption
      * & NSPersistentStoreUbiquitousContentNameKey enabled. If the persistent
      * store coordinator could not be added, the initialisation fails.
-     * THROWS: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
+     * - throws: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
      *
      * - parameter model: The model to use througout the application.
      * - parameter cloudUbiquitousNameKey: Option to specify that a persistent store has a given name in ubiquity.
@@ -227,7 +249,7 @@ public class DataStore: NSObject {
     /**
      * Method to save all contexts in the data store synchronously. A callback is
      * given at each context save.
-     * THROWS: An error if the save operations fail.
+     * - throws: An error if the save operations fail.
      *
      * - parameter contextSave: A callback given at each context save.
      */
@@ -242,7 +264,7 @@ public class DataStore: NSObject {
     
     /**
      * Method to save all contexts in the data store synchronously.
-     * THROWS: An error if the save operations fail.
+     * - throws: An error if the save operations fail.
      */
     public func saveAndWait() throws {
         try saveAndWait(onContextSave: nil)
@@ -327,7 +349,7 @@ public class DataStore: NSObject {
     
     /**
      * Synchronous context saving helper method.
-     * THROWS: An error if the save operations fail.
+     * - throws: An error if the save operations fail.
      *
      * - parameter context: The context to save.
      * - parameter contextSave: A callback given at each context save.
