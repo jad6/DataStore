@@ -2,9 +2,11 @@
 
 ## State of Repository
 
-DataStore uses Swift 1.2 and is currently in development for iCloud support. Non-cloud operations still work as explained in this doc.
+This is the Swift 2.0 version of the repository and requires [Xcode 7.0+](https://developer.apple.com/xcode/downloads/) to compile. Ultimately this will be merged into master as version 1.1 of the framework once the following things are implemented:
 
-For the Swift 2.0 version head to the [`swift2`](https://github.com/jad6/DataStore/tree/swift2) branch. This branch will be merged into master to produce version 1.1 of the framework.
+- Core Data iCloud support
+- Xcode Bot CI (if it decides to work) to achieve full test code coverage
+- Example project to demonstrate the use of DataStore.
 
 ## Overview
 

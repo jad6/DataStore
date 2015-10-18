@@ -1,0 +1,806 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		050257921A1A2CEB006FD1E5 /* DataStoreEntityName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050257911A1A2CEB006FD1E5 /* DataStoreEntityName.swift */; };
+		050257931A1A2CEB006FD1E5 /* DataStoreEntityName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050257911A1A2CEB006FD1E5 /* DataStoreEntityName.swift */; };
+		051398701B36161A00681B24 /* DataStoreErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0513986F1B36161A00681B24 /* DataStoreErrors.swift */; };
+		051398711B36161A00681B24 /* DataStoreErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0513986F1B36161A00681B24 /* DataStoreErrors.swift */; };
+		051797231A248CF400513894 /* DataStoreDuplicates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051797221A248CF400513894 /* DataStoreDuplicates.swift */; };
+		051797241A248CF400513894 /* DataStoreDuplicates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051797221A248CF400513894 /* DataStoreDuplicates.swift */; };
+		053690CA1A24DF6F00DF5AFB /* DataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 053690C91A24DF6F00DF5AFB /* DataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		053690CB1A24DFC300DF5AFB /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BE363E1A1499EA008AAE7B /* DataStore.swift */; };
+		05571C9D1A19DBE300A70410 /* DataStoreMainQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05571C9C1A19DBE300A70410 /* DataStoreMainQueueTests.swift */; };
+		05571C9E1A19DBE300A70410 /* DataStoreMainQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05571C9C1A19DBE300A70410 /* DataStoreMainQueueTests.swift */; };
+		05571CA81A19DCD200A70410 /* DataStoreTests.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 05571CA11A19DCD200A70410 /* DataStoreTests.xcdatamodeld */; };
+		05571CA91A19DCD200A70410 /* DataStoreTests.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 05571CA11A19DCD200A70410 /* DataStoreTests.xcdatamodeld */; };
+		0578ED351A1D7E3800C44771 /* DSTPerson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0578ED341A1D7E3800C44771 /* DSTPerson.swift */; };
+		0578ED361A1D7E3800C44771 /* DSTPerson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0578ED341A1D7E3800C44771 /* DSTPerson.swift */; };
+		057C53831A0DDBC800DC6360 /* DataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 057C53821A0DDBC800DC6360 /* DataStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		057C53891A0DDBC900DC6360 /* DataStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 057C537D1A0DDBC800DC6360 /* DataStore.framework */; };
+		058C350F1A22F8F0009B9C36 /* DataStoreCloudTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058C350E1A22F8F0009B9C36 /* DataStoreCloudTests.swift */; };
+		058C35101A22F8F0009B9C36 /* DataStoreCloudTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058C350E1A22F8F0009B9C36 /* DataStoreCloudTests.swift */; };
+		05BE36001A14785B008AAE7B /* DataStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05BE35F51A14785B008AAE7B /* DataStore.framework */; };
+		05BE36421A1499EA008AAE7B /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BE363E1A1499EA008AAE7B /* DataStore.swift */; };
+		05BE36441A1499EA008AAE7B /* DataStoreOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BE363F1A1499EA008AAE7B /* DataStoreOperations.swift */; };
+		05BE36451A1499EA008AAE7B /* DataStoreOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BE363F1A1499EA008AAE7B /* DataStoreOperations.swift */; };
+		05BE36481A1499EA008AAE7B /* ManagedObejctContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BE36411A1499EA008AAE7B /* ManagedObejctContext.swift */; };
+		05BE36491A1499EA008AAE7B /* ManagedObejctContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BE36411A1499EA008AAE7B /* ManagedObejctContext.swift */; };
+		05CCA8881A2A799A0062C543 /* DataStoreReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CCA8871A2A799A0062C543 /* DataStoreReset.swift */; };
+		05CCA8891A2A799A0062C543 /* DataStoreReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CCA8871A2A799A0062C543 /* DataStoreReset.swift */; };
+		05CCA88B1A2A802E0062C543 /* DataStoreFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CCA88A1A2A802E0062C543 /* DataStoreFileSystem.swift */; };
+		05CCA88C1A2A802E0062C543 /* DataStoreFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CCA88A1A2A802E0062C543 /* DataStoreFileSystem.swift */; };
+		05CCA88E1A2A9D970062C543 /* DataStoreNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CCA88D1A2A9D970062C543 /* DataStoreNotifications.swift */; };
+		05CCA88F1A2A9D970062C543 /* DataStoreNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CCA88D1A2A9D970062C543 /* DataStoreNotifications.swift */; };
+		05E1A9E11A19EB9F00F9CB63 /* DataStoreAllQueuesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E1A9E01A19EB9F00F9CB63 /* DataStoreAllQueuesTests.swift */; };
+		05E1A9E21A19EB9F00F9CB63 /* DataStoreAllQueuesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E1A9E01A19EB9F00F9CB63 /* DataStoreAllQueuesTests.swift */; };
+		05EDFCF41A14AAA700FB472B /* DataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EDFCF31A14AAA700FB472B /* DataStoreTests.swift */; };
+		05EDFCF51A14AAA700FB472B /* DataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EDFCF31A14AAA700FB472B /* DataStoreTests.swift */; };
+		05EDFCF71A14AE5800FB472B /* DataStoreBackgroundQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EDFCF61A14AE5800FB472B /* DataStoreBackgroundQueueTests.swift */; };
+		05EDFCF81A14AE5800FB472B /* DataStoreBackgroundQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EDFCF61A14AE5800FB472B /* DataStoreBackgroundQueueTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		057C538A1A0DDBC900DC6360 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 057C53741A0DDBC800DC6360 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 057C537C1A0DDBC800DC6360;
+			remoteInfo = DataStore;
+		};
+		05BE36011A14785B008AAE7B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 057C53741A0DDBC800DC6360 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 05BE35F41A14785B008AAE7B;
+			remoteInfo = "DataStore-Mac";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		050257911A1A2CEB006FD1E5 /* DataStoreEntityName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreEntityName.swift; sourceTree = "<group>"; };
+		0513986F1B36161A00681B24 /* DataStoreErrors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreErrors.swift; sourceTree = "<group>"; };
+		051797221A248CF400513894 /* DataStoreDuplicates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreDuplicates.swift; sourceTree = "<group>"; };
+		053690C91A24DF6F00DF5AFB /* DataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataStore.h; sourceTree = "<group>"; };
+		05571C9C1A19DBE300A70410 /* DataStoreMainQueueTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreMainQueueTests.swift; sourceTree = "<group>"; };
+		05571CA21A19DCD200A70410 /* DataStoreTests.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataStoreTests.xcdatamodel; sourceTree = "<group>"; };
+		0578ED341A1D7E3800C44771 /* DSTPerson.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DSTPerson.swift; sourceTree = "<group>"; };
+		057C537D1A0DDBC800DC6360 /* DataStore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DataStore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		057C53811A0DDBC800DC6360 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		057C53821A0DDBC800DC6360 /* DataStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataStore.h; sourceTree = "<group>"; };
+		057C53881A0DDBC900DC6360 /* DataStoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DataStoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		057C538E1A0DDBC900DC6360 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = "../DataStore-iOSTests/Info.plist"; sourceTree = "<group>"; };
+		058C350E1A22F8F0009B9C36 /* DataStoreCloudTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreCloudTests.swift; sourceTree = "<group>"; };
+		05BE35F51A14785B008AAE7B /* DataStore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DataStore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		05BE35F81A14785B008AAE7B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		05BE35FF1A14785B008AAE7B /* DataStoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DataStoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		05BE36051A14785B008AAE7B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		05BE363E1A1499EA008AAE7B /* DataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
+		05BE363F1A1499EA008AAE7B /* DataStoreOperations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreOperations.swift; sourceTree = "<group>"; };
+		05BE36411A1499EA008AAE7B /* ManagedObejctContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManagedObejctContext.swift; sourceTree = "<group>"; };
+		05CCA8871A2A799A0062C543 /* DataStoreReset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreReset.swift; sourceTree = "<group>"; };
+		05CCA88A1A2A802E0062C543 /* DataStoreFileSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreFileSystem.swift; sourceTree = "<group>"; };
+		05CCA88D1A2A9D970062C543 /* DataStoreNotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreNotifications.swift; sourceTree = "<group>"; };
+		05E1A9E01A19EB9F00F9CB63 /* DataStoreAllQueuesTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreAllQueuesTests.swift; sourceTree = "<group>"; };
+		05EDFCF31A14AAA700FB472B /* DataStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreTests.swift; sourceTree = "<group>"; };
+		05EDFCF61A14AE5800FB472B /* DataStoreBackgroundQueueTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStoreBackgroundQueueTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		057C53791A0DDBC800DC6360 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		057C53851A0DDBC900DC6360 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				057C53891A0DDBC900DC6360 /* DataStore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05BE35F11A14785B008AAE7B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05BE35FC1A14785B008AAE7B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05BE36001A14785B008AAE7B /* DataStore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		05571C9F1A19DCD200A70410 /* Core Data Files */ = {
+			isa = PBXGroup;
+			children = (
+				05571CA11A19DCD200A70410 /* DataStoreTests.xcdatamodeld */,
+				0578ED341A1D7E3800C44771 /* DSTPerson.swift */,
+			);
+			name = "Core Data Files";
+			path = CoreDataFiles;
+			sourceTree = "<group>";
+		};
+		057C53731A0DDBC800DC6360 = {
+			isa = PBXGroup;
+			children = (
+				05BE360E1A147960008AAE7B /* DataStore-Common */,
+				05BE36151A147AC8008AAE7B /* DatStore-Common Tests */,
+				057C537F1A0DDBC800DC6360 /* DataStore-iOS */,
+				057C538C1A0DDBC900DC6360 /* DataStore-iOS Tests */,
+				05BE35F61A14785B008AAE7B /* DataStore-Mac */,
+				05BE36031A14785B008AAE7B /* DataStore-Mac Tests */,
+				057C537E1A0DDBC800DC6360 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		057C537E1A0DDBC800DC6360 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				057C537D1A0DDBC800DC6360 /* DataStore.framework */,
+				057C53881A0DDBC900DC6360 /* DataStoreTests.xctest */,
+				05BE35F51A14785B008AAE7B /* DataStore.framework */,
+				05BE35FF1A14785B008AAE7B /* DataStoreTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		057C537F1A0DDBC800DC6360 /* DataStore-iOS */ = {
+			isa = PBXGroup;
+			children = (
+				057C53821A0DDBC800DC6360 /* DataStore.h */,
+				057C53801A0DDBC800DC6360 /* Supporting Files */,
+			);
+			path = "DataStore-iOS";
+			sourceTree = "<group>";
+		};
+		057C53801A0DDBC800DC6360 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				057C53811A0DDBC800DC6360 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		057C538C1A0DDBC900DC6360 /* DataStore-iOS Tests */ = {
+			isa = PBXGroup;
+			children = (
+				057C538D1A0DDBC900DC6360 /* Supporting Files */,
+			);
+			name = "DataStore-iOS Tests";
+			path = "DataStore-iOSTests";
+			sourceTree = "<group>";
+		};
+		057C538D1A0DDBC900DC6360 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				057C538E1A0DDBC900DC6360 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		05BE35F61A14785B008AAE7B /* DataStore-Mac */ = {
+			isa = PBXGroup;
+			children = (
+				053690C91A24DF6F00DF5AFB /* DataStore.h */,
+				05BE35F71A14785B008AAE7B /* Supporting Files */,
+			);
+			path = "DataStore-Mac";
+			sourceTree = "<group>";
+		};
+		05BE35F71A14785B008AAE7B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				05BE35F81A14785B008AAE7B /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		05BE36031A14785B008AAE7B /* DataStore-Mac Tests */ = {
+			isa = PBXGroup;
+			children = (
+				05BE36041A14785B008AAE7B /* Supporting Files */,
+			);
+			name = "DataStore-Mac Tests";
+			path = "DataStore-MacTests";
+			sourceTree = "<group>";
+		};
+		05BE36041A14785B008AAE7B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				05BE36051A14785B008AAE7B /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		05BE360E1A147960008AAE7B /* DataStore-Common */ = {
+			isa = PBXGroup;
+			children = (
+				05BE363E1A1499EA008AAE7B /* DataStore.swift */,
+				05CCA8871A2A799A0062C543 /* DataStoreReset.swift */,
+				05BE363F1A1499EA008AAE7B /* DataStoreOperations.swift */,
+				050257911A1A2CEB006FD1E5 /* DataStoreEntityName.swift */,
+				051797221A248CF400513894 /* DataStoreDuplicates.swift */,
+				05CCA88A1A2A802E0062C543 /* DataStoreFileSystem.swift */,
+				05CCA88D1A2A9D970062C543 /* DataStoreNotifications.swift */,
+				0513986F1B36161A00681B24 /* DataStoreErrors.swift */,
+				05BE36411A1499EA008AAE7B /* ManagedObejctContext.swift */,
+			);
+			path = "DataStore-Common";
+			sourceTree = "<group>";
+		};
+		05BE36151A147AC8008AAE7B /* DatStore-Common Tests */ = {
+			isa = PBXGroup;
+			children = (
+				05EDFCF31A14AAA700FB472B /* DataStoreTests.swift */,
+				05571C9C1A19DBE300A70410 /* DataStoreMainQueueTests.swift */,
+				05EDFCF61A14AE5800FB472B /* DataStoreBackgroundQueueTests.swift */,
+				05E1A9E01A19EB9F00F9CB63 /* DataStoreAllQueuesTests.swift */,
+				058C350E1A22F8F0009B9C36 /* DataStoreCloudTests.swift */,
+				05571C9F1A19DCD200A70410 /* Core Data Files */,
+			);
+			name = "DatStore-Common Tests";
+			path = "DatStore-CommonTests";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		057C537A1A0DDBC800DC6360 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				057C53831A0DDBC800DC6360 /* DataStore.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05BE35F21A14785B008AAE7B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				053690CA1A24DF6F00DF5AFB /* DataStore.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		057C537C1A0DDBC800DC6360 /* DataStore-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 057C53931A0DDBC900DC6360 /* Build configuration list for PBXNativeTarget "DataStore-iOS" */;
+			buildPhases = (
+				057C53781A0DDBC800DC6360 /* Sources */,
+				057C53791A0DDBC800DC6360 /* Frameworks */,
+				057C537A1A0DDBC800DC6360 /* Headers */,
+				057C537B1A0DDBC800DC6360 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "DataStore-iOS";
+			productName = DataStore;
+			productReference = 057C537D1A0DDBC800DC6360 /* DataStore.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		057C53871A0DDBC900DC6360 /* DataStore-iOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 057C53961A0DDBC900DC6360 /* Build configuration list for PBXNativeTarget "DataStore-iOSTests" */;
+			buildPhases = (
+				057C53841A0DDBC900DC6360 /* Sources */,
+				057C53851A0DDBC900DC6360 /* Frameworks */,
+				057C53861A0DDBC900DC6360 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				057C538B1A0DDBC900DC6360 /* PBXTargetDependency */,
+			);
+			name = "DataStore-iOSTests";
+			productName = DataStoreTests;
+			productReference = 057C53881A0DDBC900DC6360 /* DataStoreTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		05BE35F41A14785B008AAE7B /* DataStore-Mac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05BE36081A14785B008AAE7B /* Build configuration list for PBXNativeTarget "DataStore-Mac" */;
+			buildPhases = (
+				05BE35F01A14785B008AAE7B /* Sources */,
+				05BE35F11A14785B008AAE7B /* Frameworks */,
+				05BE35F21A14785B008AAE7B /* Headers */,
+				05BE35F31A14785B008AAE7B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "DataStore-Mac";
+			productName = "DataStore-Mac";
+			productReference = 05BE35F51A14785B008AAE7B /* DataStore.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		05BE35FE1A14785B008AAE7B /* DataStore-MacTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05BE360B1A14785B008AAE7B /* Build configuration list for PBXNativeTarget "DataStore-MacTests" */;
+			buildPhases = (
+				05BE35FB1A14785B008AAE7B /* Sources */,
+				05BE35FC1A14785B008AAE7B /* Frameworks */,
+				05BE35FD1A14785B008AAE7B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				05BE36021A14785B008AAE7B /* PBXTargetDependency */,
+			);
+			name = "DataStore-MacTests";
+			productName = "DataStore-MacTests";
+			productReference = 05BE35FF1A14785B008AAE7B /* DataStoreTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		057C53741A0DDBC800DC6360 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = JO;
+				LastSwiftMigration = 0700;
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
+				ORGANIZATIONNAME = "Jad Osseiran";
+				TargetAttributes = {
+					057C537C1A0DDBC800DC6360 = {
+						CreatedOnToolsVersion = 6.1;
+					};
+					057C53871A0DDBC900DC6360 = {
+						CreatedOnToolsVersion = 6.1;
+					};
+					05BE35F41A14785B008AAE7B = {
+						CreatedOnToolsVersion = 6.1;
+					};
+					05BE35FE1A14785B008AAE7B = {
+						CreatedOnToolsVersion = 6.1;
+					};
+				};
+			};
+			buildConfigurationList = 057C53771A0DDBC800DC6360 /* Build configuration list for PBXProject "DataStore" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 057C53731A0DDBC800DC6360;
+			productRefGroup = 057C537E1A0DDBC800DC6360 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				057C537C1A0DDBC800DC6360 /* DataStore-iOS */,
+				057C53871A0DDBC900DC6360 /* DataStore-iOSTests */,
+				05BE35F41A14785B008AAE7B /* DataStore-Mac */,
+				05BE35FE1A14785B008AAE7B /* DataStore-MacTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		057C537B1A0DDBC800DC6360 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		057C53861A0DDBC900DC6360 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05BE35F31A14785B008AAE7B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05BE35FD1A14785B008AAE7B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		057C53781A0DDBC800DC6360 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05CCA88E1A2A9D970062C543 /* DataStoreNotifications.swift in Sources */,
+				05CCA88B1A2A802E0062C543 /* DataStoreFileSystem.swift in Sources */,
+				05BE36421A1499EA008AAE7B /* DataStore.swift in Sources */,
+				051797231A248CF400513894 /* DataStoreDuplicates.swift in Sources */,
+				05CCA8881A2A799A0062C543 /* DataStoreReset.swift in Sources */,
+				050257921A1A2CEB006FD1E5 /* DataStoreEntityName.swift in Sources */,
+				05BE36481A1499EA008AAE7B /* ManagedObejctContext.swift in Sources */,
+				051398701B36161A00681B24 /* DataStoreErrors.swift in Sources */,
+				05BE36441A1499EA008AAE7B /* DataStoreOperations.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		057C53841A0DDBC900DC6360 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05571CA81A19DCD200A70410 /* DataStoreTests.xcdatamodeld in Sources */,
+				0578ED351A1D7E3800C44771 /* DSTPerson.swift in Sources */,
+				05571C9D1A19DBE300A70410 /* DataStoreMainQueueTests.swift in Sources */,
+				05E1A9E11A19EB9F00F9CB63 /* DataStoreAllQueuesTests.swift in Sources */,
+				058C350F1A22F8F0009B9C36 /* DataStoreCloudTests.swift in Sources */,
+				05EDFCF41A14AAA700FB472B /* DataStoreTests.swift in Sources */,
+				05EDFCF71A14AE5800FB472B /* DataStoreBackgroundQueueTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05BE35F01A14785B008AAE7B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05CCA88F1A2A9D970062C543 /* DataStoreNotifications.swift in Sources */,
+				05CCA88C1A2A802E0062C543 /* DataStoreFileSystem.swift in Sources */,
+				051797241A248CF400513894 /* DataStoreDuplicates.swift in Sources */,
+				053690CB1A24DFC300DF5AFB /* DataStore.swift in Sources */,
+				05CCA8891A2A799A0062C543 /* DataStoreReset.swift in Sources */,
+				050257931A1A2CEB006FD1E5 /* DataStoreEntityName.swift in Sources */,
+				05BE36491A1499EA008AAE7B /* ManagedObejctContext.swift in Sources */,
+				051398711B36161A00681B24 /* DataStoreErrors.swift in Sources */,
+				05BE36451A1499EA008AAE7B /* DataStoreOperations.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05BE35FB1A14785B008AAE7B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05571CA91A19DCD200A70410 /* DataStoreTests.xcdatamodeld in Sources */,
+				0578ED361A1D7E3800C44771 /* DSTPerson.swift in Sources */,
+				05571C9E1A19DBE300A70410 /* DataStoreMainQueueTests.swift in Sources */,
+				05E1A9E21A19EB9F00F9CB63 /* DataStoreAllQueuesTests.swift in Sources */,
+				058C35101A22F8F0009B9C36 /* DataStoreCloudTests.swift in Sources */,
+				05EDFCF51A14AAA700FB472B /* DataStoreTests.swift in Sources */,
+				05EDFCF81A14AE5800FB472B /* DataStoreBackgroundQueueTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		057C538B1A0DDBC900DC6360 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 057C537C1A0DDBC800DC6360 /* DataStore-iOS */;
+			targetProxy = 057C538A1A0DDBC900DC6360 /* PBXContainerItemProxy */;
+		};
+		05BE36021A14785B008AAE7B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 05BE35F41A14785B008AAE7B /* DataStore-Mac */;
+			targetProxy = 05BE36011A14785B008AAE7B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		057C53911A0DDBC900DC6360 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		057C53921A0DDBC900DC6360 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		057C53941A0DDBC900DC6360 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "DataStore-iOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = DataStore;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		057C53951A0DDBC900DC6360 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "DataStore-iOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = DataStore;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		057C53971A0DDBC900DC6360 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "DataStore-iOSTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = DataStoreTests;
+			};
+			name = Debug;
+		};
+		057C53981A0DDBC900DC6360 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = "DataStore-iOSTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = DataStoreTests;
+			};
+			name = Release;
+		};
+		05BE36091A14785B008AAE7B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_VERSION = A;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "DataStore-Mac/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = DataStore;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		05BE360A1A14785B008AAE7B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_VERSION = A;
+				INFOPLIST_FILE = "DataStore-Mac/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = DataStore;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		05BE360C1A14785B008AAE7B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "DataStore-MacTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = DataStoreTests;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		05BE360D1A14785B008AAE7B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "DataStore-MacTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = DataStoreTests;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		057C53771A0DDBC800DC6360 /* Build configuration list for PBXProject "DataStore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				057C53911A0DDBC900DC6360 /* Debug */,
+				057C53921A0DDBC900DC6360 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		057C53931A0DDBC900DC6360 /* Build configuration list for PBXNativeTarget "DataStore-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				057C53941A0DDBC900DC6360 /* Debug */,
+				057C53951A0DDBC900DC6360 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		057C53961A0DDBC900DC6360 /* Build configuration list for PBXNativeTarget "DataStore-iOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				057C53971A0DDBC900DC6360 /* Debug */,
+				057C53981A0DDBC900DC6360 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		05BE36081A14785B008AAE7B /* Build configuration list for PBXNativeTarget "DataStore-Mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05BE36091A14785B008AAE7B /* Debug */,
+				05BE360A1A14785B008AAE7B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		05BE360B1A14785B008AAE7B /* Build configuration list for PBXNativeTarget "DataStore-MacTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05BE360C1A14785B008AAE7B /* Debug */,
+				05BE360D1A14785B008AAE7B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		05571CA11A19DCD200A70410 /* DataStoreTests.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				05571CA21A19DCD200A70410 /* DataStoreTests.xcdatamodel */,
+			);
+			currentVersion = 05571CA21A19DCD200A70410 /* DataStoreTests.xcdatamodel */;
+			path = DataStoreTests.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 057C53741A0DDBC800DC6360 /* Project object */;
+}
