@@ -123,10 +123,10 @@ public class DataStore: NSObject {
             
             if #available(iOS 9, OSX 10.11, *) {
                 // Set the default merge policy type
-                let mergePolicy = NSMergePolicy(mergeType: .MergeByPropertyObjectTrumpMergePolicyType)
-                self.writerManagedObjectContext.mergePolicy = mergePolicy
-                self.mainManagedObjectContext.mergePolicy = mergePolicy
-                self.backgroundManagedObjectContext.mergePolicy = mergePolicy
+                let policy = mergePolicy != nil ? mergePolicy! : NSMergePolicy(mergeType: .MergeByPropertyObjectTrumpMergePolicyType)
+                self.writerManagedObjectContext.mergePolicy = policy
+                self.mainManagedObjectContext.mergePolicy = policy
+                self.backgroundManagedObjectContext.mergePolicy = policy
             }
 
             // Register for Core Data notifications
