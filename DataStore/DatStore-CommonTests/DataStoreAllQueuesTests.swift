@@ -31,7 +31,7 @@ import CoreData
 import DataStore
 
 class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
-
+    
     override func setUp() {
         super.setUp()
     }
@@ -39,7 +39,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
     override func tearDown() {
         super.tearDown()
     }
-
+    
     // MARK: Creating
     
     func testCreating() {
@@ -76,17 +76,23 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
             dispatch_group_leave(group)
         }
         
-        dispatch_group_notify(group, dispatch_get_main_queue()) {
-            XCTAssert(insertedPerson?.firstName == "Jad" &&
-                insertedPerson?.lastName == "Osseiran" &&
-                insertedBackgroundPerson?.firstName == "Nils" &&
-                insertedBackgroundPerson?.lastName == "Osseiran" &&
-                self.dataStore.mainManagedObjectContext.hasChanges &&
-                self.dataStore.backgroundManagedObjectContext.hasChanges, "Pass")
+        dispatch_group_notify(group, dispatch_get_main_queue()) { [weak self] in
+            XCTAssertEqual(insertedPerson?.firstName, "Jad")
+            XCTAssertEqual(insertedPerson?.lastName, "Osseiran")
+            XCTAssertEqual(insertedBackgroundPerson?.firstName, "Nils")
+            XCTAssertEqual(insertedBackgroundPerson?.lastName, "Osseiran")
+            
+            if let weakSelf = self {
+                XCTAssertTrue(weakSelf.dataStore.mainManagedObjectContext.hasChanges)
+                XCTAssertTrue(weakSelf.dataStore.backgroundManagedObjectContext.hasChanges)
+            } else {
+                XCTFail()
+            }
+            
             expectation.fulfill()
         }
         
-        waitForExpectationsWithTimeout(2.0, handler: nil)
+        waitForExpectationsWithTimeout(defaultTimeout, handler: defaultHandler)
     }
     
     func testCreatingAndSave() {
@@ -103,8 +109,8 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
-        }, completion: { context, error in
-            dispatch_group_leave(group)
+            }, completion: { context, error in
+                dispatch_group_leave(group)
         })
         
         dispatch_group_enter(group)
@@ -114,17 +120,22 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
             }
-        }, completion: { context, error in
-            dispatch_group_leave(group)
+            }, completion: { context, error in
+                dispatch_group_leave(group)
         })
         
-        dispatch_group_notify(group, dispatch_get_main_queue()) {
-            XCTAssert(self.dataStore.mainManagedObjectContext.hasChanges == false &&
-                self.dataStore.backgroundManagedObjectContext.hasChanges == false, "Pass")
+        dispatch_group_notify(group, dispatch_get_main_queue()) { [weak self] in
+            if let weakSelf = self {
+                XCTAssertFalse(weakSelf.dataStore.mainManagedObjectContext.hasChanges)
+                XCTAssertFalse(weakSelf.dataStore.backgroundManagedObjectContext.hasChanges)
+            } else {
+                XCTFail()
+            }
+            
             expectation.fulfill()
         }
         
-        waitForExpectationsWithTimeout(2.0, handler: nil)
+        waitForExpectationsWithTimeout(defaultTimeout, handler: defaultHandler)
     }
     
     func testCreatingAndWait() {
@@ -153,12 +164,12 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
             }
         }
         
-        XCTAssert(insertedPerson?.firstName == "Jad" &&
-            insertedPerson?.lastName == "Osseiran" &&
-            insertedBackgroundPerson?.firstName == "Nils" &&
-            insertedBackgroundPerson?.lastName == "Osseiran" &&
-            dataStore.mainManagedObjectContext.hasChanges &&
-            dataStore.backgroundManagedObjectContext.hasChanges, "Pass")
+        XCTAssertEqual(insertedPerson?.firstName, "Jad")
+        XCTAssertEqual(insertedPerson?.lastName, "Osseiran")
+        XCTAssertEqual(insertedBackgroundPerson?.firstName, "Nils")
+        XCTAssertEqual(insertedBackgroundPerson?.lastName, "Osseiran")
+        XCTAssertTrue(dataStore.mainManagedObjectContext.hasChanges)
+        XCTAssertTrue(dataStore.backgroundManagedObjectContext.hasChanges)
     }
     
     func testCreatingWaitAndSave() {
@@ -206,7 +217,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         } catch let error {
             XCTFail("Insertion failed \(error)")
         }
-
+        
         do {
             try dataStore.performBackgroundClosureWaitAndSave({ context in
                 context.insertObjectWithEntityName(entityName) { object in
@@ -248,7 +259,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         } catch let error {
             XCTFail("Insertion failed \(error)")
         }
-
+        
         do {
             try dataStore.performBackgroundClosureWaitAndSave({ context in
                 context.insertObjectWithEntityName(entityName) { object in
@@ -294,7 +305,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                     XCTFail("Insertion failed \(error)")
                     results = nil
                 }
-
+                
                 if let unwrappedResults = results {
                     XCTAssertEqual(unwrappedResults.count, 1)
                 }
@@ -302,7 +313,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         } catch let error {
             XCTFail("Insertion failed \(error)")
         }
-
+        
         do {
             try dataStore.performClosureWaitAndSave{ context in
                 let results: [AnyObject]?
@@ -326,21 +337,21 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         } catch let error {
             XCTFail("Insertion failed \(error)")
         }
-
+        
         var person: DSTPerson!
         dataStore.performClosureAndWait() { context in
             let predicate = NSPredicate(format: "firstName == \"Jad\" AND lastName == \"Osseiran\"")
-
+            
             do {
                 let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [DSTPerson]
-
+                
                 XCTAssertEqual(results.count, 1)
                 person = results.last
             } catch let error {
                 XCTFail("Insertion failed \(error)")
             }
         }
-
+        
         XCTAssertEqual(person.firstName, "Jad")
         XCTAssertEqual(person.lastName, "Osseiran")
         XCTAssertFalse(dataStore.mainManagedObjectContext.hasChanges)
@@ -351,9 +362,14 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         let smallNumber = 10
         
         do {
-            try dataStore.performClosureWaitAndSave({ context in
-                let entityName = self.dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
-            
+            try dataStore.performClosureWaitAndSave({ [weak self] context in
+                guard self != nil else {
+                    XCTFail()
+                    return
+                }
+                
+                let entityName = self!.dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
+                
                 for i in 0 ..< (smallNumber / 2) {
                     context.insertObjectWithEntityName(entityName) { object in
                         let person = object as! DSTPerson
@@ -361,15 +377,20 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                         person.lastName = "\(i*2)"
                     }
                 }
-            })
+                })
         } catch let error {
             XCTFail("Insertion failed \(error)")
         }
         
         do {
-            try dataStore.performBackgroundClosureWaitAndSave({ context in
-                let entityName = self.dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
-            
+            try dataStore.performBackgroundClosureWaitAndSave({ [weak self] context in
+                guard self != nil else {
+                    XCTFail()
+                    return
+                }
+                
+                let entityName = self!.dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
+                
                 for i in (smallNumber / 2) ..< smallNumber {
                     context.insertObjectWithEntityName(entityName) { object in
                         let person = object as! DSTPerson
@@ -377,7 +398,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                         person.lastName = "\(i*2)"
                     }
                 }
-            })
+                })
         } catch let error {
             XCTFail("Insertion failed \(error)")
         }
@@ -385,12 +406,12 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         var fetchedConcatinatedFirstNameString = String()
         dataStore.performClosureAndWait() { context in
             let sortDescriptor = NSSortDescriptor(key: "firstName", ascending: false)
-
+            
             do {
                 let results = try context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor]) as! [DSTPerson]
-
+                
                 XCTAssertEqual(results.count, smallNumber, "The count does not match")
-
+                
                 for person in results {
                     fetchedConcatinatedFirstNameString += person.firstName
                 }
@@ -421,8 +442,8 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
-        }, completion: { context, error in
-            dispatch_group_leave(group)
+            }, completion: { context, error in
+                dispatch_group_leave(group)
         })
         
         dispatch_group_enter(group)
@@ -432,27 +453,27 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
             }
-        }, completion: { context, error in
-            dispatch_group_leave(group)
+            }, completion: { context, error in
+                dispatch_group_leave(group)
         })
         
         dispatch_group_notify(group, dispatch_get_main_queue()) {
             self.dataStore.performClosureAndWait() { context in
                 let predicate = NSPredicate(format: "lastName == \"Osseiran\"")
-
+                
                 do {
                     let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [DSTPerson]
                     XCTAssertEqual(results.count, 2, "Only two people were inserted")
                 } catch let error {
                     XCTFail("Fetch failed \(error)")
                 }
-
+                
                 XCTAssertFalse(context.hasChanges)
                 expectation.fulfill()
             }
         }
         
-        waitForExpectationsWithTimeout(2.0, handler: nil)
+        waitForExpectationsWithTimeout(defaultTimeout, handler: defaultHandler)
     }
     
     func testFetchingNonExistingAsync() {
@@ -469,8 +490,8 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
-        }, completion: { context, error in
-            dispatch_group_leave(group)
+            }, completion: { context, error in
+                dispatch_group_leave(group)
         })
         
         dispatch_group_enter(group)
@@ -480,8 +501,8 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
             }
-        }, completion: { context, error in
-            dispatch_group_leave(group)
+            }, completion: { context, error in
+                dispatch_group_leave(group)
         })
         
         dispatch_group_notify(group, dispatch_get_main_queue()) {
@@ -494,21 +515,21 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 } catch let error {
                     XCTFail("Fetch failed \(error)")
                 }
-
+                
                 XCTAssertFalse(context.hasChanges)
                 expectation.fulfill()
             }
         }
         
-        waitForExpectationsWithTimeout(2.0, handler: nil)
+        waitForExpectationsWithTimeout(defaultTimeout, handler: defaultHandler)
     }
     
     func testFetchingWithValueAndKeyAsync() {
         let expectation = expectationWithDescription("Fetch existing key-value")
         let entityName = dataStore.entityNameForObjectClass(DSTPerson.self, withClassPrefix: "DST")
-
+        
         let group = dispatch_group_create()
-
+        
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
             do {
@@ -523,10 +544,10 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
             } catch let error {
                 XCTFail("Fetch failed \(error)")
             }
-        }, completion: { context, error in
-            dispatch_group_leave(group)
+            }, completion: { context, error in
+                dispatch_group_leave(group)
         })
-
+        
         dispatch_group_enter(group)
         dataStore.performBackgroundClosureAndSave({ context in
             do {
@@ -541,10 +562,10 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
             } catch let error {
                 XCTFail("Fetch failed \(error)")
             }
-        }, completion: { context, error in
-            dispatch_group_leave(group)
+            }, completion: { context, error in
+                dispatch_group_leave(group)
         })
-
+        
         dispatch_group_notify(group, dispatch_get_main_queue()) {
             self.dataStore.performClosureAndWait() { context in
                 let predicate = NSPredicate(format: "lastName == \"Osseiran\"")
@@ -555,13 +576,13 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 } catch let error {
                     XCTFail("Fetch failed \(error)")
                 }
-
+                
                 XCTAssertFalse(context.hasChanges)
                 expectation.fulfill()
             }
         }
-    
-        waitForExpectationsWithTimeout(2.0, handler: nil)
+        
+        waitForExpectationsWithTimeout(defaultTimeout, handler: defaultHandler)
     }
     
     func testFetchingWithOrderAsync() {
@@ -581,8 +602,8 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                     person.lastName = "\(i*2)"
                 }
             }
-        }, completion: { context, error in
-            dispatch_group_leave(group)
+            }, completion: { context, error in
+                dispatch_group_leave(group)
         })
         
         dispatch_group_enter(group)
@@ -594,36 +615,36 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                     person.lastName = "\(i*2)"
                 }
             }
-        }, completion: { context, error in
+            }, completion: { context, error in
                 dispatch_group_leave(group)
         })
         
         dispatch_group_notify(group, dispatch_get_main_queue()) {
             self.dataStore.performClosureAndWait() { context in
                 let sortDescriptor = NSSortDescriptor(key: "firstName", ascending: false)
-
+                
                 do {
                     let results = try context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor]) as! [DSTPerson]
-
+                    
                     let desiredConcatinatedFirstNameString = "9876543210"
-
+                    
                     var fetchedConcatinatedFirstNameString = String()
                     for person in results {
                         fetchedConcatinatedFirstNameString += person.firstName
                     }
-
+                    
                     XCTAssertEqual(results.count, smallNumber)
                     XCTAssertEqual(desiredConcatinatedFirstNameString, fetchedConcatinatedFirstNameString)
                 } catch let error {
                     XCTFail("Fetch failed \(error)")
                 }
-
+                
                 XCTAssertFalse(context.hasChanges)
                 expectation.fulfill()
             }
         }
         
-        waitForExpectationsWithTimeout(2.0, handler: nil)
+        waitForExpectationsWithTimeout(defaultTimeout, handler: defaultHandler)
     }
     
     // MARK: Parallel Saving
@@ -649,9 +670,9 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
         
         do {
             try dataStore.saveAndWait(onContextSave: { context in
-                        // FIXME: This strangely calls save:completion:... I have no clue as! to why?!
-                        XCTAssertFalse(context.hasChanges, "The context should not have changes")
-                    })
+                // FIXME: This strangely calls save:completion:... I have no clue as! to why?!
+                XCTAssertFalse(context.hasChanges, "The context should not have changes")
+            })
         } catch let error {
             XCTFail("Failed to save \(error)")
         }
@@ -664,7 +685,7 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
                 XCTFail("Fetch failed \(error)")
                 results = nil
             }
-
+            
             if let unwrappedResults = results {
                 XCTAssertEqual(2, unwrappedResults.count)
             }
@@ -705,29 +726,34 @@ class DataStoreAllQueuesTests: DataStoreTests, DataStoreOperationTests {
             self.dataStore.save(onContextSave: { context in
                 // FIXME: This strangely calls saveAndWait:... I have no clue as! to why?!
                 XCTAssertFalse(context.hasChanges, "The context should not have changes")
-            }, completion: { error in
-                self.dataStore.performClosureAndWait() { context in
-                    let results: [AnyObject]?
-                    do {
-                        results = try context.findAllForEntityWithEntityName(entityName)
-                    } catch let error {
-                        XCTFail("Fetch failed \(error)")
-                        results = nil
+                }, completion: { [weak self] error in
+                    guard self != nil else {
+                        XCTFail()
+                        return
                     }
-
-                    if let unwrappedResults = results {
-                        XCTAssertEqual(2, unwrappedResults.count)
+                    
+                    self!.dataStore.performClosureAndWait() { context in
+                        let results: [AnyObject]?
+                        do {
+                            results = try context.findAllForEntityWithEntityName(entityName)
+                        } catch let error {
+                            XCTFail("Fetch failed \(error)")
+                            results = nil
+                        }
+                        
+                        if let unwrappedResults = results {
+                            XCTAssertEqual(2, unwrappedResults.count)
+                        }
                     }
-                }
-
-                XCTAssertNil(error)
-                XCTAssertFalse(self.dataStore.mainManagedObjectContext.hasChanges)
-                XCTAssertFalse(self.dataStore.backgroundManagedObjectContext.hasChanges)
-
-                expectation.fulfill()
+                    
+                    XCTAssertNil(error)
+                    XCTAssertFalse(self!.dataStore.mainManagedObjectContext.hasChanges)
+                    XCTAssertFalse(self!.dataStore.backgroundManagedObjectContext.hasChanges)
+                    
+                    expectation.fulfill()
             })
         }
         
-        waitForExpectationsWithTimeout(2.0, handler: nil)
+        waitForExpectationsWithTimeout(defaultTimeout, handler: defaultHandler)
     }
 }

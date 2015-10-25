@@ -33,6 +33,12 @@ import DataStore
 class DataStoreTests: XCTestCase {
     
     var dataStore: DataStore!
+    
+    let defaultTimeout = 2.0
+    
+    let defaultHandler: XCWaitCompletionHandler = { error in
+        XCTAssertNil(error)
+    }
         
     override func setUp() {
         super.setUp()
