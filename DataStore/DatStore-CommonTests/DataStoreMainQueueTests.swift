@@ -271,7 +271,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
                 XCTAssertEqual(results.count, smallNumber, "The count does not match")
                 
                 for person in results {
-                    fetchedConcatinatedFirstNameString += person.firstName
+                    fetchedConcatinatedFirstNameString += person.firstName!
                 }
             } catch let error {
                 XCTFail("Fetch failed \(error)")
@@ -403,7 +403,7 @@ class DataStoreMainQueueTests: DataStoreTests, DataStoreOperationTests {
                 
                 var fetchedConcatinatedFirstNameString = String()
                 for person in results {
-                    fetchedConcatinatedFirstNameString += person.firstName
+                    fetchedConcatinatedFirstNameString += person.firstName!
                 }
                 
                 XCTAssertEqual(results.count, smallNumber)
