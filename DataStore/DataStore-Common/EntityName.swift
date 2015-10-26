@@ -30,10 +30,10 @@ import CoreData
 
 public extension DataStore {
     
-    /// Singleton instance of dictionary to keep track of the stored class names.
-    private class var entityClassNamesDictionary: [String: String] {
+    /// Singleton instance of dictionary to keep track of the stored entity names.
+    private class var cachedEntityNames: [String: String] {
         struct Singleton {
-            static let instance = [String: String]()
+            static var instance = [String: String]()
         }
         return Singleton.instance
     }
@@ -41,80 +41,85 @@ public extension DataStore {
     /**
      * Helper method to empty the cached entity class names.
      */
-    public class func clearClassNameCache() {
-        var cache = entityClassNamesDictionary
+    public class func clearCachedEntityNames() {
+        var cache = cachedEntityNames
         cache.removeAll(keepCapacity: false)
     }
     
-    public func entityNameForObjectClassName(classString: String, withClassPrefix classPrefix: String?) -> String! {
-        // FIXME: When Apple sorts out how they will treat the Swift namespacing and class name retieving this can be improved on.
-        let range = classString.rangeOfString(".", options: NSStringCompareOptions.CaseInsensitiveSearch, range: Range<String.Index>(start:classString.startIndex, end: classString.endIndex), locale: nil)
-        let className = range != nil ? classString.substringFromIndex(range!.endIndex) : classString
+    /**
+     * Method to return the correct entity name for a given class name.
+     *
+     * - complexity: O(n)
+     * - throws: An `InvalidEntityNameFetchRequest` error if no entity names were found or if multiple names were found to match.
+     * - parameter classString: The class name for the managed object who's entity name will be returned. This can either
+     * be a fully namespaced Swift classname like so `ModuleName.ClassName` or just contain the class name without the 
+     * module namespacing (the latter is what Objective-C will be using).
+     * - parameter classPrefix: The prefix which differs from the model entity name and the class name.
+     * You would set this if your given class name is different from the entity name shown in the xcdatamodeld file.
+     * - returns: The entity name for the given class name, `nil` if the error is populated.
+     */
+    public func entityNameForObjectClassString(classString: String, withClassPrefix classPrefix: String? = nil) throws -> String! {
+        let className: String
+        let classStringRange = Range<String.Index>(start: classString.startIndex, end: classString.endIndex)
+        if let delimiterRange = classString.rangeOfString(".", options: NSStringCompareOptions.CaseInsensitiveSearch, range: classStringRange, locale: nil) {
+            // We have module namespacing save our module name.
+            className = classString.substringFromIndex(delimiterRange.endIndex)
+        } else {
+            // We do not have module namespacing so the class name will be what was passed down for us.
+            className = classString
+        }
         
         // Get a reference to the singleton names dictionary.
-        var dictionary = DataStore.entityClassNamesDictionary
-
-        // Check if the value has already been calculated.
-        var entityName = dictionary[className]
+        var cache = DataStore.cachedEntityNames
         
-        if entityName != nil {
+        // Check if the value has already been calculated.
+        if let cachedName = cache[classString] {
             // Reutrn the existing value.
-            return entityName
+            return cachedName
         }
         
         // Look for the matching entity in the coordinator.
+        var foundPotentialNames = [String]()
         for entity in persistentStoreCoordinator.managedObjectModel.entities {
-            if entity.managedObjectClassName == className {
-                entityName = className
-                break
+            // In the case where there is a module namespace then `classString` will not be equal to `className`.
+            if entity.managedObjectClassName == classString || entity.managedObjectClassName == className {
+                foundPotentialNames.append(entity.managedObjectClassName)
             }
         }
         
-        // If the entity was found save it for later and check for the prefix.
-        if entityName != nil {
-            if let prefix = classPrefix {
-                let prefixCount = prefix.characters.count
-                // Check if the prefix is valid.
-                if className.hasPrefix(prefix) && className.characters.count > prefixCount {
-                    // Adjust the entity name by removing the prefix.
-                    let index: String.Index = className.startIndex.advancedBy(prefixCount)
-                    entityName = className.substringFromIndex(index)
-                }
-            }
-            // Cache the entity name for later.
-            dictionary[className] = entityName!
+        if foundPotentialNames.count != 1 {
+            throw NSError.invalidEntityNamesErrorFromMatches(foundPotentialNames, classString: classString)
         }
         
+        // By this point the entity was found so save it for later.
+        var entityName = foundPotentialNames.first!
+        // Process the prefix discrepency if there is one
+        if let prefix = classPrefix {
+            let prefixCount = prefix.characters.count
+            // Check if the prefix is valid.
+            if className.hasPrefix(prefix) && className.characters.count > prefixCount {
+                // Adjust the entity name by removing the prefix.
+                let index: String.Index = className.startIndex.advancedBy(prefixCount)
+                entityName = className.substringFromIndex(index)
+            }
+        }
+        
+        // Cache the entity name for later.
+        cache[classString] = entityName
+        // Return the found entity name.
         return entityName
     }
     
     /**
-     * Method to return the correct entity name for a given class. If the 
-     * class has a prefix which differs from the entity name in your model this 
-     * method will allow you to give the project prefix and will return the 
-     * correct name to use for methods such as! entityForName:.
+     * Method to return the correct entity name for a given class.
      *
      * - complexity: O(n)
-     * - parameter objectClass: The class for the managed object who's name will be returned.
+     * - parameter objectClass: The class for the managed object who's entity name will be returned.
      * - parameter classPrefix: The prefix which differs from the model entity name and the class name.
-     * - returns: The entity name for the given class, nil if the class given did not match any of the model's entities.
+     * You would set this if your given class name is different from the entity name shown in the xcdatamodeld file.
+     * - returns: The entity name for the given class, nil if the error is populated.
      */
-    public func entityNameForObjectClass(objectClass: NSManagedObject.Type, withClassPrefix classPrefix: String?) -> String! {
-        let classString = NSStringFromClass(objectClass)
-        
-        return entityNameForObjectClassName(classString, withClassPrefix: classPrefix)
-    }
-    
-    /**
-     * Method to return the correct entity name for a given class. Use this method
-     * if the class has a prefix which does not differs from the entity name in
-     * your model. If it does differ use entityNameForObjectClass:withClassPrefix:.
-     *
-     * - complexity: O(n)
-     * - parameter objectClass: The class for the managed object who's name will be returned.
-     * - returns: The entity name for the given class, nil if the class given did not match any of the model's entities.
-     */
-    public func entityNameForObjectClass(objectClass: NSManagedObject.Type) -> String! {
-        return entityNameForObjectClass(objectClass, withClassPrefix: nil)
+    public func entityNameForObjectClass(objectClass: NSManagedObject.Type, withClassPrefix classPrefix: String? = nil) throws -> String! {
+        return try entityNameForObjectClassString(NSStringFromClass(objectClass), withClassPrefix: classPrefix)
     }
 }

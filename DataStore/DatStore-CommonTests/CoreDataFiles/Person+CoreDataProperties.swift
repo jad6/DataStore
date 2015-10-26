@@ -1,5 +1,5 @@
 //
-//  DSTPerson+CoreDataProperties.swift
+//  Person+CoreDataProperties.swift
 //  DataStore
 //
 //  Created by Jad Osseiran on 10/25/15.
@@ -12,7 +12,7 @@
 import Foundation
 import CoreData
 
-extension DSTPerson {
+extension Person {
 
     @NSManaged var firstName: String?
     @NSManaged var lastName: String?

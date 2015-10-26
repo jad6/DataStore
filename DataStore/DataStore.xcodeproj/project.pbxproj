@@ -23,16 +23,16 @@
 		057C53891A0DDBC900DC6360 /* DataStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 057C537D1A0DDBC800DC6360 /* DataStore.framework */; };
 		05898F331BDD66CA00F885EA /* UniqueConstraintMainQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F321BDD66CA00F885EA /* UniqueConstraintMainQueueTests.swift */; };
 		05898F341BDD66CA00F885EA /* UniqueConstraintMainQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F321BDD66CA00F885EA /* UniqueConstraintMainQueueTests.swift */; };
-		05898F451BDD689F00F885EA /* DSTPerson+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F411BDD689F00F885EA /* DSTPerson+CoreDataProperties.swift */; };
-		05898F461BDD689F00F885EA /* DSTPerson+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F411BDD689F00F885EA /* DSTPerson+CoreDataProperties.swift */; };
-		05898F471BDD689F00F885EA /* DSTPerson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F421BDD689F00F885EA /* DSTPerson.swift */; };
-		05898F481BDD689F00F885EA /* DSTPerson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F421BDD689F00F885EA /* DSTPerson.swift */; };
-		05898F491BDD689F00F885EA /* DSTCreditCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F431BDD689F00F885EA /* DSTCreditCard+CoreDataProperties.swift */; };
-		05898F4A1BDD689F00F885EA /* DSTCreditCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F431BDD689F00F885EA /* DSTCreditCard+CoreDataProperties.swift */; };
-		05898F4B1BDD689F00F885EA /* DSTCreditCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F441BDD689F00F885EA /* DSTCreditCard.swift */; };
-		05898F4C1BDD689F00F885EA /* DSTCreditCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F441BDD689F00F885EA /* DSTCreditCard.swift */; };
 		05898F4E1BDDD02E00F885EA /* UniqueConstraintBackgroundQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F4D1BDDD02E00F885EA /* UniqueConstraintBackgroundQueueTests.swift */; };
 		05898F4F1BDDD02E00F885EA /* UniqueConstraintBackgroundQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F4D1BDDD02E00F885EA /* UniqueConstraintBackgroundQueueTests.swift */; };
+		05898F541BDDD82400F885EA /* Person+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F501BDDD82400F885EA /* Person+CoreDataProperties.swift */; };
+		05898F551BDDD82400F885EA /* Person+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F501BDDD82400F885EA /* Person+CoreDataProperties.swift */; };
+		05898F561BDDD82400F885EA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F511BDDD82400F885EA /* Person.swift */; };
+		05898F571BDDD82400F885EA /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F511BDDD82400F885EA /* Person.swift */; };
+		05898F581BDDD82400F885EA /* CreditCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F521BDDD82400F885EA /* CreditCard+CoreDataProperties.swift */; };
+		05898F591BDDD82400F885EA /* CreditCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F521BDDD82400F885EA /* CreditCard+CoreDataProperties.swift */; };
+		05898F5A1BDDD82400F885EA /* CreditCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F531BDDD82400F885EA /* CreditCard.swift */; };
+		05898F5B1BDDD82400F885EA /* CreditCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05898F531BDDD82400F885EA /* CreditCard.swift */; };
 		058C350F1A22F8F0009B9C36 /* CloudTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058C350E1A22F8F0009B9C36 /* CloudTests.swift */; };
 		058C35101A22F8F0009B9C36 /* CloudTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058C350E1A22F8F0009B9C36 /* CloudTests.swift */; };
 		05BE36001A14785B008AAE7B /* DataStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05BE35F51A14785B008AAE7B /* DataStore.framework */; };
@@ -85,11 +85,11 @@
 		057C53881A0DDBC900DC6360 /* DataStoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DataStoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		057C538E1A0DDBC900DC6360 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = "../DataStore-iOSTests/Info.plist"; sourceTree = "<group>"; };
 		05898F321BDD66CA00F885EA /* UniqueConstraintMainQueueTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniqueConstraintMainQueueTests.swift; sourceTree = "<group>"; };
-		05898F411BDD689F00F885EA /* DSTPerson+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DSTPerson+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		05898F421BDD689F00F885EA /* DSTPerson.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DSTPerson.swift; sourceTree = "<group>"; };
-		05898F431BDD689F00F885EA /* DSTCreditCard+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DSTCreditCard+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		05898F441BDD689F00F885EA /* DSTCreditCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DSTCreditCard.swift; sourceTree = "<group>"; };
 		05898F4D1BDDD02E00F885EA /* UniqueConstraintBackgroundQueueTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UniqueConstraintBackgroundQueueTests.swift; sourceTree = "<group>"; };
+		05898F501BDDD82400F885EA /* Person+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Person+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		05898F511BDDD82400F885EA /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
+		05898F521BDDD82400F885EA /* CreditCard+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CreditCard+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		05898F531BDDD82400F885EA /* CreditCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreditCard.swift; sourceTree = "<group>"; };
 		058C350E1A22F8F0009B9C36 /* CloudTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudTests.swift; sourceTree = "<group>"; };
 		05BE35F51A14785B008AAE7B /* DataStore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DataStore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		05BE35F81A14785B008AAE7B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -143,10 +143,10 @@
 		05571C9F1A19DCD200A70410 /* Core Data Files */ = {
 			isa = PBXGroup;
 			children = (
-				05898F411BDD689F00F885EA /* DSTPerson+CoreDataProperties.swift */,
-				05898F421BDD689F00F885EA /* DSTPerson.swift */,
-				05898F431BDD689F00F885EA /* DSTCreditCard+CoreDataProperties.swift */,
-				05898F441BDD689F00F885EA /* DSTCreditCard.swift */,
+				05898F501BDDD82400F885EA /* Person+CoreDataProperties.swift */,
+				05898F511BDDD82400F885EA /* Person.swift */,
+				05898F521BDDD82400F885EA /* CreditCard+CoreDataProperties.swift */,
+				05898F531BDDD82400F885EA /* CreditCard.swift */,
 				05571CA11A19DCD200A70410 /* DataStoreTests.xcdatamodeld */,
 			);
 			name = "Core Data Files";
@@ -469,16 +469,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05898F5A1BDDD82400F885EA /* CreditCard.swift in Sources */,
 				05571CA81A19DCD200A70410 /* DataStoreTests.xcdatamodeld in Sources */,
 				05898F4E1BDDD02E00F885EA /* UniqueConstraintBackgroundQueueTests.swift in Sources */,
 				05571C9D1A19DBE300A70410 /* MainQueueTests.swift in Sources */,
-				05898F4B1BDD689F00F885EA /* DSTCreditCard.swift in Sources */,
-				05898F471BDD689F00F885EA /* DSTPerson.swift in Sources */,
-				05898F451BDD689F00F885EA /* DSTPerson+CoreDataProperties.swift in Sources */,
-				05898F491BDD689F00F885EA /* DSTCreditCard+CoreDataProperties.swift in Sources */,
+				05898F581BDDD82400F885EA /* CreditCard+CoreDataProperties.swift in Sources */,
+				05898F561BDDD82400F885EA /* Person.swift in Sources */,
 				05E1A9E11A19EB9F00F9CB63 /* AllQueuesTests.swift in Sources */,
 				058C350F1A22F8F0009B9C36 /* CloudTests.swift in Sources */,
 				05898F331BDD66CA00F885EA /* UniqueConstraintMainQueueTests.swift in Sources */,
+				05898F541BDDD82400F885EA /* Person+CoreDataProperties.swift in Sources */,
 				05EDFCF41A14AAA700FB472B /* DataStoreTests.swift in Sources */,
 				05EDFCF71A14AE5800FB472B /* BackgroundQueueTests.swift in Sources */,
 			);
@@ -504,16 +504,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05898F5B1BDDD82400F885EA /* CreditCard.swift in Sources */,
 				05571CA91A19DCD200A70410 /* DataStoreTests.xcdatamodeld in Sources */,
 				05898F4F1BDDD02E00F885EA /* UniqueConstraintBackgroundQueueTests.swift in Sources */,
 				05571C9E1A19DBE300A70410 /* MainQueueTests.swift in Sources */,
-				05898F4C1BDD689F00F885EA /* DSTCreditCard.swift in Sources */,
-				05898F481BDD689F00F885EA /* DSTPerson.swift in Sources */,
-				05898F461BDD689F00F885EA /* DSTPerson+CoreDataProperties.swift in Sources */,
-				05898F4A1BDD689F00F885EA /* DSTCreditCard+CoreDataProperties.swift in Sources */,
+				05898F591BDDD82400F885EA /* CreditCard+CoreDataProperties.swift in Sources */,
+				05898F571BDDD82400F885EA /* Person.swift in Sources */,
 				05E1A9E21A19EB9F00F9CB63 /* AllQueuesTests.swift in Sources */,
 				058C35101A22F8F0009B9C36 /* CloudTests.swift in Sources */,
 				05898F341BDD66CA00F885EA /* UniqueConstraintMainQueueTests.swift in Sources */,
+				05898F551BDDD82400F885EA /* Person+CoreDataProperties.swift in Sources */,
 				05EDFCF51A14AAA700FB472B /* DataStoreTests.swift in Sources */,
 				05EDFCF81A14AE5800FB472B /* BackgroundQueueTests.swift in Sources */,
 			);
@@ -633,7 +633,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = "DataStore-iOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = DataStore;
@@ -652,7 +652,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = "DataStore-iOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = DataStore;
@@ -703,7 +703,7 @@
 				INFOPLIST_FILE = "DataStore-Mac/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = DataStore;
 				SDKROOT = macosx;
@@ -726,7 +726,7 @@
 				INFOPLIST_FILE = "DataStore-Mac/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jadosseiran.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = DataStore;
 				SDKROOT = macosx;

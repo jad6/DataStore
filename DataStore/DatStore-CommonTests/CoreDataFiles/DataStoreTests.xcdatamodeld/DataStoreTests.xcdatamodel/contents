@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9057" systemVersion="15B42" minimumToolsVersion="Xcode 7.0">
-    <entity name="CreditCard" representedClassName=".DSTCreditCard" syncable="YES">
+    <entity name="CreditCard" representedClassName=".CreditCard" syncable="YES">
         <attribute name="bank" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="cvv" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="pan" optional="YES" attributeType="String" syncable="YES"/>
@@ -11,7 +11,7 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="Person" representedClassName="DSTPerson" syncable="YES">
+    <entity name="Person" representedClassName=".Person" syncable="YES">
         <attribute name="firstName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="lastName" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="creditCards" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CreditCard" inverseName="holder" inverseEntity="CreditCard" syncable="YES"/>

@@ -29,9 +29,14 @@
 import Foundation
 
 let errorDomain = "com.jadosseiran.DataStore.errors"
+
 let entitiesFialedKey = "entitiesFialed"
+let foundEntityNamesKey = "foundEntityNames"
 
 public enum DataStoreError: ErrorType {
+    /// The parameters used to find a matching entity name for a `NSManagedObject`
+    /// are invalid. Multiple or no matching entities were found.
+    case InvalidEntityNameFetchRequest
     /// The object to delete is invalid, most likely not a `NSManagedObject` instance.
     case InvalidDeleteObject
     /// The entity for the object to delete is invalid.
@@ -44,14 +49,30 @@ public enum DataStoreError: ErrorType {
 
 extension NSError {
     class var prematureDeallocationError: NSError {
-        let userInfo: [String: AnyObject] = [NSLocalizedDescriptionKey: "A symbol that was captured by a closure no longer exists, logic related to it is ignored.", NSLocalizedRecoveryOptionsErrorKey: "Check the closures related to this error's stack trace."]
+        let userInfo: [String: AnyObject] = [NSLocalizedDescriptionKey : "A symbol that was captured by a closure no longer exists, logic related to it is ignored.",
+                                    NSLocalizedRecoveryOptionsErrorKey : "Check the closures related to this error's stack trace."]
         return NSError(domain: errorDomain, code: DataStoreError.PrematureDeallocation._code, userInfo: userInfo)
     }
     
     class func failedDeletionErrorForEntitieNames(entitiesInfo: [String: NSError]) -> NSError {
         assert(entitiesInfo.count > 0)
         
-        let userInfo: [String: AnyObject] = [NSLocalizedDescriptionKey: "Failed to delete objects for at least one entity.", NSLocalizedRecoveryOptionsErrorKey: "Check the \"\(entitiesFialedKey)\" key in the error's userInfo.", entitiesFialedKey: entitiesInfo]
+        let userInfo: [String: AnyObject] = [NSLocalizedDescriptionKey : "Failed to delete objects for at least one entity.",
+                                    NSLocalizedRecoveryOptionsErrorKey : "Check the \"\(entitiesFialedKey)\" key in the error's userInfo.",
+                                                     entitiesFialedKey : entitiesInfo]
         return NSError(domain: errorDomain, code: DataStoreError.FailedEntityDeletion._code, userInfo: userInfo)
+    }
+    
+    class func invalidEntityNamesErrorFromMatches(foundPotentialNames: [String], classString: String) -> NSError {
+        let userInfo: [NSObject : AnyObject]
+        if foundPotentialNames.isEmpty {
+            userInfo = [NSLocalizedDescriptionKey : "No matching entity names were found for class string `\(classString)`.",
+               NSLocalizedRecoveryOptionsErrorKey : "Ensure that you have correctly set up the entity in Core Data."]
+        } else {
+            userInfo = [NSLocalizedDescriptionKey : "Multiple matching entity names were found for class string `\(classString)`. You can view the found matches under the key \(foundEntityNamesKey) of this error's userInfo.",
+               NSLocalizedRecoveryOptionsErrorKey : "Ensure that you have correctly set up the entity in Core Data.",
+                              foundEntityNamesKey : foundPotentialNames]
+        }
+        return NSError(domain: errorDomain, code: DataStoreError.InvalidEntityNameFetchRequest._code, userInfo: userInfo)
     }
 }

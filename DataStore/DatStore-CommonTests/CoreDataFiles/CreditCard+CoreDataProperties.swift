@@ -1,5 +1,5 @@
 //
-//  DSTCreditCard+CoreDataProperties.swift
+//  CreditCard+CoreDataProperties.swift
 //  DataStore
 //
 //  Created by Jad Osseiran on 10/25/15.
@@ -12,11 +12,11 @@
 import Foundation
 import CoreData
 
-extension DSTCreditCard {
+extension CreditCard {
 
     @NSManaged var pan: String?
     @NSManaged var cvv: NSNumber?
     @NSManaged var bank: String?
-    @NSManaged var holder: DSTPerson?
+    @NSManaged var holder: Person?
 
 }
