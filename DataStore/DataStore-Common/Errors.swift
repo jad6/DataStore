@@ -32,14 +32,26 @@ let errorDomain = "com.jadosseiran.DataStore.errors"
 let entitiesFialedKey = "entitiesFialed"
 
 public enum DataStoreError: ErrorType {
+    /// The object to delete is invalid, most likely not a `NSManagedObject` instance.
     case InvalidDeleteObject
+    /// The entity for the object to delete is invalid.
     case FailedEntityDeletion
+    /// A non `NSManagedObject` was attempted to be deleted.
     case DeleteNonManagedObject
+    /// A closure captured symbol tried to reference a deallocated object.
+    case PrematureDeallocation
 }
 
-func failedDeletionErrorForEntitieNames(entitiesInfo: [String: NSError]) -> NSError {
-    assert(entitiesInfo.count > 0)
+extension NSError {
+    class var prematureDeallocationError: NSError {
+        let userInfo: [String: AnyObject] = [NSLocalizedDescriptionKey: "A symbol that was captured by a closure no longer exists, logic related to it is ignored.", NSLocalizedRecoveryOptionsErrorKey: "Check the closures related to this error's stack trace."]
+        return NSError(domain: errorDomain, code: DataStoreError.PrematureDeallocation._code, userInfo: userInfo)
+    }
     
-    let userInfo: [String: AnyObject] = [NSLocalizedDescriptionKey: "Failed to delete objects for at least one entity.", NSLocalizedRecoveryOptionsErrorKey: "Check the \"\(entitiesFialedKey)\" key in the error's userInfo.", entitiesFialedKey: entitiesInfo]
-    return NSError(domain: errorDomain, code: DataStoreError.FailedEntityDeletion._code, userInfo: userInfo)
+    class func failedDeletionErrorForEntitieNames(entitiesInfo: [String: NSError]) -> NSError {
+        assert(entitiesInfo.count > 0)
+        
+        let userInfo: [String: AnyObject] = [NSLocalizedDescriptionKey: "Failed to delete objects for at least one entity.", NSLocalizedRecoveryOptionsErrorKey: "Check the \"\(entitiesFialedKey)\" key in the error's userInfo.", entitiesFialedKey: entitiesInfo]
+        return NSError(domain: errorDomain, code: DataStoreError.FailedEntityDeletion._code, userInfo: userInfo)
+    }
 }

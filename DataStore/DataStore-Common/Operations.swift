@@ -74,10 +74,14 @@ public extension DataStore {
      * - parameter completion: Closure containing an error pointer which is called when the operations and save are completed.
      */
     public func performClosureAndSave(closure: ContextClosure, completion: ContextSaveClosure?) {
-        performClosure() { context in
+        performClosure() { [weak self] context in
             closure(context: context)
-            self.save() { error in
-                completion?(context: context, error: error)
+            if let weakSelf = self {
+                weakSelf.save() { error in
+                    completion?(context: context, error: error)
+                }
+            } else {
+                completion?(context: context, error: NSError.prematureDeallocationError)
             }
         }
     }
@@ -126,10 +130,15 @@ public extension DataStore {
      * - parameter completion: Closure containing an error pointer which is called when the operations and save are completed.
      */
     public func performBackgroundClosureAndSave(closure: ContextClosure, completion: ContextSaveClosure?) {
-        performBackgroundClosure() { context in
+        performBackgroundClosure() { [weak self] context in
             closure(context: context)
-            self.save() { error in
-                completion?(context: context, error: error)
+            
+            if let weakSelf = self {
+                weakSelf.save() { error in
+                    completion?(context: context, error: error)
+                }
+            } else {
+                completion?(context: context, error: NSError.prematureDeallocationError)
             }
         }
     }

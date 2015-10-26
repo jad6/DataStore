@@ -84,7 +84,7 @@ public extension DataStore {
         
         if failedEntitiesInfo.count > 0 {
             // There was an error encountered in the deletion. report it back.
-            throw failedDeletionErrorForEntitieNames(failedEntitiesInfo)
+            throw NSError.failedDeletionErrorForEntitieNames(failedEntitiesInfo)
         }
     }
     

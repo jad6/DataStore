@@ -63,7 +63,17 @@ public class DataStore: NSObject {
     private(set) var writerManagedObjectContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
     
     // FIXME: Yuck... http://www.klundberg.com/blog/Swift-2-and-@available-properties/
-    private var _mergePolicy: NSMergePolicy?
+    private var _mergePolicy: NSMergePolicy? {
+        didSet {
+            if #available(iOS 9, OSX 10.11, *) {
+                // Set the default merge policy type
+                let policy = mergePolicy != nil ? mergePolicy! : NSMergePolicy(mergeType: .MergeByPropertyObjectTrumpMergePolicyType)
+                writerManagedObjectContext.mergePolicy = policy
+                mainManagedObjectContext.mergePolicy = policy
+                backgroundManagedObjectContext.mergePolicy = policy
+            }
+        }
+    }
     /// If this merge policy is set then the Core Data constraints will use it to merge the uniqueness conflicts it comes accross.
     /// This is not set by default and a `NSMergeByPropertyObjectTrumpMergePolicy` type is used by default.
     @available(iOS 9, OSX 10.11, *)
@@ -121,14 +131,6 @@ public class DataStore: NSObject {
             self.mainManagedObjectContext.parentContext = self.writerManagedObjectContext
             self.backgroundManagedObjectContext.parentContext = self.writerManagedObjectContext
             
-            if #available(iOS 9, OSX 10.11, *) {
-                // Set the default merge policy type
-                let policy = mergePolicy != nil ? mergePolicy! : NSMergePolicy(mergeType: .MergeByPropertyObjectTrumpMergePolicyType)
-                self.writerManagedObjectContext.mergePolicy = policy
-                self.mainManagedObjectContext.mergePolicy = policy
-                self.backgroundManagedObjectContext.mergePolicy = policy
-            }
-
             // Register for Core Data notifications
             self.handleNotifications()
 
@@ -208,25 +210,23 @@ public class DataStore: NSObject {
      * - parameter completion: A callback at the end of the save operation with error reporting.
      */
     public func save(onContextSave contextSave: ContextClosure?, completion: SaveClosure?) {
-        saveContext(mainManagedObjectContext, onSave: contextSave) { error in
-            if error != nil && completion != nil {
+        saveContext(mainManagedObjectContext, onSave: contextSave) { [weak self] error in
+            if error != nil || self == nil {
                 // Abort if there is an error with the main queue save.
                 dispatch_async(dispatch_get_main_queue()) {
-                    completion!(error: error)
+                    completion?(error: error)
                 }
             } else {
-                self.saveContext(self.backgroundManagedObjectContext, onSave: contextSave) { error in
-                    if error != nil && completion != nil {
+                self!.saveContext(self!.backgroundManagedObjectContext, onSave: contextSave) { [weak self] error in
+                    if error != nil || self == nil {
                         // Abort if there is an error with the background queue save.
                         dispatch_async(dispatch_get_main_queue()) {
-                            completion!(error: error)
+                            completion?(error: error)
                         }
                     } else {
-                        self.saveContext(self.writerManagedObjectContext, onSave: contextSave) { error in
-                            if completion != nil {
-                                dispatch_async(dispatch_get_main_queue()) {
-                                    completion!(error: error)
-                                }
+                        self!.saveContext(self!.writerManagedObjectContext, onSave: contextSave) { error in
+                            dispatch_async(dispatch_get_main_queue()) {
+                                completion?(error: error)
                             }
                         }
                     }
