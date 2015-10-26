@@ -77,7 +77,7 @@ public class DataStore: NSObject {
     /// If this merge policy is set then the Core Data constraints will use it to merge the uniqueness conflicts it comes accross.
     /// This is not set by default and a `NSMergeByPropertyObjectTrumpMergePolicy` type is used by default.
     @available(iOS 9, OSX 10.11, *)
-    var mergePolicy: NSMergePolicy? {
+    public var mergePolicy: NSMergePolicy? {
         get {
             return _mergePolicy
         }

@@ -1,5 +1,5 @@
 //
-//  DataStoreBackgroundQueueTests.swift
+//  BackgroundQueueTests.swift
 //  DataStore
 //
 //  Created by Jad Osseiran on 13/11/2014.
@@ -30,7 +30,7 @@ import XCTest
 import CoreData
 import DataStore
 
-class DataStoreBackgroundQueueTests: DataStoreTests, DataStoreOperationTests {
+class BackgroundQueueTests: DataStoreTests, DataStoreBaseTests {
     
     override func setUp() {
         super.setUp()

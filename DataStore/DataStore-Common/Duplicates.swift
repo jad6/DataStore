@@ -1,5 +1,5 @@
 //
-//  DataStoreDuplicates.swift
+//  Duplicates.swift
 //  DataStore
 //
 //  Created by Jad Osseiran on 25/11/2014.

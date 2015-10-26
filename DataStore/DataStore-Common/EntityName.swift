@@ -1,5 +1,5 @@
 //
-//  DataStoreEntityName.swift
+//  EntityName.swift
 //  DataStore
 //
 //  Created by Jad Osseiran on 17/11/2014.

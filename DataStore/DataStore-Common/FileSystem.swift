@@ -1,5 +1,5 @@
 //
-//  DataStoreFileSystem.swift
+//  FileSystem.swift
 //  DataStore
 //
 //  Created by Jad Osseiran on 29/11/2014.

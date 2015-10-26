@@ -69,7 +69,7 @@ class DataStoreTests: XCTestCase {
     }
 }
 
-protocol DataStoreOperationTests {
+protocol DataStoreBaseTests {
     func testCreating()
     
     func testCreatingAndSave()

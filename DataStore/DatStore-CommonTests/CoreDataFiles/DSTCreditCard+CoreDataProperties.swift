@@ -14,8 +14,9 @@ import CoreData
 
 extension DSTCreditCard {
 
-    @NSManaged var pan: NSNumber?
-    @NSManaged var expiryDate: NSDate?
+    @NSManaged var pan: String?
+    @NSManaged var cvv: NSNumber?
+    @NSManaged var bank: String?
     @NSManaged var holder: DSTPerson?
 
 }

@@ -1,5 +1,5 @@
 //
-//  DataStoreErrors.swift
+//  Errors.swift
 //  DataStore
 //
 //  Created by Jad Osseiran on 20/06/2015.
