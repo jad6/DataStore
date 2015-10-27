@@ -47,14 +47,13 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         
         var insertedPerson: Person?
         var insertedBackgroundPerson: Person?
-        
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
-        
+
+        let personEntityName = entityName
         let group = dispatch_group_create()
-        
+
         dispatch_group_enter(group)
         dataStore.performClosure() { context in
-            context.insertObjectWithEntityName(entityName) { object in
+            context.insertObjectWithEntityName(personEntityName) { object in
                 let person = object as! Person
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
@@ -66,7 +65,7 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         
         dispatch_group_enter(group)
         dataStore.performBackgroundClosure() { context in
-            context.insertObjectWithEntityName(entityName) { object in
+            context.insertObjectWithEntityName(personEntityName) { object in
                 let person = object as! Person
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
@@ -98,13 +97,12 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
     func testCreatingAndSave() {
         let expectation = expectationWithDescription("Inserted and save")
         
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
-        
+        let personEntityName = entityName
         let group = dispatch_group_create()
         
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
-            context.insertObjectWithEntityName(entityName) { object in
+            context.insertObjectWithEntityName(personEntityName) { object in
                 let person = object as! Person
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
@@ -115,7 +113,7 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         
         dispatch_group_enter(group)
         dataStore.performBackgroundClosureAndSave({ context in
-            context.insertObjectWithEntityName(entityName) { object in
+            context.insertObjectWithEntityName(personEntityName) { object in
                 let person = object as! Person
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
@@ -139,13 +137,11 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
     }
     
     func testCreatingAndWait() {
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
-        
         var insertedPerson: Person?
         var insertedBackgroundPerson: Person?
-        
-        dataStore.performClosureAndWait() { context in
-            context.insertObjectWithEntityName(entityName) { object in
+
+        dataStore.performClosureAndWait() { [unowned self] context in
+            context.insertObjectWithEntityName(self.entityName) { object in
                 let person = object as! Person
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
@@ -154,8 +150,8 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
             }
         }
         
-        dataStore.performBackgroundClosureAndWait() { context in
-            context.insertObjectWithEntityName(entityName) { object in
+        dataStore.performBackgroundClosureAndWait() { [unowned self] context in
+            context.insertObjectWithEntityName(self.entityName) { object in
                 let person = object as! Person
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
@@ -173,10 +169,9 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
     }
     
     func testCreatingWaitAndSave() {
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
         do {
-            try dataStore.performClosureWaitAndSave({ context in
-                context.insertObjectWithEntityName(entityName) { object in
+            try dataStore.performClosureWaitAndSave({ [unowned self] context in
+                context.insertObjectWithEntityName(self.entityName) { object in
                     let person = object as! Person
                     person.firstName = "Jad"
                     person.lastName = "Osseiran"
@@ -187,8 +182,8 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         }
         
         do {
-            try dataStore.performBackgroundClosureWaitAndSave({ context in
-                context.insertObjectWithEntityName(entityName) { object in
+            try dataStore.performBackgroundClosureWaitAndSave({ [unowned self] context in
+                context.insertObjectWithEntityName(self.entityName) { object in
                     let person = object as! Person
                     person.firstName = "Nils"
                     person.lastName = "Osseiran"
@@ -205,10 +200,9 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
     // MARK: Synchrnous Tests
     
     func testFetchingExistingSync() {
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
         do {
-            try dataStore.performClosureWaitAndSave({ context in
-                context.insertObjectWithEntityName(entityName) { object in
+            try dataStore.performClosureWaitAndSave({ [unowned self] context in
+                context.insertObjectWithEntityName(self.entityName) { object in
                     let person = object as! Person
                     person.firstName = "Jad"
                     person.lastName = "Osseiran"
@@ -219,8 +213,8 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         }
         
         do {
-            try dataStore.performBackgroundClosureWaitAndSave({ context in
-                context.insertObjectWithEntityName(entityName) { object in
+            try dataStore.performBackgroundClosureWaitAndSave({ [unowned self] context in
+                context.insertObjectWithEntityName(self.entityName) { object in
                     let person = object as! Person
                     person.firstName = "Nils"
                     person.lastName = "Osseiran"
@@ -232,9 +226,9 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         
         let predicate = NSPredicate(format: "lastName == \"Osseiran\"")
         
-        dataStore.performClosureAndWait() { context in
+        dataStore.performClosureAndWait() { [unowned self] context in
             do {
-                let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [Person]
+                let results = try context.findEntitiesForEntityName(self.entityName, withPredicate: predicate) as! [Person]
                 XCTAssertEqual(2, results.count, "Only two people should be inserted")
             } catch let error {
                 XCTFail("Fetch failed \(error)")
@@ -246,11 +240,9 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
     }
     
     func testFetchingNonExistingSync() {
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
-        
         do {
-            try dataStore.performClosureWaitAndSave({ context in
-                context.insertObjectWithEntityName(entityName) { object in
+            try dataStore.performClosureWaitAndSave({ [unowned self] context in
+                context.insertObjectWithEntityName(self.entityName) { object in
                     let person = object as! Person
                     person.firstName = "Jad"
                     person.lastName = "Osseiran"
@@ -261,8 +253,8 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         }
         
         do {
-            try dataStore.performBackgroundClosureWaitAndSave({ context in
-                context.insertObjectWithEntityName(entityName) { object in
+            try dataStore.performBackgroundClosureWaitAndSave({ [unowned self] context in
+                context.insertObjectWithEntityName(self.entityName) { object in
                     let person = object as! Person
                     person.firstName = "Nils"
                     person.lastName = "Osseiran"
@@ -274,9 +266,9 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         
         let predicate = NSPredicate(format: "lastName == \"Wood\"")
         
-        dataStore.performClosureAndWait() { context in
+        dataStore.performClosureAndWait() { [unowned self] context in
             do {
-                let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [Person]
+                let results = try context.findEntitiesForEntityName(self.entityName, withPredicate: predicate) as! [Person]
                 XCTAssertEqual(results.count, 0, "No match should have been found.")
             } catch let error {
                 XCTFail("Fetch failed \(error)")
@@ -288,12 +280,11 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
     }
     
     func testFetchingWithValueAndKeySync() {
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
         do {
-            try dataStore.performClosureWaitAndSave { context in
+            try dataStore.performClosureWaitAndSave { [unowned self] context in
                 let results: [AnyObject]?
                 do {
-                    results = try context.findOrInsertEntitiesWithEntityName(entityName,
+                    results = try context.findOrInsertEntitiesWithEntityName(self.entityName,
                         whereKey: "firstName",
                         equalsValue: "Jad") { insertedObject, inserted in
                             let person = insertedObject as? Person
@@ -315,10 +306,10 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         }
         
         do {
-            try dataStore.performClosureWaitAndSave{ context in
+            try dataStore.performClosureWaitAndSave{ [unowned self] context in
                 let results: [AnyObject]?
                 do {
-                    results = try context.findOrInsertEntitiesWithEntityName(entityName,
+                    results = try context.findOrInsertEntitiesWithEntityName(self.entityName,
                         whereKey: "firstName",
                         equalsValue: "Jad") { insertedObject, inserted in
                             let person = insertedObject as? Person
@@ -339,11 +330,11 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         }
         
         var person: Person!
-        dataStore.performClosureAndWait() { context in
+        dataStore.performClosureAndWait() { [unowned self] context in
             let predicate = NSPredicate(format: "firstName == \"Jad\" AND lastName == \"Osseiran\"")
             
             do {
-                let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [Person]
+                let results = try context.findEntitiesForEntityName(self.entityName, withPredicate: predicate) as! [Person]
                 
                 XCTAssertEqual(results.count, 1)
                 person = results.last
@@ -358,20 +349,11 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
     }
     
     func testFetchingWithOrderSync() {
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
         let smallNumber = 10
-        
         do {
-            try dataStore.performClosureWaitAndSave({ [weak self] context in
-                guard self != nil else {
-                    XCTFail()
-                    return
-                }
-                
-                let entityName = self!.dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
-                
+            try dataStore.performClosureWaitAndSave({ [unowned self] context in
                 for i in 0 ..< (smallNumber / 2) {
-                    context.insertObjectWithEntityName(entityName) { object in
+                    context.insertObjectWithEntityName(self.entityName) { object in
                         let person = object as! Person
                         person.firstName = "\(i)"
                         person.lastName = "\(i*2)"
@@ -383,16 +365,9 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         }
         
         do {
-            try dataStore.performBackgroundClosureWaitAndSave({ [weak self] context in
-                guard self != nil else {
-                    XCTFail()
-                    return
-                }
-                
-                let entityName = self!.dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
-                
+            try dataStore.performBackgroundClosureWaitAndSave({ [unowned self] context in
                 for i in (smallNumber / 2) ..< smallNumber {
-                    context.insertObjectWithEntityName(entityName) { object in
+                    context.insertObjectWithEntityName(self.entityName) { object in
                         let person = object as! Person
                         person.firstName = "\(i)"
                         person.lastName = "\(i*2)"
@@ -404,11 +379,10 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         }
         
         var fetchedConcatinatedFirstNameString = String()
-        dataStore.performClosureAndWait() { context in
-            let sortDescriptor = NSSortDescriptor(key: "firstName", ascending: false)
-            
+        dataStore.performClosureAndWait() { [unowned self] context in
             do {
-                let results = try context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor]) as! [Person]
+                let sortDescriptor = NSSortDescriptor(key: "firstName", ascending: false)
+                let results = try context.findEntitiesForEntityName(self.entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor]) as! [Person]
                 
                 XCTAssertEqual(results.count, smallNumber, "The count does not match")
                 
@@ -420,9 +394,7 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
             }
         }
         
-        let desiredConcatinatedFirstNameString = "9876543210"
-        
-        XCTAssertEqual(desiredConcatinatedFirstNameString, fetchedConcatinatedFirstNameString)
+        XCTAssertEqual("9876543210", fetchedConcatinatedFirstNameString)
         XCTAssertFalse(dataStore.mainManagedObjectContext.hasChanges)
     }
     
@@ -431,13 +403,12 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
     func testFetchingExistingAsync() {
         let expectation = expectationWithDescription("Fetch existing")
         
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
-        
+        let personEntityName = entityName
         let group = dispatch_group_create()
         
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
-            context.insertObjectWithEntityName(entityName) { object in
+            context.insertObjectWithEntityName(personEntityName) { object in
                 let person = object as! Person
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
@@ -448,7 +419,7 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         
         dispatch_group_enter(group)
         dataStore.performBackgroundClosureAndSave({ context in
-            context.insertObjectWithEntityName(entityName) { object in
+            context.insertObjectWithEntityName(personEntityName) { object in
                 let person = object as! Person
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
@@ -462,7 +433,7 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
                 let predicate = NSPredicate(format: "lastName == \"Osseiran\"")
                 
                 do {
-                    let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [Person]
+                    let results = try context.findEntitiesForEntityName(personEntityName, withPredicate: predicate) as! [Person]
                     XCTAssertEqual(results.count, 2, "Only two people were inserted")
                 } catch let error {
                     XCTFail("Fetch failed \(error)")
@@ -479,13 +450,12 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
     func testFetchingNonExistingAsync() {
         let expectation = expectationWithDescription("Fetch Non-existing")
         
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
-        
+        let personEntityName = entityName
         let group = dispatch_group_create()
         
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
-            context.insertObjectWithEntityName(entityName) { object in
+            context.insertObjectWithEntityName(personEntityName) { object in
                 let person = object as! Person
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
@@ -496,7 +466,7 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         
         dispatch_group_enter(group)
         dataStore.performBackgroundClosureAndSave({ context in
-            context.insertObjectWithEntityName(entityName) { object in
+            context.insertObjectWithEntityName(personEntityName) { object in
                 let person = object as! Person
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
@@ -510,7 +480,7 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
                 let predicate = NSPredicate(format: "firstName == \"Nathan\" AND lastName == \"Wood\"")
                 
                 do {
-                    let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [Person]
+                    let results = try context.findEntitiesForEntityName(personEntityName, withPredicate: predicate) as! [Person]
                     XCTAssertEqual(results.count, 0)
                 } catch let error {
                     XCTFail("Fetch failed \(error)")
@@ -526,16 +496,14 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
     
     func testFetchingWithValueAndKeyAsync() {
         let expectation = expectationWithDescription("Fetch existing key-value")
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
-        
+
+        let personEntityName = entityName
         let group = dispatch_group_create()
         
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
             do {
-                try context.findOrInsertEntitiesWithEntityName(entityName,
-                    whereKey: "firstName",
-                    equalsValue: "Jad") { insertedObject, inserted in
+                try context.findOrInsertEntitiesWithEntityName(personEntityName, whereKey: "firstName", equalsValue: "Jad") { insertedObject, inserted in
                         let person = insertedObject as? Person
                         person?.firstName = "Jad"
                         person?.lastName = "Osseiran"
@@ -551,9 +519,7 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         dispatch_group_enter(group)
         dataStore.performBackgroundClosureAndSave({ context in
             do {
-                try context.findOrInsertEntitiesWithEntityName(entityName,
-                    whereKey: "firstName",
-                    equalsValue: "Nils") { insertedObject, inserted in
+                try context.findOrInsertEntitiesWithEntityName(personEntityName, whereKey: "firstName", equalsValue: "Nils") { insertedObject, inserted in
                         let person = insertedObject as? Person
                         person?.firstName = "Nils"
                         person?.lastName = "Osseiran"
@@ -568,10 +534,9 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         
         dispatch_group_notify(group, dispatch_get_main_queue()) {
             self.dataStore.performClosureAndWait() { context in
-                let predicate = NSPredicate(format: "lastName == \"Osseiran\"")
-                
                 do {
-                    let results = try context.findEntitiesForEntityName(entityName, withPredicate: predicate) as! [Person]
+                    let predicate = NSPredicate(format: "lastName == \"Osseiran\"")
+                    let results = try context.findEntitiesForEntityName(personEntityName, withPredicate: predicate) as! [Person]
                     XCTAssertEqual(results.count, 2, "Only two people were inserted")
                 } catch let error {
                     XCTFail("Fetch failed \(error)")
@@ -588,15 +553,14 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
     func testFetchingWithOrderAsync() {
         let expectation = expectationWithDescription("Fetch in order")
         let smallNumber = 10
-        
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
-        
+
+        let personEntityName = entityName
         let group = dispatch_group_create()
         
         dispatch_group_enter(group)
         dataStore.performClosureAndSave({ context in
             for i in 0 ..< (smallNumber / 2) {
-                context.insertObjectWithEntityName(entityName) { object in
+                context.insertObjectWithEntityName(personEntityName) { object in
                     let person = object as! Person
                     person.firstName = "\(i)"
                     person.lastName = "\(i*2)"
@@ -609,7 +573,7 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         dispatch_group_enter(group)
         dataStore.performBackgroundClosureAndSave({ context in
             for i in (smallNumber / 2) ..< smallNumber {
-                context.insertObjectWithEntityName(entityName) { object in
+                context.insertObjectWithEntityName(personEntityName) { object in
                     let person = object as! Person
                     person.firstName = "\(i)"
                     person.lastName = "\(i*2)"
@@ -624,17 +588,15 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
                 let sortDescriptor = NSSortDescriptor(key: "firstName", ascending: false)
                 
                 do {
-                    let results = try context.findEntitiesForEntityName(entityName, withPredicate: nil, andSortDescriptors: [sortDescriptor]) as! [Person]
-                    
-                    let desiredConcatinatedFirstNameString = "9876543210"
-                    
+                    let results = try context.findEntitiesForEntityName(personEntityName, withPredicate: nil, andSortDescriptors: [sortDescriptor]) as! [Person]
+
                     var fetchedConcatinatedFirstNameString = String()
                     for person in results {
                         fetchedConcatinatedFirstNameString += person.firstName!
                     }
                     
                     XCTAssertEqual(results.count, smallNumber)
-                    XCTAssertEqual(desiredConcatinatedFirstNameString, fetchedConcatinatedFirstNameString)
+                    XCTAssertEqual("9876543210", fetchedConcatinatedFirstNameString)
                 } catch let error {
                     XCTFail("Fetch failed \(error)")
                 }
@@ -650,18 +612,16 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
     // MARK: Parallel Saving
     
     func testCreatingOnMultipleContextsAndSaveSync() {
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
-        
-        dataStore.performClosureAndWait() { context in
-            context.insertObjectWithEntityName(entityName) { object in
+        dataStore.performClosureAndWait() { [unowned self] context in
+            context.insertObjectWithEntityName(self.entityName) { object in
                 let person = object as! Person
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
             }
         }
         
-        dataStore.performBackgroundClosureAndWait() { context in
-            context.insertObjectWithEntityName(entityName) { object in
+        dataStore.performBackgroundClosureAndWait() { [unowned self] context in
+            context.insertObjectWithEntityName(self.entityName) { object in
                 let person = object as! Person
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
@@ -677,10 +637,10 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
             XCTFail("Failed to save \(error)")
         }
         
-        dataStore.performClosureAndWait() { context in
+        dataStore.performClosureAndWait() { [unowned self] context in
             let results: [AnyObject]?
             do {
-                results = try context.findAllForEntityWithEntityName(entityName)
+                results = try context.findAllForEntityWithEntityName(self.entityName)
             } catch let error {
                 XCTFail("Fetch failed \(error)")
                 results = nil
@@ -698,13 +658,12 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
     func testCreatingOnMultipleContextsAndSaveAsync() {
         let expectation = expectationWithDescription("Create parallel and save")
         
-        let entityName = dataStore.entityNameForObjectClass(Person.self, withClassPrefix: "DST")
-        
+        let personEntityName = entityName
         let group = dispatch_group_create()
         
         dispatch_group_enter(group)
         dataStore.performClosure() { context in
-            context.insertObjectWithEntityName(entityName) { object in
+            context.insertObjectWithEntityName(personEntityName) { object in
                 let person = object as! Person
                 person.firstName = "Jad"
                 person.lastName = "Osseiran"
@@ -714,7 +673,7 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
         
         dispatch_group_enter(group)
         dataStore.performBackgroundClosure() { context in
-            context.insertObjectWithEntityName(entityName) { object in
+            context.insertObjectWithEntityName(personEntityName) { object in
                 let person = object as! Person
                 person.firstName = "Nils"
                 person.lastName = "Osseiran"
@@ -735,7 +694,7 @@ class AllQueuesTests: DataStoreTests, DataStoreBaseTests {
                     self!.dataStore.performClosureAndWait() { context in
                         let results: [AnyObject]?
                         do {
-                            results = try context.findAllForEntityWithEntityName(entityName)
+                            results = try context.findAllForEntityWithEntityName(personEntityName)
                         } catch let error {
                             XCTFail("Fetch failed \(error)")
                             results = nil

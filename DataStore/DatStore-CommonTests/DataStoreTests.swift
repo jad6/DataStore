@@ -30,7 +30,7 @@ import XCTest
 import CoreData
 import DataStore
 
-class DataStoreTests: XCTestCase {
+class DataStoreTests: XCTestCase, DataStoreTestModel {
     
     var dataStore: DataStore!
     
@@ -63,13 +63,18 @@ class DataStoreTests: XCTestCase {
         }
 
         dataStore = nil
-        DataStore.clearClassNameCache()
+        DataStore.clearCachedEntityNames()
 
         super.tearDown()
     }
 }
 
-protocol DataStoreBaseTests {
+protocol DataStoreTestModel {
+    var dataStore: DataStore! { get set }
+}
+
+protocol DataStoreBaseTests: DataStoreTestModel {
+
     func testCreating()
     
     func testCreatingAndSave()
@@ -93,4 +98,17 @@ protocol DataStoreBaseTests {
     func testFetchingWithValueAndKeyAsync()
     
     func testFetchingWithOrderAsync()
+}
+
+extension DataStoreBaseTests {
+    var entityName: String {
+        var personEntityName: String!
+        do {
+            personEntityName = try dataStore?.entityNameForObjectClass(Person.self)
+        } catch let error {
+            XCTFail("Failed to fetch entity name with error \(error)")
+            assertionFailure("I'm doing you a favour by crashing here.")
+        }
+        return personEntityName
+    }
 }

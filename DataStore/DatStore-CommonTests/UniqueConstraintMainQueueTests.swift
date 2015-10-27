@@ -17,28 +17,28 @@ class UniqueConstraintTests: DataStoreTests {
     func testErrorMergePolicySync() {
         dataStore.mergePolicy = NSMergePolicy(mergeType: .ErrorMergePolicyType)
         
-        let entityName = dataStore.entityNameForObjectClass(DSTCreditCard.self, withClassPrefix: "DST")
-        do {
-            try dataStore.performClosureWaitAndSave({ context in
-                context.insertObjectWithEntityName(entityName) { object in
-                    let card = object as! DSTCreditCard
-                    card.pan = "123"
-                    card.cvv = 123
-                    card.bank = "Chase"
-                }
-            })
-            
-            try dataStore.performClosureWaitAndSave({ context in
-                context.insertObjectWithEntityName(entityName) { object in
-                    let card = object as! DSTCreditCard
-                    card.pan = "123"
-                    card.cvv = 456
-                    card.bank = "ANZ"
-                }
-            })
-        } catch let error {
-            XCTFail("Insertion failed \(error)")
-        }
+//        let entityName = dataStore.entityNameForObjectClass(CreditCard.self, withClassPrefix: "DST")
+//        do {
+//            try dataStore.performClosureWaitAndSave({ context in
+//                context.insertObjectWithEntityName(entityName) { object in
+//                    let card = object as! CreditCard
+//                    card.pan = "123"
+//                    card.cvv = 123
+//                    card.bank = "Chase"
+//                }
+//            })
+//            
+//            try dataStore.performClosureWaitAndSave({ context in
+//                context.insertObjectWithEntityName(entityName) { object in
+//                    let card = object as! CreditCard
+//                    card.pan = "123"
+//                    card.cvv = 456
+//                    card.bank = "ANZ"
+//                }
+//            })
+//        } catch let error {
+//            XCTFail("Insertion failed \(error)")
+//        }
     }
     
     func testMergeByPropertyStoreTrumpMergePolicySync() {
