@@ -100,6 +100,29 @@ protocol DataStoreBaseTests: DataStoreTestModel {
     func testFetchingWithOrderAsync()
 }
 
+protocol DataStoreUniqunessTests: DataStoreTestModel {
+
+    func testErrorMergePolicySync()
+
+    func testMergeByPropertyStoreTrumpMergePolicySync()
+
+    func testMergeByPropertyObjectTrumpMergePolicySync()
+
+    func testOverwriteMergePolicySync()
+
+    func testRollbackMergePolicySync()
+
+    func testErrorMergePolicyAsync()
+
+    func testMergeByPropertyStoreTrumpMergePolicyAsync()
+
+    func testMergeByPropertyObjectTrumpMergePolicyAsync()
+
+    func testOverwriteMergePolicyAsync()
+
+    func testRollbackMergePolicyAsync()
+}
+
 extension DataStoreBaseTests {
     var entityName: String {
         var personEntityName: String!
@@ -110,5 +133,18 @@ extension DataStoreBaseTests {
             assertionFailure("I'm doing you a favour by crashing here.")
         }
         return personEntityName
+    }
+}
+
+extension DataStoreUniqunessTests {
+    var entityName: String {
+        var cardEntityName: String!
+        do {
+            cardEntityName = try dataStore?.entityNameForObjectClass(CreditCard.self)
+        } catch let error {
+            XCTFail("Failed to fetch entity name with error \(error)")
+            assertionFailure("I'm doing you a favour by crashing here.")
+        }
+        return cardEntityName
     }
 }
