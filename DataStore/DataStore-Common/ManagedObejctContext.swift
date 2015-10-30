@@ -35,6 +35,7 @@ public extension NSManagedObjectContext {
      * be nil if the method succeeded. If the fetch fails nil is
      * returned and the error parameter is populated.
      * - throws: An error if something goes wrong in the fetch request.
+     * - note: If you are using Swift make sure that your `entityName` does not include the namespace.
      *
      * - parameter entityName: The entity name of for the managed object to find.
      * - parameter predicate: The predicate to use for the NSFetchRequest
@@ -56,6 +57,7 @@ public extension NSManagedObjectContext {
      * be nil if the method succeeded. If the fetch fails nil is
      * returned and the error parameter is populated.
      * - throws: An error if something goes wrong in the fetch request.
+     * - note: If you are using Swift make sure that your `entityName` does not include the namespace.
      *
      * - parameter entityName: The entity name of for the managed object to find.
      * - parameter predicate: The predicate to use for the NSFetchRequest
@@ -74,6 +76,7 @@ public extension NSManagedObjectContext {
      * A callback closure is passed to allow modification of each of the resulting objects,
      * typically to set their attributes.
      * - throws: An error if something goes wrong in the fetch request.
+     * - note: If you are using Swift make sure that your `entityName` does not include the namespace.
      *
      * - note: If you are build for iOS 9+ or Mac OS X 10.11+ please consider using unique constraints.
      * https://developer.apple.com/videos/wwdc/2015/?id=220
@@ -123,6 +126,7 @@ public extension NSManagedObjectContext {
     /**
      * Method which returns all the objects for the given entity name.
      * - throws: An error if something goes wrong in the fetch request.
+     * - note: If you are using Swift make sure that your `entityName` does not include the namespace.
      *
      * - parameter entityName: The entity name of for the managed object to find.
      * - returns: An array containing all the managed objects for the given entity name.
@@ -134,6 +138,7 @@ public extension NSManagedObjectContext {
     /**
      * Helper method to insert a new object in the context.
      *
+     * - note: If you are using Swift make sure that your `entityName` does not include the namespace.
      * - parameter entityName: The entity name of for the managed object to find.
      * - parameter insertion: Insertion closure to allow the setting up of the newly created object. nil if the creation was unsuccessful.
      */

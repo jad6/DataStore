@@ -37,7 +37,7 @@ public extension DataStore {
         }
         return Singleton.instance
     }
-    
+
     /**
      * Helper method to empty the cached entity class names.
      */
@@ -59,14 +59,14 @@ public extension DataStore {
      * - returns: The entity name for the given class name, `nil` if the error is populated.
      */
     public func entityNameForObjectClassString(classString: String, withClassPrefix classPrefix: String? = nil) throws -> String! {
-        let className: String
+        var entityName: String
         let classStringRange = Range<String.Index>(start: classString.startIndex, end: classString.endIndex)
         if let delimiterRange = classString.rangeOfString(".", options: NSStringCompareOptions.CaseInsensitiveSearch, range: classStringRange, locale: nil) {
             // We have module namespacing save our module name.
-            className = classString.substringFromIndex(delimiterRange.endIndex)
+            entityName = classString.substringFromIndex(delimiterRange.endIndex)
         } else {
             // We do not have module namespacing so the class name will be what was passed down for us.
-            className = classString
+            entityName = classString
         }
         
         // Get a reference to the singleton names dictionary.
@@ -82,7 +82,7 @@ public extension DataStore {
         var foundPotentialNames = [String]()
         for entity in persistentStoreCoordinator.managedObjectModel.entities {
             // In the case where there is a module namespace then `classString` will not be equal to `className`.
-            if entity.managedObjectClassName == classString || entity.managedObjectClassName == className {
+            if entity.managedObjectClassName == classString || entity.managedObjectClassName == entityName {
                 foundPotentialNames.append(entity.managedObjectClassName)
             }
         }
@@ -90,17 +90,15 @@ public extension DataStore {
         if foundPotentialNames.count != 1 {
             throw NSError.invalidEntityNamesErrorFromMatches(foundPotentialNames, classString: classString)
         }
-        
-        // By this point the entity was found so save it for later.
-        var entityName = foundPotentialNames.first!
+
         // Process the prefix discrepency if there is one
         if let prefix = classPrefix {
             let prefixCount = prefix.characters.count
             // Check if the prefix is valid.
-            if className.hasPrefix(prefix) && className.characters.count > prefixCount {
+            if entityName.hasPrefix(prefix) && entityName.characters.count > prefixCount {
                 // Adjust the entity name by removing the prefix.
-                let index: String.Index = className.startIndex.advancedBy(prefixCount)
-                entityName = className.substringFromIndex(index)
+                let index: String.Index = entityName.startIndex.advancedBy(prefixCount)
+                entityName = entityName.substringFromIndex(index)
             }
         }
         
