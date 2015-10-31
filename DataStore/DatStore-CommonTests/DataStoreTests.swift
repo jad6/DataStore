@@ -147,4 +147,40 @@ extension DataStoreUniqunessTests {
         }
         return cardEntityName
     }
+
+    var cardOneCVV: Int {
+        return 123
+    }
+    var cardTwoCVV: Int {
+        return 456
+    }
+    
+    func insertSameIDObjectsInMainContext(errorHandler: ((error: NSError) -> Void)? = nil) {
+        do {
+            let cardEntityName = entityName
+            try dataStore.performClosureWaitAndSave({ context in
+                context.insertObjectWithEntityName(cardEntityName) { object in
+                    let card = object as! CreditCard
+                    card.pan = "123"
+                    card.cvv = self.cardOneCVV
+                    card.bank = "Chase"
+                }
+            })
+                        
+            try dataStore.performClosureWaitAndSave({ context in
+                context.insertObjectWithEntityName(cardEntityName) { object in
+                    let card = object as! CreditCard
+                    card.pan = "123"
+                    card.cvv = self.cardTwoCVV
+                    card.bank = "ANZ"
+                }
+            })
+        } catch let error {
+            if let handler = errorHandler {
+                handler(error: error as NSError)
+            } else {
+                XCTFail("Failed insert with error: \(error)")
+            }
+        }
+    }
 }

@@ -212,6 +212,10 @@ public class DataStore: NSObject {
     public func save(onContextSave contextSave: ContextClosure?, completion: SaveClosure?) {
         saveContext(mainManagedObjectContext, onSave: contextSave) { [weak self] error in
             if error != nil || self == nil {
+                if self == nil {
+                    error 
+                }
+                
                 // Abort if there is an error with the main queue save.
                 dispatch_async(dispatch_get_main_queue()) {
                     completion?(error: error)
@@ -224,7 +228,7 @@ public class DataStore: NSObject {
                             completion?(error: error)
                         }
                     } else {
-                        self!.saveContext(self!.writerManagedObjectContext, onSave: contextSave) { error in
+                        self!.saveContext(self!.writerManagedObjectContext, onSave: contextSave) [weak self] { error in
                             dispatch_async(dispatch_get_main_queue()) {
                                 completion?(error: error)
                             }

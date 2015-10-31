@@ -17,58 +17,82 @@ class UniqueConstraintTests: DataStoreTests, DataStoreUniqunessTests {
     func testErrorMergePolicySync() {
         dataStore.mergePolicy = NSMergePolicy(mergeType: .ErrorMergePolicyType)
         
-        do {
-            try dataStore.performClosureWaitAndSave({ [unowned self] context in
-                context.insertObjectWithEntityName(self.entityName) { object in
-                    let card = object as! CreditCard
-                    card.pan = "123"
-                    card.cvv = 123
-                    card.bank = "Chase"
-                }
-            })
+        insertSameIDObjectsInMainContext { error in
+            let conflictList = error.userInfo["conflictList"] as? [NSObject]
+            XCTAssertEqual(conflictList?.count, 1)
             
-            try dataStore.performClosureWaitAndSave({ [unowned self] context in
-                context.insertObjectWithEntityName(self.entityName) { object in
-                    let card = object as! CreditCard
-                    card.pan = "123"
-                    card.cvv = 456
-                    card.bank = "ANZ"
-                }
-            })
-        } catch let error as NSError {
-            XCTAssertNotNil(error.userInfo["conflictList"])
+            let constraintConflict = conflictList?.first as? NSConstraintConflict
+            XCTAssertNotNil(constraintConflict)
+            XCTAssertEqual(constraintConflict!.conflictingObjects.count, 2)
         }
-
-//        dataStore.performClosureAndWait { [unowned self] context in
-//            do {
-//                let results = try context.findAllForEntityWithEntityName(self.entityName)
-//
-//                XCTAssertEqual(results.count, 1)
-//                XCTAssertEqual(results.first!., <#T##expression2: [T : U]##[T : U]#>)
-//            } catch let error {
-//                XCTFail("Fetch encountered error: \(error)")
-//            }
-//        }
     }
     
     func testMergeByPropertyStoreTrumpMergePolicySync() {
         dataStore.mergePolicy = NSMergePolicy(mergeType: .MergeByPropertyStoreTrumpMergePolicyType)
 
+        insertSameIDObjectsInMainContext()
+        
+        dataStore.performClosureAndWait { [unowned self] context in
+            do {
+                let results = try context.findAllForEntityWithEntityName(self.entityName) as! [CreditCard]
+
+                XCTAssertEqual(results.count, 1)
+                XCTAssertEqual(results.first!.cvv, self.cardTwoCVV)
+            } catch let error {
+                XCTFail("Fetch encountered error: \(error)")
+            }
+        }
     }
     
     func testMergeByPropertyObjectTrumpMergePolicySync() {
         dataStore.mergePolicy = NSMergePolicy(mergeType: .MergeByPropertyObjectTrumpMergePolicyType)
 
+        insertSameIDObjectsInMainContext()
+        
+        dataStore.performClosureAndWait { [unowned self] context in
+            do {
+                let results = try context.findAllForEntityWithEntityName(self.entityName) as! [CreditCard]
+                
+                XCTAssertEqual(results.count, 1)
+                XCTAssertEqual(results.first!.cvv, self.cardTwoCVV)
+            } catch let error {
+                XCTFail("Fetch encountered error: \(error)")
+            }
+        }
     }
     
     func testOverwriteMergePolicySync() {
         dataStore.mergePolicy = NSMergePolicy(mergeType: .OverwriteMergePolicyType)
 
+        insertSameIDObjectsInMainContext()
+        
+        dataStore.performClosureAndWait { [unowned self] context in
+            do {
+                let results = try context.findAllForEntityWithEntityName(self.entityName) as! [CreditCard]
+                
+                XCTAssertEqual(results.count, 1)
+                XCTAssertEqual(results.first!.cvv, self.cardTwoCVV)
+            } catch let error {
+                XCTFail("Fetch encountered error: \(error)")
+            }
+        }
     }
     
     func testRollbackMergePolicySync() {
         dataStore.mergePolicy = NSMergePolicy(mergeType: .RollbackMergePolicyType)
 
+        insertSameIDObjectsInMainContext()
+        
+        dataStore.performClosureAndWait { [unowned self] context in
+            do {
+                let results = try context.findAllForEntityWithEntityName(self.entityName) as! [CreditCard]
+                
+                XCTAssertEqual(results.count, 1)
+                XCTAssertEqual(results.first!.cvv, self.cardOneCVV)
+            } catch let error {
+                XCTFail("Fetch encountered error: \(error)")
+            }
+        }
     }
     
     // MARK: Async
