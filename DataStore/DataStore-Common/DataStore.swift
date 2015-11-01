@@ -165,16 +165,16 @@ public class DataStore: NSObject {
     }
     
     /**
-     * Convenience initialiser which sets up a cloud Core Data environment with
-     * a SQLLite store type with a persistent store having no configurations and options
-     * NSMigratePersistentStoresAutomaticallyOption, NSInferMappingModelAutomaticallyOption
-     * & NSPersistentStoreUbiquitousContentNameKey enabled. If the persistent
-     * store coordinator could not be added, the initialisation fails.
-     * - throws: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
-     *
-     * - parameter model: The model to use througout the application.
-     * - parameter cloudUbiquitousNameKey: Option to specify that a persistent store has a given name in ubiquity.
-     * - parameter storePath: The file location of the persistent store.
+     Convenience initialiser which sets up a cloud Core Data environment with
+     a SQLLite store type with a persistent store having no configurations and options
+     NSMigratePersistentStoresAutomaticallyOption, NSInferMappingModelAutomaticallyOption
+     & NSPersistentStoreUbiquitousContentNameKey enabled. If the persistent
+     store coordinator could not be added, the initialisation fails.
+     - throws: If a new store cannot be created an instance of NSError that describes the problem will be thrown.
+
+     - parameter model: The model to use througout the application.
+     - parameter cloudUbiquitousNameKey: Option to specify that a persistent store has a given name in ubiquity.
+     - parameter storePath: The file location of the persistent store.
      */
     public convenience init!(model: NSManagedObjectModel,
         cloudUbiquitousNameKey: String,
@@ -203,34 +203,50 @@ public class DataStore: NSObject {
     // MARK: Asynchronous Methods
     
     /**
-     * Method to save all contexts in the data store asynchronously. A callback is 
-     * given at each context save.
-     *
-     * - parameter contextSave: A callback given at each context save.
-     * - parameter completion: A callback at the end of the save operation with error reporting.
+     Method to save all contexts in the data store asynchronously. A callback is
+     given at each context save.
+     - note: At the end of the same all contexts will be reset.
+
+     - parameter contextSave: A callback given at each context save.
+     - parameter completion: A callback at the end of the save operation with error reporting.
      */
     public func save(onContextSave contextSave: ContextClosure?, completion: SaveClosure?) {
         saveContext(mainManagedObjectContext, onSave: contextSave) { [weak self] error in
             if error != nil || self == nil {
+                var saveError = error
                 if self == nil {
-                    error 
+                    saveError = NSError.prematureDeallocationError
                 }
                 
                 // Abort if there is an error with the main queue save.
                 dispatch_async(dispatch_get_main_queue()) {
-                    completion?(error: error)
+                    completion?(error: saveError)
                 }
             } else {
                 self!.saveContext(self!.backgroundManagedObjectContext, onSave: contextSave) { [weak self] error in
                     if error != nil || self == nil {
+                        var saveError = error
+                        if self == nil {
+                            saveError = NSError.prematureDeallocationError
+                        }
+
                         // Abort if there is an error with the background queue save.
                         dispatch_async(dispatch_get_main_queue()) {
-                            completion?(error: error)
+                            completion?(error: saveError)
                         }
                     } else {
-                        self!.saveContext(self!.writerManagedObjectContext, onSave: contextSave) [weak self] { error in
+                        self!.saveContext(self!.writerManagedObjectContext, onSave: contextSave) { [weak self] error in
+                            var saveError = error
+                            if self == nil {
+                                saveError = NSError.prematureDeallocationError
+                            }
+
+                            // Abort if there is an error with deallocating self prematurely.
                             dispatch_async(dispatch_get_main_queue()) {
-                                completion?(error: error)
+                                // Reset the contexts as we are done with the change syncing
+                                self?.resetContexts()
+
+                                completion?(error: saveError)
                             }
                         }
                     }
@@ -241,6 +257,7 @@ public class DataStore: NSObject {
     
     /**
      * Method to save all contexts in the data store asynchronously.
+     * - note: At the end of the same all contexts will be reset.
      *
      * - parameter completion: A callback at the end of the save operation with error reporting.
      */
@@ -252,7 +269,8 @@ public class DataStore: NSObject {
     
     /**
      * Method to save all contexts in the data store synchronously. A callback is
-     * given at each context save.
+     * given at each context save. 
+     * - note: At the end of the same all contexts will be reset.
      * - throws: An error if the save operations fail.
      *
      * - parameter contextSave: A callback given at each context save.
@@ -264,10 +282,14 @@ public class DataStore: NSObject {
         try saveContextAndWait(backgroundManagedObjectContext, onSave: contextSave)
         // If we did not throw an error on the background context, try saving the writer context.
         try saveContextAndWait(writerManagedObjectContext, onSave: contextSave)
+
+        // Reset the contexts as we are done with the change syncing
+        resetContexts()
     }
     
     /**
      * Method to save all contexts in the data store synchronously.
+     * - note: At the end of the same all contexts will be reset.
      * - throws: An error if the save operations fail.
      */
     public func saveAndWait() throws {
