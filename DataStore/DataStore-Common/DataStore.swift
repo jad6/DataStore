@@ -342,9 +342,15 @@ public class DataStore: NSObject {
      Helper method to reset all contexts.
      */
     public func resetContexts() {
-        mainManagedObjectContext.reset()
-        backgroundManagedObjectContext.reset()
-        writerManagedObjectContext.reset()
+        if mainManagedObjectContext.hasChanges {
+            mainManagedObjectContext.reset()
+        }
+        if backgroundManagedObjectContext.hasChanges {
+            backgroundManagedObjectContext.reset()
+        }
+        if writerManagedObjectContext.hasChanges {
+            writerManagedObjectContext.reset()
+        }
     }
     
     // MARK: Private Methods
