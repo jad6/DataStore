@@ -32,8 +32,8 @@ import CoreData
 public extension DataStore {
     
     /**
-     * Convenient notifications struct containing the names and keys used
-     * throughout the DataStore.
+     Convenient notifications struct containing the names and keys used
+     throughout the DataStore.
      */
     public struct Notifications {
         /// Notification sent when one of the sibling contexts saves. The
@@ -52,7 +52,7 @@ public extension DataStore {
         public static let storeDidMoveToCloudFileSystemDirectory = "DSstoreDidMoveToCloudFileSystemDirectory"
         
         /**
-         * The keys used for the notifications userInfo.
+         The keys used for the notifications userInfo.
          */
         public struct Keys {
             /// The error key which will be included when errors are found.
@@ -69,7 +69,7 @@ public extension DataStore {
     }
     
     /**
-     * Helper method to handle all the notification registrations and/or handlings.
+     Helper method to handle all the notification registrations and/or handlings.
      */
     func handleNotifications() {
         let notificationCenter = NSNotificationCenter.defaultCenter()
@@ -92,9 +92,9 @@ public extension DataStore {
     }
     
     /**
-     * Notification method to handle logic just before stores swaping.
-     *
-     * - parameter notification: The notification object posted before the stores swap.
+     Notification method to handle logic just before stores swaping.
+   
+     - parameter notification: The notification object posted before the stores swap.
      */
     func handlePersistentStoresWillChangeNotification(notification: NSNotification) {
         // FIXME: What was this meant to do?
@@ -163,9 +163,9 @@ public extension DataStore {
     }
 
     /**
-     * Notification method to handle logic for cloud store imports.
-     *
-     * - parameter notification: The notification object posted when data was imported.
+     Notification method to handle logic for cloud store imports.
+   
+     - parameter notification: The notification object posted when data was imported.
      */
     func handleImportChangesNotification(notification: NSNotification) {
         // Inline closure to merge a context.
@@ -181,9 +181,9 @@ public extension DataStore {
     }
     
     /**
-     * Notification method to handle logic once the main context has saved.
-     *
-     * - parameter notification: The notification object posted when mainManagedObjectContext was saved.
+     Notification method to handle logic once the main context has saved.
+   
+     - parameter notification: The notification object posted when mainManagedObjectContext was saved.
      */
     func handleMainContextSaveNotification(notification: NSNotification) {
         if let mainContext = notification.object as? NSManagedObjectContext where mainContext == mainManagedObjectContext {
@@ -200,9 +200,9 @@ public extension DataStore {
     }
     
     /**
-     * Notification method to handle logic once the bacground context has saved.
-     *
-     * - parameter notification: The notification object posted when backgroundManagedObjectContext was saved.
+     Notification method to handle logic once the bacground context has saved.
+   
+     - parameter notification: The notification object posted when backgroundManagedObjectContext was saved.
      */
     func handleBackgroundContextSaveNotification(notification: NSNotification) {
         if let backgroundContext = notification.object as? NSManagedObjectContext where backgroundContext == backgroundManagedObjectContext {

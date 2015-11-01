@@ -31,14 +31,14 @@ import CoreData
 public extension DataStore {
     
     /**
-     * Method which removes duplicates for an entity.
-     * - throws: An error if anything goes wrong
-     *
-     * - parameter entityName: The name of the entity for which to remove duplicates.
-     * - parameter key: The key attribute to use for unique identification of the object.
-     * - parameter type: The attribute type of the identification key.
-     * - parameter duplicateToDelete: A closure which will be called when two duplicate objects are found. Return the duplicate to delete.
-     * - returns: True if the operation succeeded.
+     Method which removes duplicates for an entity.
+     - throws: An error if anything goes wrong
+   
+     - parameter entityName: The name of the entity for which to remove duplicates.
+     - parameter key: The key attribute to use for unique identification of the object.
+     - parameter type: The attribute type of the identification key.
+     - parameter duplicateToDelete: A closure which will be called when two duplicate objects are found. Return the duplicate to delete.
+     - returns: True if the operation succeeded.
      */
     public func removeDuplicatesInStoreForEntityName(entityName: String,
         withUniqueAttributeKey key: String,
@@ -65,11 +65,11 @@ public extension DataStore {
     // MARK: - Private
 
     /**
-     * Filter out unique values that have no duplicates.
-     *
-     * - parameter valuesWithDupes: Dctionary of values without duplicates
-     * - parameter key: The key attribute to use for unique identification of the object.
-     * - returns: An array of duplicated values.
+     Filter out unique values that have no duplicates.
+   
+     - parameter valuesWithDupes: Dctionary of values without duplicates
+     - parameter key: The key attribute to use for unique identification of the object.
+     - returns: An array of duplicated values.
      */
     private func retrieveDuplicateFromValues(valuesWithDupes: [AnyObject], withUniqueAttributeKey key: String) -> [AnyObject] {
         // Create an array to store the duplicate values.
@@ -88,13 +88,13 @@ public extension DataStore {
     }
     
     /**
-     * Fetches the number of times each unique value appears in the store.
-     * - throws: An error if anything goes wrong.
-     * 
-     * - parameter entityName: The name of the entity for which to remove duplicates.
-     * - parameter uniqueAttribute: The value of the unique attribute to group the fetch with.
-     * - parameter countExpressionDescription: The count description expression for the fetch.
-     * - returns: An array of dictionaries containing the duplicated info, nil if an error was ecountered.
+     Fetches the number of times each unique value appears in the store.
+     - throws: An error if anything goes wrong.
+     
+     - parameter entityName: The name of the entity for which to remove duplicates.
+     - parameter uniqueAttribute: The value of the unique attribute to group the fetch with.
+     - parameter countExpressionDescription: The count description expression for the fetch.
+     - returns: An array of dictionaries containing the duplicated info, nil if an error was ecountered.
      */
     private func fetchDuplicateInfo(entityName entityName: String,
         uniqueAttribute: AnyObject,
@@ -108,12 +108,12 @@ public extension DataStore {
     }
     
     /**
-     * Method to return a conut expression description to be used to find duplicates.
-     *
-     * - parameter entityName: The name of the entity for which to remove duplicates.
-     * - parameter key: The key attribute to use for unique identification of the object.
-     * - parameter type: The attribute type of the identification key.
-     * - returns: Expression description to get the count for an entity name with the give key
+     Method to return a conut expression description to be used to find duplicates.
+   
+     - parameter entityName: The name of the entity for which to remove duplicates.
+     - parameter key: The key attribute to use for unique identification of the object.
+     - parameter type: The attribute type of the identification key.
+     - returns: Expression description to get the count for an entity name with the give key
      */
     private func countExpressionDescriptionForEntityName(entityName: String,
         withUniqueAttributeKey key: String,
@@ -130,13 +130,13 @@ public extension DataStore {
     }
     
     /**
-     * Helper method to delete the duplicates in an array using a given algorithm.
-     * - throws: An error if anything goes wrong.
-     *
-     * - parameter dupes: An array of duplicated objects.
-     * - parameter key: The key attribute to use for unique identification of the object.
-     * - parameter duplicateToDelete: A closure which will be called when two duplicate objects are found. Return the duplicate to delete.
-     * - returns: True if the operation succeeded.
+     Helper method to delete the duplicates in an array using a given algorithm.
+     - throws: An error if anything goes wrong.
+   
+     - parameter dupes: An array of duplicated objects.
+     - parameter key: The key attribute to use for unique identification of the object.
+     - parameter duplicateToDelete: A closure which will be called when two duplicate objects are found. Return the duplicate to delete.
+     - returns: True if the operation succeeded.
      */
     private func deleteDuplicates(dupes: [AnyObject],
         withUniqueAttributeKey key: String,

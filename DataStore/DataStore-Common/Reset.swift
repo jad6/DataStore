@@ -31,7 +31,7 @@ import CoreData
 public extension DataStore {
 
     /**
-     * Enum which dictates how the store will be reset when the data store is reset.
+     Enum which dictates how the store will be reset when the data store is reset.
      */
     @objc public enum StoreResetOption: Int {
         /// Uses the current store options.
@@ -89,11 +89,11 @@ public extension DataStore {
     }
     
     /**
-     * Method to reset the Core Data environment. This erases the data in the
-     * persistent stores as well as! reseting all managed object contexts.
-     *
-     * - complexity: O(n)
-     * - returns: true if the process is successful.
+     Method to reset the Core Data environment. This erases the data in the
+     persistent stores as well as! reseting all managed object contexts.
+   
+     - complexity: O(n)
+     - returns: true if the process is successful.
      */
     public func reset() throws {
         try reset { store in .CopyExisting }
@@ -133,13 +133,13 @@ public extension DataStore {
     // MARK: - Private Methods
 
     /**
-     * Method to reset the Core Data environment. This erases the data in the
-     * persistent stores as well as reseting all managed object contexts.
-     * Further, depening on the option cloud data can also be reset.
-     * - throws: The error if an error is encountered in the process.
-     *
-     * - complexity: O(n)
-     * - parameter newStoreOption: A closure to return a reset option for the given store.
+     Method to reset the Core Data environment. This erases the data in the
+     persistent stores as well as reseting all managed object contexts.
+     Further, depening on the option cloud data can also be reset.
+     - throws: The error if an error is encountered in the process.
+   
+     - complexity: O(n)
+     - parameter newStoreOption: A closure to return a reset option for the given store.
      */
     @available(iOS 8, OSX 10.10, *)
     private func replaceStoresManually(stores: [NSPersistentStore], newStoreOption: (store: NSPersistentStore) -> StoreResetOption) throws {

@@ -39,7 +39,7 @@ public extension DataStore {
     }
 
     /**
-     * Helper method to empty the cached entity class names.
+     Helper method to empty the cached entity class names.
      */
     public class func clearCachedEntityNames() {
         var cache = cachedEntityNames
@@ -47,16 +47,16 @@ public extension DataStore {
     }
     
     /**
-     * Method to return the correct entity name for a given class name.
-     *
-     * - complexity: O(n)
-     * - throws: An `InvalidEntityNameFetchRequest` error if no entity names were found or if multiple names were found to match.
-     * - parameter classString: The class name for the managed object who's entity name will be returned. This can either
-     * be a fully namespaced Swift classname like so `ModuleName.ClassName` or just contain the class name without the 
-     * module namespacing (the latter is what Objective-C will be using).
-     * - parameter classPrefix: The prefix which differs from the model entity name and the class name.
-     * You would set this if your given class name is different from the entity name shown in the xcdatamodeld file.
-     * - returns: The entity name for the given class name, `nil` if the error is populated.
+     Method to return the correct entity name for a given class name.
+     - complexity: O(n)
+     - throws: An `InvalidEntityNameFetchRequest` error if no entity names were found or if multiple names were found to match.
+
+     - parameter classString: The class name for the managed object who's entity name will be returned. This can either
+     be a fully namespaced Swift classname like so `ModuleName.ClassName` or just contain the class name without the 
+     module namespacing (the latter is what Objective-C will be using).
+     - parameter classPrefix: The prefix which differs from the model entity name and the class name.
+     You would set this if your given class name is different from the entity name shown in the xcdatamodeld file.
+     - returns: The entity name for the given class name, `nil` if the error is populated.
      */
     public func entityNameForObjectClassString(classString: String, withClassPrefix classPrefix: String? = nil) throws -> String! {
         var entityName: String
@@ -109,13 +109,13 @@ public extension DataStore {
     }
     
     /**
-     * Method to return the correct entity name for a given class.
-     *
-     * - complexity: O(n)
-     * - parameter objectClass: The class for the managed object who's entity name will be returned.
-     * - parameter classPrefix: The prefix which differs from the model entity name and the class name.
-     * You would set this if your given class name is different from the entity name shown in the xcdatamodeld file.
-     * - returns: The entity name for the given class, nil if the error is populated.
+     Method to return the correct entity name for a given class.
+     - complexity: O(n)
+     
+     - parameter objectClass: The class for the managed object who's entity name will be returned.
+     - parameter classPrefix: The prefix which differs from the model entity name and the class name.
+     You would set this if your given class name is different from the entity name shown in the xcdatamodeld file.
+     - returns: The entity name for the given class, nil if the error is populated.
      */
     public func entityNameForObjectClass(objectClass: NSManagedObject.Type, withClassPrefix classPrefix: String? = nil) throws -> String! {
         return try entityNameForObjectClassString(NSStringFromClass(objectClass), withClassPrefix: classPrefix)
