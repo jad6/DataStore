@@ -45,6 +45,10 @@ public enum DataStoreError: ErrorType {
     case DeleteNonManagedObject
     /// A closure captured symbol tried to reference a deallocated object.
     case PrematureDeallocation
+    #if os(OSX)
+    /// The context could not commit the edits before a save.
+    case CommitEditFailed
+    #endif
 }
 
 extension NSError {
@@ -75,4 +79,11 @@ extension NSError {
         }
         return NSError(domain: errorDomain, code: DataStoreError.InvalidEntityNameFetchRequest._code, userInfo: userInfo)
     }
+
+    #if os(OSX)
+    class var commitEditingError: NSError {
+        let userInfo: [String: AnyObject] = [NSLocalizedDescriptionKey : "Unable to commit editing before saving."]
+        return NSError(domain: errorDomain, code: DataStoreError.CommitEditFailed._code, userInfo: userInfo)
+    }
+    #endif
 }

@@ -366,7 +366,9 @@ public class DataStore: NSObject {
         context.performBlock() {
             var saveError: NSError?
             do {
-                try context.save()
+                if context.hasChanges {
+                    try context.save()
+                }
                 // Give save callback for the context.
                 contextSave?(context: context)
             } catch let error as NSError {
@@ -391,7 +393,14 @@ public class DataStore: NSObject {
 
         context.performBlockAndWait() {
             do {
-                try context.save()
+                if context.hasChanges {
+                    #if os(OSX)
+                    if context.commitEditing() == false {
+                        throw NSError.commitEditingError
+                    }
+                    #endif
+                    try context.save()
+                }
                 // Give save callback for the context.
                 contextSave?(context: context)
             } catch let error as NSError {
