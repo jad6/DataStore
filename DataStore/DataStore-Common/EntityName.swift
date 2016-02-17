@@ -60,7 +60,7 @@ public extension DataStore {
      */
     public func entityNameForObjectClassString(classString: String, withClassPrefix classPrefix: String? = nil) throws -> String! {
         var entityName: String
-        let classStringRange = Range<String.Index>(start: classString.startIndex, end: classString.endIndex)
+        let classStringRange = classString.startIndex ..< classString.endIndex
         if let delimiterRange = classString.rangeOfString(".", options: NSStringCompareOptions.CaseInsensitiveSearch, range: classStringRange, locale: nil) {
             // We have module namespacing save our module name.
             entityName = classString.substringFromIndex(delimiterRange.endIndex)
