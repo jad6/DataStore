@@ -75,19 +75,19 @@ public extension DataStore {
         let notificationCenter = NSNotificationCenter.defaultCenter()
         
         // Register a selector to handle this notification.
-        notificationCenter.addObserver(self, selector: "handlePersistentStoresDidChangeNotification:", name: NSPersistentStoreCoordinatorStoresDidChangeNotification, object: persistentStoreCoordinator)
-        notificationCenter.addObserver(self, selector: "handlePersistentStoresWillChangeNotification:", name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: persistentStoreCoordinator)
+        notificationCenter.addObserver(self, selector: #selector(handlePersistentStoresDidChangeNotification(_:)), name: NSPersistentStoreCoordinatorStoresDidChangeNotification, object: persistentStoreCoordinator)
+        notificationCenter.addObserver(self, selector: #selector(handlePersistentStoresWillChangeNotification(_:)), name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: persistentStoreCoordinator)
         
         // Register a selector for the notification in the case Core Data posts
         // content changes from iCloud.
-        notificationCenter.addObserver(self, selector: "handleImportChangesNotification:", name:
+        notificationCenter.addObserver(self, selector: #selector(handleImportChangesNotification(_:)), name:
             NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: persistentStoreCoordinator)
         
         // Register for the sibling contexts save notifications on their
         // respective queues.
-        notificationCenter.addObserver(self, selector: "handleMainContextSaveNotification:", name:
+        notificationCenter.addObserver(self, selector: #selector(handleMainContextSaveNotification(_:)), name:
             NSManagedObjectContextDidSaveNotification, object: mainManagedObjectContext)
-        notificationCenter.addObserver(self, selector: "handleBackgroundContextSaveNotification:", name:
+        notificationCenter.addObserver(self, selector: #selector(handleBackgroundContextSaveNotification(_:)), name:
             NSManagedObjectContextDidSaveNotification, object: backgroundManagedObjectContext)
     }
     
@@ -113,7 +113,7 @@ public extension DataStore {
                 } catch let error as NSError {
                     userInfo = [Notifications.Keys.error: error]
                 } catch {
-                    assertionFailure("Well looks like the save method on NSManagedObjectContext throws something that is not an NSError... - \(__FUNCTION__) @ \(__LINE__)")
+                    assertionFailure("Well looks like the save method on NSManagedObjectContext throws something that is not an NSError... - \(#function) @ \(#line)")
                 }
 
                 // Post the save temporary store notification.

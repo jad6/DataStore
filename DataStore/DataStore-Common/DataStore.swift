@@ -36,7 +36,7 @@ public var _dataStoreLogging = false
  This function allows for more readable console output.
  */
 func log(message: String) {
-    print("\(__FILE__).\(__FUNCTION__) (\(__LINE__)): \(message)")
+    print("\(#file).\(#function) (\(#line)): \(message)")
 }
 
 /**
